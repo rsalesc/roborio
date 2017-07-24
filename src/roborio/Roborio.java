@@ -1,18 +1,23 @@
 package roborio;
 
-import robocode.AdvancedRobot;
+import robocode.HitByBulletEvent;
+import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
+import roborio.enemies.ComplexEnemyRobot;
 import roborio.enemies.EnemyTracker;
-import roborio.utils.Physics;
-import roborio.utils.Point;
+import roborio.movement.RoborioMovement;
+import roborio.myself.MyLog;
+import roborio.myself.MyRobot;
+import roborio.utils.BackAsFrontRobot;
 
 import java.awt.*;
 
 /**
  * Created by Roberto Sales on 21/07/17.
  */
-public class Roborio extends AdvancedRobot {
+public class Roborio extends BackAsFrontRobot {
+    private RoborioMovement movement;
 
     public void run() {
         clearLastRoundData();
@@ -24,15 +29,21 @@ public class Roborio extends AdvancedRobot {
 
         setupColors();
         setupRadar();
-
-        System.out.println(EnemyTracker.getInstance().size());
+        movement = new RoborioMovement(this);
 
         while(true) {
+            trackMe();
+            movement.doMovement();
+
             if(getRadarTurnRemaining() == 0)
                 setTurnRadarRight(1);
 
             execute();
         }
+    }
+
+    private void trackMe() {
+        MyLog.getInstance().push(new MyRobot(this));
     }
 
     void activateSpinningLock() {
@@ -48,24 +59,32 @@ public class Roborio extends AdvancedRobot {
     }
 
     @Override
+    public void onHitByBullet(HitByBulletEvent e) {
+        movement.onHitByBullet(e);
+    }
+
+    @Override
     public void onScannedRobot(ScannedRobotEvent e) {
+        trackEnemy(e);
+
+        movement.onScan(e);
+        doOnScan(e);
+    }
+
+    public void trackEnemy(ScannedRobotEvent e) {
         EnemyTracker.getInstance().push(e, this);
+    }
 
-        setTurnRight(e.getBearing());
-        setTurnGunRight(getHeading() - getGunHeading() + e.getBearing());
-        if(Math.abs(getTurnRemaining()) < 10) {
-            if(e.getDistance() > 300) {
-                setAhead(e.getDistance() * 0.5);
-            } else if(e.getDistance() < 100) {
-                setBack(e.getDistance() * 2);
-            }
-        }
+    public void doOnScan(ScannedRobotEvent e) {
+        ComplexEnemyRobot enemy = EnemyTracker.getInstance().getLatestState(e);
 
+        setTurnGunRight(Utils.normalRelativeAngleDegrees(getHeading() - getGunHeading() + e.getBearing()));
         if(Math.abs(getGunTurnRemaining()) < 8) {
             setFire(1.0);
         }
 
-        setTurnRadarRight(getHeading() - getRadarHeading() + e.getBearing());
+        double radarTurn = getHeadingRadians() + e.getBearingRadians() - getRadarHeadingRadians();
+        setTurnRadarRightRadians(Utils.normalRelativeAngle(radarTurn)*2);
     }
 
     public boolean isOn1v1() {
@@ -83,18 +102,14 @@ public class Roborio extends AdvancedRobot {
 
     }
 
-    public Point getPoint() {
-        return new Point(getX(), getY());
+    @Override
+    public void onPaint(Graphics2D g) {
+        g.setColor(Color.BLUE); // default painting color
+        movement.onPaint(g);
     }
 
-    public void setBackAsFront(double bearing, double distance) {
-        double angle = Utils.normalRelativeAngle(bearing - getHeadingRadians());
-        double narrowAngle = Math.atan(Math.tan(angle));
-        setTurnRightRadians(narrowAngle);
-        setAhead(distance * (angle == narrowAngle ? 1 : -1));
-    }
-
-    public void moveWithBackAsFront(Point dest) {
-        setBackAsFront(Physics.absoluteBearing(getPoint(), dest), getPoint().distance(dest));
+    @Override
+    public void onRoundEnded(RoundEndedEvent e) {
+        movement.printLog();
     }
 }

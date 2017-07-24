@@ -38,6 +38,31 @@ public class EnemyLog {
         return log[realAt(length-1)];
     }
 
+
+    /**
+     * @param k is 1-indexed
+     * @return
+     */
+    public ComplexEnemyRobot getKthLatest(int k) {
+        if(length < k)
+            k = length;
+        return log[realAt(length - k)];
+    }
+
+    /* TODO: put a binary search over here */
+    public ComplexEnemyRobot atLeastAt(long time) {
+        ComplexEnemyRobot res = null;
+        for(int i = 1; i <= length; i++) {
+            ComplexEnemyRobot cur = log[realAt(length - i)];
+            if(cur.getTime() >= time)
+                res = cur;
+            else
+                return res;
+        }
+
+        return res;
+    }
+
     public ComplexEnemyRobot at(int i) throws ArrayIndexOutOfBoundsException {
         if(i >= length)
             throw new ArrayIndexOutOfBoundsException();
@@ -52,7 +77,7 @@ public class EnemyLog {
         return length;
     }
 
-    public void push(ComplexEnemyRobot enemy) {
+    public ComplexEnemyRobot push(ComplexEnemyRobot enemy) {
         log[realAt(length++)] = enemy;
         if(length > LOG_SIZE) {
             length = LOG_SIZE;
@@ -60,10 +85,12 @@ public class EnemyLog {
             if(removed >= LOG_SIZE)
                 removed = 0;
         }
+
+        return enemy;
     }
 
-    public void push(ScannedRobotEvent e, Robot from) {
-        push(new ComplexEnemyRobot(e, from));
+    public ComplexEnemyRobot push(ScannedRobotEvent e, Robot from) {
+        return push(new ComplexEnemyRobot(e, from));
     }
 
     public void pop() {
@@ -80,5 +107,29 @@ public class EnemyLog {
         int discard = Math.max(0, length - count);
         for(int i = 0; i < discard; i++)
             pop();
+    }
+
+    public EnemySnapshot takeSnapshot(int index, int size) {
+        if(index >= length)
+            throw new ArrayIndexOutOfBoundsException();
+
+        int low = Math.max(index - size + 1, 0);
+        int high = Math.min(index + size, length);
+        int baseIndex = index - low;
+
+        ComplexEnemyRobot[] snap = new ComplexEnemyRobot[high - low];
+        for(int i = low; i < high; i++) {
+            snap[i] = log[realAt(i)];
+        }
+
+        return new EnemySnapshot(snap, baseIndex);
+    }
+
+    /*
+        DELTAS
+     */
+
+    public double getEnergyDelta() {
+        return getLatest().getEnergy() - getKthLatest(2).getEnergy();
     }
 }

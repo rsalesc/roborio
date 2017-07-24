@@ -1,5 +1,7 @@
 package roborio.utils;
 
+import java.awt.geom.Point2D;
+
 /**
  * Created by Roberto Sales on 22/07/17.
  */
@@ -20,6 +22,10 @@ public class Point {
     public Point(Point a, Point b) {
         setX(b.x - a.x);
         setY(b.y - a.y);
+    }
+
+    public Point2D.Double to2D() {
+        return new Point2D.Double(x, y);
     }
 
     public double getY() {
@@ -118,6 +124,10 @@ public class Point {
      * @return angle in robocode notation
      */
     public double absoluteBearing() {
-        return Math.atan2(x, y);
+        return R.atan2(x, y);
+    }
+
+    public Point project(double angle, double length) {
+        return new Point(x + R.sin(angle) * length, y + R.cos(angle) * length);
     }
 }

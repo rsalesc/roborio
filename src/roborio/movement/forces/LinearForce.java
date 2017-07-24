@@ -1,4 +1,4 @@
-package roborio.movement;
+package roborio.movement.forces;
 
 import roborio.utils.Point;
 

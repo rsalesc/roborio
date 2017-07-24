@@ -2,6 +2,7 @@ package roborio.enemies;
 
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
+import roborio.movement.predictor.MovementPredictor;
 import roborio.utils.Physics;
 import roborio.utils.Point;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -41,9 +42,9 @@ public class ComplexEnemyRobot extends EnemyRobot {
         x = Physics.getX(robot, absBearing, e.getDistance());
         y = Physics.getY(robot, absBearing, e.getDistance());
 
-        lateralVelocity = Physics.getLateralVelocityFromStationary(robot, absBearing, getVelocity(), getHeading());
-        angularVelocity = Physics.getAngularVelocityFromStationary(robot, absBearing, getDistance(), getVelocity(), getHeading());
-        approachingVelocity = Physics.getApproachingVelocityFromStationary(robot, absBearing, getDistance(), getVelocity(), getHeading());
+        lateralVelocity = Physics.getLateralVelocityFromStationary(absBearing, getVelocity(), getHeading());
+        angularVelocity = Physics.getAngularVelocityFromStationary(absBearing, getDistance(), getVelocity(), getHeading());
+        approachingVelocity = Physics.getApproachingVelocityFromStationary(absBearing, getVelocity(), getHeading());
     }
 
     public long getTime() { return time; }
@@ -70,5 +71,9 @@ public class ComplexEnemyRobot extends EnemyRobot {
 
     public double getApproachingVelocity() {
         return approachingVelocity;
+    }
+
+    public MovementPredictor.PredictedPoint getPredictionPoint() {
+        return new MovementPredictor.PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
     }
 }

@@ -1,7 +1,7 @@
-package roborio.movement;
+package roborio.movement.forces;
 
-import roborio.utils.MathUtils;
 import roborio.utils.Point;
+import roborio.utils.R;
 
 /**
  * Created by Roberto Sales on 22/07/17.
@@ -52,7 +52,7 @@ public class SigmoidForce extends Force {
         Point source = new Point(getX(), getY());
         Point robot = new Point(X, Y);
         double distance = source.distance(robot);
-        double size = MathUtils.logisticFunction(distance, threshold, STEEP) * alpha + beta;
+        double size = R.logisticFunction(distance, threshold, STEEP) * alpha + beta;
         return new Point(source, robot).resized(size);
     }
 }

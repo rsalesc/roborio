@@ -1,7 +1,10 @@
 package roborio.myself;
 
 import robocode.Robot;
+import roborio.movement.predictor.MovementPredictor;
+import roborio.utils.Physics;
 import roborio.utils.Point;
+import roborio.utils.R;
 
 /**
  * Created by Roberto Sales on 22/07/17.
@@ -93,5 +96,26 @@ public class MyRobot {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public Point getPoint() {
+        return getPosition();
+    }
+
+    public double getLateralVelocity(Point from) {
+        double absBearing = Physics.absoluteBearing(from, getPoint());
+        return Physics.getLateralVelocityFromStationary(absBearing, getVelocity(), getHeading());
+    }
+
+    public int getDirection(Point from) {
+        double lateralVelocity = getLateralVelocity(from);
+        if(R.nearOrBetween(0, lateralVelocity, 0))
+            return 0;
+        else
+            return lateralVelocity > 0 ? 1 : -1;
+    }
+
+    public MovementPredictor.PredictedPoint getPredictionPoint() {
+        return new MovementPredictor.PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
     }
 }

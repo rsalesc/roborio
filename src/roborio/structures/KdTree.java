@@ -14,7 +14,9 @@ import java.util.Queue;
 /**
  * Implementation of K-d Tree inspired by
  * Robério e Seus Teclados' ICPC library
- * implementation and Rednaxela's 2nd gen's.
+ * based on "Optimizing Search Strategies in k-d Trees"
+ * https://graphics.stanford.edu/~tpurcell/pubs/search.pdf
+ * and Rednaxela's 2nd gen
  *
  * This version additionally supports
  * approximate kNN, which is usually fine
@@ -38,7 +40,7 @@ import java.util.Queue;
  *
  */
 abstract public class KdTree<T> {
-    private static int      BUCKET_SIZE = 24;
+    private static int      BUCKET_SIZE = 28;
     private static double   EPSILON = 1e-9;
 
     // initial data

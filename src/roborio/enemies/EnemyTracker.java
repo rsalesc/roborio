@@ -27,13 +27,14 @@ public class EnemyTracker {
         return SINGLETON;
     }
 
-    public void push(ScannedRobotEvent e, Robot from) {
+    public ComplexEnemyRobot push(ScannedRobotEvent e, Robot from) {
         if(!seenEnemies.containsKey(e.getName())) {
             EnemyLog log = new EnemyLog();
-            log.push(e, from);
+            ComplexEnemyRobot res = log.push(e, from);
             seenEnemies.put(e.getName(), log);
+            return res;
         } else {
-            seenEnemies.get(e.getName()).push(e, from);
+            return seenEnemies.get(e.getName()).push(e, from);
         }
     }
 
