@@ -26,14 +26,14 @@ public class WaveCollection {
         waves.add(wave);
     }
 
-    public Wave earliestWave(Point dest, WaveCondition condition) {
+    public Wave earliestWave(Point dest, long time, WaveCondition condition) {
         double earliestTime = Double.POSITIVE_INFINITY;
         Wave earliest = null;
 
         for(Wave wave : waves) {
             if(condition.test(wave)) {
                 double breakAt = wave.getBreakTime(dest);
-                if (breakAt < earliestTime) {
+                if (breakAt > time && breakAt < earliestTime) {
                     earliestTime = breakAt;
                     earliest = wave;
                 }
@@ -43,40 +43,40 @@ public class WaveCollection {
         return earliest;
     }
 
-    public Wave earliestWave(Point dest) {
-        return earliestWave(dest, new WaveCondition.Tautology());
+    public Wave earliestWave(Point dest, long time) {
+        return earliestWave(dest, time, new WaveCondition.Tautology());
     }
 
     public Wave earliestWave(MyRobot robot) {
-        return earliestWave(robot.getPoint());
+        return earliestWave(robot.getPoint(), robot.getTime());
     }
 
     public Wave earliestWave(ComplexEnemyRobot robot) {
-        return earliestWave(robot.getPoint());
+        return earliestWave(robot.getPoint(), robot.getTime());
     }
 
-    public Wave earliestFireWave(Point dest) {
-        return earliestWave(dest, new EnemyFireWaveCondition());
+    public Wave earliestFireWave(Point dest, long time) {
+        return earliestWave(dest, time, new EnemyFireWaveCondition());
     }
 
     public Wave earliestFireWave(ComplexEnemyRobot robot) {
-        return earliestFireWave(robot.getPoint());
+        return earliestFireWave(robot.getPoint(), robot.getTime());
     }
 
     public Wave earliestFireWave(MyRobot robot) {
-        return earliestWave(robot.getPoint());
+        return earliestFireWave(robot.getPoint(), robot.getTime());
     }
 
-    public Wave earliestFireWave(Point dest, ComplexEnemyRobot from) {
-        return earliestWave(dest, new EnemyFireWaveCondition(from.getName()));
+    public Wave earliestFireWave(Point dest, long time, ComplexEnemyRobot from) {
+        return earliestWave(dest, time, new EnemyFireWaveCondition(from.getName()));
     }
 
     public Wave earliestFireWave(ComplexEnemyRobot robot, ComplexEnemyRobot from) {
-        return earliestFireWave(robot.getPoint(), from);
+        return earliestFireWave(robot.getPoint(), robot.getTime(), from);
     }
 
     public Wave earliestFireWave(MyRobot robot, ComplexEnemyRobot from) {
-        return earliestFireWave(robot.getPoint(), from);
+        return earliestFireWave(robot.getPoint(), robot.getTime(), from);
     }
 
     public int removePassed(MyRobot robot) {

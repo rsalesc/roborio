@@ -3,6 +3,7 @@ package roborio.utils.waves;
 import roborio.enemies.ComplexEnemyRobot;
 import roborio.myself.MyRobot;
 import roborio.myself.MySnapshot;
+import roborio.utils.Physics;
 import roborio.utils.Point;
 import roborio.utils.R;
 
@@ -66,6 +67,10 @@ public class Wave {
         return velocity * (time - this.time);
     }
 
+    public boolean hasTouchedRobot(Point point, long time) {
+        return point.distance(source) - Physics.BOT_WIDTH < getDistanceTraveled(time);
+    }
+
     public boolean hasPassedRobot(MyRobot robot) {
         return robot.getPosition().distance(source) + R.WAVE_EXTRA < getDistanceTraveled(robot.getTime());
     }
@@ -79,15 +84,15 @@ public class Wave {
     }
 
     public double getBreakTime(Point dest) {
-        return dest.distance(source) / velocity;
+        return dest.distance(source) / velocity + time;
     }
 
     public double getBreakTime(ComplexEnemyRobot robot) {
-        return robot.getPoint().distance(source) / velocity;
+        return robot.getPoint().distance(source) / velocity + time;
     }
 
     public double getBreakTime(MyRobot robot) {
-        return robot.getPoint().distance(source) / velocity;
+        return robot.getPoint().distance(source) / velocity + time;
     }
 
     public int getMyDirection() {

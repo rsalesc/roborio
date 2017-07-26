@@ -4,8 +4,9 @@ import robocode.HitByBulletEvent;
 import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
-import roborio.enemies.ComplexEnemyRobot;
 import roborio.enemies.EnemyTracker;
+import roborio.gunning.AutomaticGun;
+import roborio.gunning.GuessClusteringGun;
 import roborio.movement.RoborioMovement;
 import roborio.myself.MyLog;
 import roborio.myself.MyRobot;
@@ -17,7 +18,12 @@ import java.awt.*;
  * Created by Roberto Sales on 21/07/17.
  */
 public class Roborio extends BackAsFrontRobot {
+
+    private double worstTime = 0;
+    private double totalTime = 0;
+    private int timedTicks = 0;
     private RoborioMovement movement;
+    private AutomaticGun gun;
 
     public void run() {
         clearLastRoundData();
@@ -30,13 +36,24 @@ public class Roborio extends BackAsFrontRobot {
         setupColors();
         setupRadar();
         movement = new RoborioMovement(this);
+        gun = new GuessClusteringGun(this, false);
 
         while(true) {
+            double startTime = System.nanoTime();
+
             trackMe();
+            gun.doGunning();
             movement.doMovement();
 
             if(getRadarTurnRemaining() == 0)
                 setTurnRadarRight(1);
+
+            gun.doFiring();
+
+            double timeTaken = System.nanoTime() - startTime;
+            timedTicks++;
+            worstTime = Math.max(worstTime, timeTaken);
+            totalTime += timeTaken;
 
             execute();
         }
@@ -67,6 +84,7 @@ public class Roborio extends BackAsFrontRobot {
     public void onScannedRobot(ScannedRobotEvent e) {
         trackEnemy(e);
 
+        gun.onScan(e);
         movement.onScan(e);
         doOnScan(e);
     }
@@ -76,13 +94,6 @@ public class Roborio extends BackAsFrontRobot {
     }
 
     public void doOnScan(ScannedRobotEvent e) {
-        ComplexEnemyRobot enemy = EnemyTracker.getInstance().getLatestState(e);
-
-        setTurnGunRight(Utils.normalRelativeAngleDegrees(getHeading() - getGunHeading() + e.getBearing()));
-        if(Math.abs(getGunTurnRemaining()) < 8) {
-            setFire(1.0);
-        }
-
         double radarTurn = getHeadingRadians() + e.getBearingRadians() - getRadarHeadingRadians();
         setTurnRadarRightRadians(Utils.normalRelativeAngle(radarTurn)*2);
     }
@@ -106,10 +117,16 @@ public class Roborio extends BackAsFrontRobot {
     public void onPaint(Graphics2D g) {
         g.setColor(Color.BLUE); // default painting color
         movement.onPaint(g);
+        gun.onPaint(g);
     }
 
     @Override
     public void onRoundEnded(RoundEndedEvent e) {
         movement.printLog();
+        gun.printLog();
+
+        System.out.println("Timing Info");
+        System.out.println("Average time per tick: " + totalTime / timedTicks / 1000000);
+        System.out.println("Worst time: " + worstTime / 1000000);
     }
 }

@@ -1,7 +1,7 @@
 package roborio.enemies;
 
-import robocode.Robot;
 import robocode.ScannedRobotEvent;
+import roborio.utils.BackAsFrontRobot;
 
 import java.util.HashMap;
 
@@ -27,7 +27,7 @@ public class EnemyTracker {
         return SINGLETON;
     }
 
-    public ComplexEnemyRobot push(ScannedRobotEvent e, Robot from) {
+    public ComplexEnemyRobot push(ScannedRobotEvent e, BackAsFrontRobot from) {
         if(!seenEnemies.containsKey(e.getName())) {
             EnemyLog log = new EnemyLog();
             ComplexEnemyRobot res = log.push(e, from);

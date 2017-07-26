@@ -11,6 +11,7 @@ public abstract class Physics {
     public static final double  MAX_TURN_RATE = Rules.MAX_TURN_RATE;
     public static final double  MAX_POWER = 3.0;
     public static final double  MIN_POWER = 0.1;
+    public static final double  BOT_WIDTH = 18;
 
     public static double absoluteBearing(Point source, Point dest) {
         return new Point(source, dest).absoluteBearing();
@@ -63,5 +64,9 @@ public abstract class Physics {
 
     public static double bulletVelocity(double power) {
         return 20. - power*3;
+    }
+
+    public static double bulletPower(double velocity){
+        return (20.0 - velocity) / 3;
     }
 }

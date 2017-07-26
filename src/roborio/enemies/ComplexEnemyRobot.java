@@ -1,8 +1,9 @@
 package roborio.enemies;
 
-import robocode.Robot;
 import robocode.ScannedRobotEvent;
 import roborio.movement.predictor.MovementPredictor;
+import roborio.utils.AxisRectangle;
+import roborio.utils.BackAsFrontRobot;
 import roborio.utils.Physics;
 import roborio.utils.Point;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -20,12 +21,13 @@ public class ComplexEnemyRobot extends EnemyRobot {
     private double angularVelocity;
     private double lateralVelocity;
     private double approachingVelocity;
+    private double distanceToWall;
 
     ComplexEnemyRobot() {
         super();
     }
 
-    ComplexEnemyRobot(ScannedRobotEvent e, Robot from) {
+    ComplexEnemyRobot(ScannedRobotEvent e, BackAsFrontRobot from) {
         this.update(e, from);
     }
 
@@ -33,9 +35,10 @@ public class ComplexEnemyRobot extends EnemyRobot {
         throw new NotImplementedException();
     }
 
-    public void update(ScannedRobotEvent e, Robot robot) {
+    public void update(ScannedRobotEvent e, BackAsFrontRobot robot) {
         super.update(e);
         time = e.getTime();
+        AxisRectangle field = robot.getBattleField();
 
         absBearing = e.getBearingRadians() + Math.toRadians(robot.getHeading());
 
@@ -45,6 +48,12 @@ public class ComplexEnemyRobot extends EnemyRobot {
         lateralVelocity = Physics.getLateralVelocityFromStationary(absBearing, getVelocity(), getHeading());
         angularVelocity = Physics.getAngularVelocityFromStationary(absBearing, getDistance(), getVelocity(), getHeading());
         approachingVelocity = Physics.getApproachingVelocityFromStationary(absBearing, getVelocity(), getHeading());
+        distanceToWall = Math.sqrt(sqr(Math.min(getX(), field.getWidth() - getX())) +
+                                    sqr(Math.min(getY(), field.getHeight() - getY())));
+    }
+
+    private double sqr(double x) {
+        return x*x;
     }
 
     public long getTime() { return time; }
@@ -75,5 +84,13 @@ public class ComplexEnemyRobot extends EnemyRobot {
 
     public MovementPredictor.PredictedPoint getPredictionPoint() {
         return new MovementPredictor.PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
+    }
+
+    public double getDistanceToWall() {
+        return distanceToWall;
+    }
+
+    public double getAbsoluteBearing() {
+        return absBearing;
     }
 }

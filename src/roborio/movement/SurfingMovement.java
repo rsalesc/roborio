@@ -22,13 +22,23 @@ import java.util.List;
 
 /**
  * Created by Roberto Sales on 23/07/17.
+ * TODO: fix energy drop detection
+ * TODO: get stuff from last two turns right in the waves
+ * TODO: add eval for stop position (direction = 0)
+ * TODO: keep my distance
+ * TODO: use rolling averages
+ * TODO: use segmentation
+ * http://robowiki.net/wiki/Wave_Suffering
  */
-public class GFSurfingMovement extends Movement {
-    private static final int WALL_STICK = 140;
-    private static final int BUCKET_COUNT = 41;
-    private static final int BUCKET_MID = (BUCKET_COUNT - 1) / 2;
+public class SurfingMovement extends Movement {
+    private static final int        BUCKET_COUNT = 41;
+    private static final int        BUCKET_MID = (BUCKET_COUNT - 1) / 2;
+    private static double[]         buckets;
 
-    private double[]        buckets;
+    static {
+        buckets = new double[BUCKET_COUNT];
+    }
+
     private WaveCollection  waves;
     private AxisRectangle   field;
     private EnemyLog        targetLog;
@@ -38,14 +48,14 @@ public class GFSurfingMovement extends Movement {
     private static final int        WAVE_DIVISIONS = 81;
 
     private DangerPoint[]         _predicted;
+    private int                   _predictedIndex;
     private int                   _wavesPassed;
     private int                   _shotsTaken;
 
-    public GFSurfingMovement(BackAsFrontRobot robot) {
+    public SurfingMovement(BackAsFrontRobot robot) {
         super(robot);
         waves = new WaveCollection();
-        buckets = new double[BUCKET_COUNT];
-        field = robot.getBattleField().shrink(18, 18);
+        field = robot.getBattleField();
         targetLog = null;
         myLog = MyLog.getInstance();
 
@@ -63,7 +73,7 @@ public class GFSurfingMovement extends Movement {
 
         while(iterator.hasNext()) {
             Wave wave = iterator.next();
-            if(wave.isEnemyWave() && wave.isReal()) {
+            if(wave instanceof EnemyFireWave) {
                 EnemyFireWave enemyWave = (EnemyFireWave) wave;
                 if(enemyWave.wasFiredBy(e.getBullet(), getTime())) {
                     this.log(enemyWave, hitPoint);
@@ -108,14 +118,17 @@ public class GFSurfingMovement extends Movement {
         _predicted = new DangerPoint[]{dangerClockwise, dangerCounterClockwise};
 
         double angle;
-        if(dangerClockwise.getDanger() < dangerCounterClockwise.getDanger())
-            angle = naiveWallSmoothing(currentLocation,
+        if(dangerClockwise.getDanger() < dangerCounterClockwise.getDanger()) {
+            angle = WallSmoothing.naive(field, currentLocation,
                     Physics.absoluteBearing(currentLocation, dangerClockwise),
                     1);
-        else
-            angle = naiveWallSmoothing(currentLocation,
+            _predictedIndex = 0;
+        } else {
+            angle = WallSmoothing.naive(field, currentLocation,
                     Physics.absoluteBearing(currentLocation, dangerCounterClockwise),
                     -1);
+            _predictedIndex = 1;
+        }
 
         getRobot().setBackAsFront(angle);
     }
@@ -141,7 +154,7 @@ public class GFSurfingMovement extends Movement {
     }
 
     private DangerPoint getDanger(EnemyFireWave wave, int direction) {
-        Point impactPoint = MovementPredictor.predictOnWaveImpact(myLog.getLatest().getPredictionPoint(),
+        Point impactPoint = MovementPredictor.predictOnWaveImpact(field, myLog.getLatest().getPredictionPoint(),
                 wave, direction);
 
         return new DangerPoint(impactPoint, buckets[getBucket(wave, impactPoint)]);
@@ -154,25 +167,23 @@ public class GFSurfingMovement extends Movement {
         }
     }
 
-    private double naiveWallSmoothing(Point source, double angle, int direction) {
-        while(!field.contains(source.project(angle, WALL_STICK)))
-            angle += direction*0.05;
-        return angle;
-    }
-
     @Override
     public void onPaint(Graphics2D graphics) {
         G g = new G(graphics);
 
         if(_predicted != null) {
             for (int i = 0; i < _predicted.length; i++) {
-                g.drawPoint(_predicted[i], 6.0, Color.WHITE);
+                if(i != _predictedIndex) continue;
+                g.drawPoint(_predicted[i], 6.0, i == _predictedIndex ? Color.GREEN : Color.WHITE);
                 g.drawLine(getRobot().getPoint(), _predicted[i], Color.WHITE);
             }
         }
 
+        Wave earliestWave = waves.earliestWave(myLog.getLatest());
+
         for(Wave wave : waves.getWaves()) {
-            g.drawCircle(wave.getSource(), wave.getDistanceTraveled(getTime()));
+            g.drawCircle(wave.getSource(), wave.getDistanceTraveled(getTime()),
+                wave == earliestWave ? Color.WHITE : Color.BLUE);
 
             double angle = 0;
             double ratio = R.DOUBLE_PI / WAVE_DIVISIONS;

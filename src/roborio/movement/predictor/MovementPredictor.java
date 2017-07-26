@@ -2,10 +2,8 @@ package roborio.movement.predictor;
 
 import robocode.Rules;
 import robocode.util.Utils;
-import roborio.utils.BackAsFrontRobot;
-import roborio.utils.Physics;
-import roborio.utils.Point;
-import roborio.utils.R;
+import roborio.movement.WallSmoothing;
+import roborio.utils.*;
 import roborio.utils.waves.Wave;
 
 /**
@@ -14,15 +12,30 @@ import roborio.utils.waves.Wave;
  */
 public abstract class MovementPredictor {
 
-    public static PredictedPoint predictOnWaveImpact(PredictedPoint initialPoint, Wave wave, int direction) {
+    public static PredictedPoint predictOnWaveImpact(AxisRectangle field, PredictedPoint initialPoint, Wave wave, int direction) {
+        AxisRectangle shrinkedField = field.shrink(18, 18);
+
         PredictedPoint cur = initialPoint;
-        while(!wave.hasPassed(cur, cur.time)) {
-            double angle = Utils.normalAbsoluteAngle(Physics.absoluteBearing(cur, wave.getSource())
-                    + R.HALF_PI * direction);
+        while(!wave.hasTouchedRobot(cur, cur.time)) {
+            double angle = Utils.normalAbsoluteAngle(WallSmoothing.naive(shrinkedField, cur,
+                    Physics.absoluteBearing(wave.getSource(), cur)
+                    + R.HALF_PI * direction, direction));
             cur = _fastTick(cur, angle, Rules.MAX_VELOCITY);
         }
 
         return cur;
+    }
+
+    public static Range getBetterMaximumEscapeAngle(AxisRectangle field, PredictedPoint initialPoint, Wave wave) {
+        Point cw = predictOnWaveImpact(field, initialPoint, wave, 1);
+        Point ccw = predictOnWaveImpact(field, initialPoint, wave, -1);
+
+        double absBearing = Physics.absoluteBearing(wave.getSource(), initialPoint);
+        Range res = new Range();
+        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), cw) - absBearing));
+        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), ccw) - absBearing));
+
+        return res;
     }
 
 
@@ -41,7 +54,7 @@ public abstract class MovementPredictor {
      * @return  the current predicted point
      */
     private static PredictedPoint _fastTick(PredictedPoint last, double angle, double maxVelocity) {
-        double offset = angle - last.heading;
+        double offset = Utils.normalRelativeAngle(angle - last.heading);
         double turn = BackAsFrontRobot.getQuickestTurn(offset);
         int ahead = offset == turn ? 1 : -1;
 
@@ -60,7 +73,7 @@ public abstract class MovementPredictor {
         double aheadVelocity = ahead * velocity;
         double newVelocity;
         if(aheadVelocity < -Rules.DECELERATION)
-            newVelocity = Rules.DECELERATION * ahead;
+            newVelocity = velocity + Rules.DECELERATION * ahead;
         else if(aheadVelocity >= 0) {
             newVelocity = velocity + Rules.ACCELERATION * ahead;
         } else {

@@ -5,7 +5,7 @@ import roborio.Roborio;
 /**
  * Created by Roberto Sales on 22/07/17.
  */
-public class RoborioMovement extends GFSurfingMovement {
+public class RoborioMovement extends SurfingMovement {
     public RoborioMovement(Roborio robot) {
         super(robot);
     }

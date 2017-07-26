@@ -4,8 +4,8 @@ package roborio.enemies;
  * Created by Roberto Sales on 21/07/17.
  */
 
-import robocode.Robot;
 import robocode.ScannedRobotEvent;
+import roborio.utils.BackAsFrontRobot;
 
 /**
  * This class assumes that the enemy logs
@@ -89,7 +89,7 @@ public class EnemyLog {
         return enemy;
     }
 
-    public ComplexEnemyRobot push(ScannedRobotEvent e, Robot from) {
+    public ComplexEnemyRobot push(ScannedRobotEvent e, BackAsFrontRobot from) {
         return push(new ComplexEnemyRobot(e, from));
     }
 
@@ -123,6 +123,12 @@ public class EnemyLog {
         }
 
         return new EnemySnapshot(snap, baseIndex);
+    }
+
+    public EnemySnapshot takeSnapshot(int size) {
+        if(length == 0)
+            return null;
+        return takeSnapshot(length - 1, size);
     }
 
     /*

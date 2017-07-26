@@ -113,7 +113,7 @@ abstract public class KdTree<T> {
          * @return the best hyperplane to partition this node
          */
         @Override
-        protected int minkowskiBestHyperplane(KdTree<T> node) {
+        public int minkowskiBestHyperplane(KdTree<T> node) {
             throw new NotImplementedException();
         }
 
@@ -125,7 +125,7 @@ abstract public class KdTree<T> {
          * @return minkowski distance Lx between those points for some x >= 1
          */
         @Override
-        protected double minkowskiDistance(double[] a, double[] b) {
+        public double minkowskiDistance(double[] a, double[] b) {
             throw new NotImplementedException();
         }
 
@@ -141,7 +141,7 @@ abstract public class KdTree<T> {
          * @return
          */
         @Override
-        protected double minkowskiToHyperrect(double[] p, double[] min, double[] max) {
+        public double minkowskiToHyperrect(double[] p, double[] min, double[] max) {
             throw new NotImplementedException();
         }
     }
@@ -163,6 +163,9 @@ abstract public class KdTree<T> {
      *                the point
      */
     public void add(double point[], T payload) {
+        if(point.length != dim)
+            throw new IllegalArgumentException();
+
         KdTree<T> current = this;
 
         while(!current.isLeaf() || current.isHeavy()) {
@@ -252,6 +255,9 @@ abstract public class KdTree<T> {
      *         in the tree of the query point, as Entry<T>
      */
     public List<Entry<T>> kNN(double[] query, int K, double alpha) {
+        if(query.length != dim)
+            throw new IllegalArgumentException();
+
         if(this.size() == 0)
             return new ArrayList<Entry<T>>();
 
@@ -379,7 +385,7 @@ abstract public class KdTree<T> {
         return this.length >= this.data.length;
     }
 
-    protected abstract int minkowskiBestHyperplane(KdTree<T> node);
-    protected abstract double minkowskiDistance(double[] a, double[] b);
-    protected abstract double minkowskiToHyperrect(double[] p, double[] min, double[] max);
+    public abstract int minkowskiBestHyperplane(KdTree<T> node);
+    public abstract double minkowskiDistance(double[] a, double[] b);
+    public abstract double minkowskiToHyperrect(double[] p, double[] min, double[] max);
 }
