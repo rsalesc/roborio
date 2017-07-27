@@ -8,7 +8,6 @@ import roborio.enemies.EnemyLog;
 import roborio.enemies.EnemyTracker;
 import roborio.gunning.utils.GuessFactorStats;
 import roborio.gunning.utils.PowerSelection;
-import roborio.movement.predictor.MovementPredictor;
 import roborio.myself.MyLog;
 import roborio.utils.*;
 import roborio.utils.waves.MyFireWave;
@@ -24,14 +23,12 @@ import java.util.List;
  * Created by Roberto Sales on 25/07/17.
  */
 public class GuessFactorGun extends AutomaticGun {
-    private static final double MAX_ESCAPE_ANGLE = 0.7;
-
     private static final int    DISTANCE_SEGMENTS = 4;
-    private static final int    LATERAL_SEGMENTS = 3;
+    private static final int    LATERAL_SEGMENTS = 4;
     private static final int    ADVANCING_SEGMENTS = 3;
     private static final int    WALL_SEGMENTS = 2;
-    private static final int    POWER_SEGMENTS = 4;
-    private static GuessFactorStats[][][][] stats;
+    private static final int    POWER_SEGMENTS = 3;
+    private static GuessFactorStats[][][] stats;
 
     private GunFireEvent lastFireEvent;
     private double       absFireAngle;
@@ -42,7 +39,7 @@ public class GuessFactorGun extends AutomaticGun {
     private Range _lastGfRange;
 
     static {
-        stats = new GuessFactorStats[DISTANCE_SEGMENTS][LATERAL_SEGMENTS][WALL_SEGMENTS][POWER_SEGMENTS];
+        stats = new GuessFactorStats[DISTANCE_SEGMENTS][LATERAL_SEGMENTS][WALL_SEGMENTS];
     }
 
     private WaveCollection waves;
@@ -53,22 +50,19 @@ public class GuessFactorGun extends AutomaticGun {
     }
 
     public GuessFactorStats getStats(double distance, double lateralVelocity, double wallDistance, double bulletPower) {
-        int distanceSegment = Math.min((int)(distance / 150), DISTANCE_SEGMENTS - 1);
-        int lateralSegment = R.constrain(0,  (int)(lateralVelocity /  3 + (LATERAL_SEGMENTS - 1) / 2), LATERAL_SEGMENTS - 1);
-        //int advancingSegment = R.constrain(0, (int)(advancingVelocity / 3 + (ADVANCING_SEGMENTS - 1) / 2), ADVANCING_SEGMENTS -1 );
-        int wallSegment = Math.min((int)(wallDistance / 120), WALL_SEGMENTS - 1);
-        int powerSegment = Math.min((int)(Math.sqrt((bulletPower - 0.1) / 2.9) * POWER_SEGMENTS), POWER_SEGMENTS - 1);
+        int distanceSegment = Math.min((int)(distance / 300), DISTANCE_SEGMENTS - 1);
+        int lateralSegment = R.constrain(0,  (int)(Math.abs(lateralVelocity) / 2), LATERAL_SEGMENTS - 1);
+        int wallSegment = wallDistance <= 120 ? 1 : 0;
         if(!R.isBetween(0, distanceSegment,DISTANCE_SEGMENTS -1)
             || !R.isBetween(0, lateralSegment, LATERAL_SEGMENTS - 1)
                 //|| !R.isBetween(0, advancingSegment, ADVANCING_SEGMENTS - 1)
-                || !R.isBetween(0, wallSegment, WALL_SEGMENTS - 1)
-                || !R.isBetween(0, powerSegment, POWER_SEGMENTS - 1))
+                || !R.isBetween(0, wallSegment, WALL_SEGMENTS - 1))
             return null;
 
-        if(stats[distanceSegment][lateralSegment][wallSegment][powerSegment] == null)
-            stats[distanceSegment][lateralSegment][wallSegment][powerSegment] = new GuessFactorStats(0.05);
+        if(stats[distanceSegment][lateralSegment][wallSegment] == null)
+            stats[distanceSegment][lateralSegment][wallSegment] = new GuessFactorStats(0.03, 1.0);
 
-        return stats[distanceSegment][lateralSegment][wallSegment][powerSegment];
+        return stats[distanceSegment][lateralSegment][wallSegment];
     }
 
     @Override
@@ -94,9 +88,12 @@ public class GuessFactorGun extends AutomaticGun {
 
         checkHits(enemy);
 
-        Range mea = MovementPredictor.getBetterMaximumEscapeAngle(getRobot().getBattleField(),
-                enemy.getPredictionPoint(), new Wave(MyLog.getInstance().takeSnapshot(10), getRobot().getPoint(),
-                        getTime(), Rules.getBulletSpeed(bulletPower)));
+        //Range mea = MovementPredictor.getBetterMaximumEscapeAngle(getRobot().getBattleField(),
+          //      enemy.getPredictionPoint(), new Wave(MyLog.getInstance().takeSnapshot(10), getRobot().getPoint(),
+            //            getTime(), Rules.getBulletSpeed(bulletPower)));
+
+        double amea = Physics.maxEscapeAngle(Rules.getBulletSpeed(bulletPower));
+        Range mea = new Range(-amea, +amea);
 
         double maxAbsoluteEscape = mea.maxAbsolute();
         Range gfRange = new Range(mea.min / maxAbsoluteEscape, mea.max / maxAbsoluteEscape);
@@ -108,8 +105,9 @@ public class GuessFactorGun extends AutomaticGun {
 
         GuessFactorStats stats = getStats(distance, lateralVelocity, distanceToWall, bulletPower);
 
+        int enemyDirection = enemy.getDirection();
         double bestGF = stats.getBestGuessFactor(gfRange);
-        double bearingOffset = bestGF * MAX_ESCAPE_ANGLE;
+        double bearingOffset = enemyDirection * bestGF * Physics.maxEscapeAngle(Rules.getBulletSpeed(bulletPower));
 
         _lastStats = stats;
         _lastEnemy = enemy;
@@ -129,9 +127,10 @@ public class GuessFactorGun extends AutomaticGun {
                 ComplexEnemyRobot pastEnemy =
                         EnemyTracker.getInstance().getLog(enemy).atLeastAt(wave.getTime() - 1);
 
+                int enemyDirection = pastEnemy.getDirection();
                 double offset = Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), enemy.getPoint())
                         - pastEnemy.getAbsoluteBearing());
-                double gf = R.constrain(-1, offset / MAX_ESCAPE_ANGLE, +1);
+                double gf = R.constrain(-1, enemyDirection * offset / Physics.maxEscapeAngle(wave.getVelocity()), +1);
 
                 double distance = pastEnemy.getDistance();
                 double lateralVelocity = pastEnemy.getLateralVelocity();
@@ -141,7 +140,7 @@ public class GuessFactorGun extends AutomaticGun {
 
                 GuessFactorStats stats = getStats(distance, lateralVelocity, wallDistance, bulletPower);
 
-                stats.logGuessFactor(gf, (wave instanceof MyFireWave) ? 2.0 : 1.0);
+                stats.logGuessFactor(gf, (wave instanceof MyFireWave) ? 1.6 : 1.0);
                 iterator.remove();
             }
         }
@@ -166,7 +165,7 @@ public class GuessFactorGun extends AutomaticGun {
             double gfValue = _lastStats.buffer[i];
 
             double dangerPercent = Math.sqrt(gfValue / maxValue);
-            double angle = _lastEnemy.getAbsoluteBearing() + gf * MAX_ESCAPE_ANGLE;
+            double angle = _lastEnemy.getAbsoluteBearing() + gf * _lastGfRange.maxAbsolute() * _lastEnemy.getDirection();
 
             g.drawCircle(getRobot().getPoint().project(angle, 100), 3.0, G.getDangerColor(dangerPercent));
         }

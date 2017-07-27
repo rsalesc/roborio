@@ -93,4 +93,8 @@ public class ComplexEnemyRobot extends EnemyRobot {
     public double getAbsoluteBearing() {
         return absBearing;
     }
+
+    public int getDirection() {
+        return lateralVelocity >= 0 ? 1 : -1;
+    }
 }

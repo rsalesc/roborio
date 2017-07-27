@@ -8,7 +8,7 @@ public class R {
     public static final double  HALF_PI = PI / 2;
     public static final double  DOUBLE_PI = PI * 2;
     public static final double  EPSILON = 1e-9;
-    public static final int     WAVE_SNAPSHOT_DIAMETER = 10;
+    public static final int     WAVE_SNAPSHOT_DIAMETER = 4;
     public static final double  WAVE_EXTRA = 50;
 
     public static double sin(double radians) {

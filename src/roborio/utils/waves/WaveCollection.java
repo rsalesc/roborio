@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Created by Roberto Sales on 23/07/17.
+ * TODO: fix memory leak
  */
 public class WaveCollection {
     private List<Wave> waves;
@@ -85,7 +86,7 @@ public class WaveCollection {
         while(iterator.hasNext()) {
             Wave wave = iterator.next();
             if(wave.hasPassedRobot(robot)) {
-                iterator.remove();
+                removeFromIterator(wave, iterator);
                 removed++;
             }
         }
@@ -93,7 +94,11 @@ public class WaveCollection {
         return removed;
     }
 
-    private static class EnemyFireWaveCondition extends WaveCondition {
+    protected void removeFromIterator(Wave wave, Iterator<Wave> iterator) {
+        iterator.remove();
+    }
+
+    public static class EnemyFireWaveCondition extends WaveCondition {
         private String name;
         public EnemyFireWaveCondition() {
             name = null;

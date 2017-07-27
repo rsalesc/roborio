@@ -7,7 +7,7 @@ import roborio.utils.Point;
  * Created by Roberto Sales on 25/07/17.
  */
 public abstract class WallSmoothing {
-    private static final double WALL_STICK = 125;
+    private static final double WALL_STICK = 140;
 
     public static double naive(AxisRectangle field, Point source, double angle, int direction) {
         while(!field.contains(source.project(angle, WALL_STICK)))

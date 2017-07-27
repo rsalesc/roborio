@@ -5,7 +5,7 @@ import roborio.Roborio;
 /**
  * Created by Roberto Sales on 22/07/17.
  */
-public class RoborioMovement extends SurfingMovement {
+public class RoborioMovement extends GotoSurfingMovement {
     public RoborioMovement(Roborio robot) {
         super(robot);
     }

@@ -1,5 +1,6 @@
 package roborio.movement;
 
+import robocode.BulletHitEvent;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
 import roborio.utils.BackAsFrontRobot;
@@ -27,6 +28,9 @@ public abstract class Movement {
 
     public abstract void doMovement();
     public void onScan(ScannedRobotEvent e) {}
+
+    public void onBulletHit(BulletHitEvent e) {}
+
     public void onHitByBullet(HitByBulletEvent e) {}
     public void onPaint(Graphics2D g) {}
 
@@ -46,6 +50,14 @@ public abstract class Movement {
 
     public double getTurnRemainingRadians() {
         return robot.getTurnRemainingRadians();
+    }
+
+    public void setBackAsFront(double angle) {
+        robot.setBackAsFront(angle);
+    }
+
+    public void setBackAsFront(double angle, double distance) {
+        robot.setBackAsFront(angle, distance);
     }
 
     public void moveWithBackAsFront(Point dest, double distance) {

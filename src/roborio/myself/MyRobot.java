@@ -1,10 +1,7 @@
 package roborio.myself;
 
-import robocode.Robot;
 import roborio.movement.predictor.MovementPredictor;
-import roborio.utils.Physics;
-import roborio.utils.Point;
-import roborio.utils.R;
+import roborio.utils.*;
 
 /**
  * Created by Roberto Sales on 22/07/17.
@@ -17,13 +14,14 @@ public class MyRobot {
     private double velocity;
     private double energy;
     private double gunHeat;
+    private double distanceToWall;
     private long time;
 
-    public MyRobot(Robot robot) {
+    public MyRobot(BackAsFrontRobot robot) {
         this.update(robot);
     }
 
-    public void update(Robot robot) {
+    public void update(BackAsFrontRobot robot) {
         setPosition(new Point(robot.getX(), robot.getY()));
         setHeading(Math.toRadians(robot.getHeading()));
         setRadarHeading(Math.toRadians(robot.getRadarHeading()));
@@ -32,6 +30,9 @@ public class MyRobot {
         setEnergy(robot.getEnergy());
         setGunHeat(robot.getGunHeat());
         setTime(robot.getTime());
+
+        AxisRectangle field = robot.getBattleField();
+        distanceToWall = field.distance(getPosition());
     }
 
     public double getHeading() {
@@ -109,13 +110,14 @@ public class MyRobot {
 
     public int getDirection(Point from) {
         double lateralVelocity = getLateralVelocity(from);
-        if(R.nearOrBetween(0, lateralVelocity, 0))
-            return 0;
-        else
-            return lateralVelocity > 0 ? 1 : -1;
+        return lateralVelocity >= 0 ? 1 : -1;
     }
 
     public MovementPredictor.PredictedPoint getPredictionPoint() {
         return new MovementPredictor.PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
+    }
+
+    public double getDistanceToWall() {
+        return distanceToWall;
     }
 }

@@ -61,4 +61,16 @@ public class AxisRectangle {
     public AxisRectangle shrink(double amountX, double amountY) {
         return this.shrinkX(amountX).shrinkY(amountY);
     }
+
+    public double distance(Point point) {
+        double x = point.getX();
+        double y = point.getY();
+        return Math.sqrt(
+                Math.min(sqr(minx - x), sqr(maxx - x)) +
+                Math.min(sqr(miny - y), sqr(maxy - y)));
+    }
+
+    public double sqr(double x) {
+        return x*x;
+    }
 }

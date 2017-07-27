@@ -1,6 +1,8 @@
 package roborio.utils;
 
 import robocode.AdvancedRobot;
+import robocode.RobotStatus;
+import robocode.StatusEvent;
 import robocode.util.Utils;
 
 import static roborio.utils.R.HALF_PI;
@@ -9,8 +11,23 @@ import static roborio.utils.R.HALF_PI;
  * Created by Roberto Sales on 22/07/17.
  */
 public abstract class BackAsFrontRobot extends AdvancedRobot {
+    private RobotStatus status;
+
     public BackAsFrontRobot() {
         super();
+    }
+
+    @Override
+    public void onStatus(StatusEvent e) {
+        status = e.getStatus();
+    }
+
+    public double getX() {
+        return status.getX();
+    }
+
+    public double getY() {
+        return status.getY();
     }
 
     public Point getPoint() {
@@ -34,7 +51,7 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     public void setBackAsFront(double bearing, double distance) {
         double angle = Utils.normalRelativeAngle(bearing - getHeadingRadians());
         double narrowAngle = getQuickestTurn(angle);
-        setTurnRightRadians(narrowAngle);
+        setTurnRightRadians(R.isNear(distance, 0.0) ? 0 : narrowAngle);
         setAhead(distance * (angle == narrowAngle ? 1 : -1));
     }
 

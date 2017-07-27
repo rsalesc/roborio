@@ -55,11 +55,11 @@ public abstract class Physics {
     }
 
     public static double maxEscapeAngle(double velocity) {
-        return Math.asin(MAX_VELOCITY / velocity);
+        return Math.asin(MAX_VELOCITY / Math.abs(velocity));
     }
 
     public static double maxTurningRate(double velocity) {
-        return Math.toRadians(MAX_TURN_RATE - 0.75 * velocity);
+        return Math.toRadians(MAX_TURN_RATE - 0.75 * Math.abs(velocity));
     }
 
     public static double bulletVelocity(double power) {
