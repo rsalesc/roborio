@@ -1,4 +1,6 @@
-package roborio.utils;
+package roborio.utils.geo;
+
+import roborio.utils.R;
 
 /**
  * Created by Roberto Sales on 25/07/17.

@@ -1,4 +1,4 @@
-package roborio.utils;
+package roborio.utils.geo;
 
 import roborio.utils.colors.Gradient;
 

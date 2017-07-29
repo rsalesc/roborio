@@ -4,6 +4,9 @@ import robocode.Rules;
 import robocode.util.Utils;
 import roborio.movement.WallSmoothing;
 import roborio.utils.*;
+import roborio.utils.geo.AxisRectangle;
+import roborio.utils.geo.Point;
+import roborio.utils.geo.Range;
 import roborio.utils.waves.Wave;
 
 import java.util.ArrayList;

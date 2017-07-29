@@ -2,7 +2,7 @@ package roborio.utils.waves;
 
 import roborio.enemies.ComplexEnemyRobot;
 import roborio.myself.MyRobot;
-import roborio.utils.Point;
+import roborio.utils.geo.Point;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,15 +12,11 @@ import java.util.List;
  * Created by Roberto Sales on 23/07/17.
  * TODO: fix memory leak
  */
-public class WaveCollection {
-    private List<Wave> waves;
+public class WaveCollection implements Iterable<Wave> {
+    protected List<Wave> waves;
 
     public WaveCollection() {
         waves = new LinkedList<Wave>();
-    }
-
-    public List<Wave> getWaves() {
-        return waves;
     }
 
     public void add(Wave wave) {
@@ -42,6 +38,10 @@ public class WaveCollection {
         }
 
         return earliest;
+    }
+
+    public void remove(Wave wave) {
+        waves.remove(wave);
     }
 
     public Wave earliestWave(Point dest, long time) {
@@ -82,11 +82,11 @@ public class WaveCollection {
 
     public int removePassed(MyRobot robot) {
         int removed = 0;
-        Iterator<Wave> iterator = waves.iterator();
-        while(iterator.hasNext()) {
-            Wave wave = iterator.next();
+        Iterator<Wave> it = iterator();
+        while(it.hasNext()) {
+            Wave wave = it.next();
             if(wave.hasPassedRobot(robot)) {
-                removeFromIterator(wave, iterator);
+                it.remove();
                 removed++;
             }
         }
@@ -94,8 +94,9 @@ public class WaveCollection {
         return removed;
     }
 
-    protected void removeFromIterator(Wave wave, Iterator<Wave> iterator) {
-        iterator.remove();
+    @Override
+    public Iterator<Wave> iterator() {
+        return waves.iterator();
     }
 
     public static class EnemyFireWaveCondition extends WaveCondition {

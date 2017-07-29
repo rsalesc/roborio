@@ -1,6 +1,7 @@
 package roborio.gunning;
 
 import robocode.Bullet;
+import robocode.BulletHitEvent;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
 import roborio.utils.BackAsFrontRobot;
@@ -20,6 +21,10 @@ public abstract class Gun {
     public abstract void doGunning();
     public void onScan(ScannedRobotEvent e) {}
     public void onPaint(Graphics2D g) {}
+
+    public void onBulletHit(BulletHitEvent e) {
+        onGunHit(new GunHitEvent(e));
+    }
 
     public BackAsFrontRobot getRobot() {
         return robot;
@@ -58,4 +63,8 @@ public abstract class Gun {
     }
 
     public void printLog(){}
+
+    public void onGunHit(GunHitEvent e){}
+
+    public abstract String getName();
 }

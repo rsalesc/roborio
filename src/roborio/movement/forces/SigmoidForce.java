@@ -1,6 +1,6 @@
 package roborio.movement.forces;
 
-import roborio.utils.Point;
+import roborio.utils.geo.Point;
 import roborio.utils.R;
 
 /**

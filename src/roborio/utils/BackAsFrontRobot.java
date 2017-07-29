@@ -4,6 +4,8 @@ import robocode.AdvancedRobot;
 import robocode.RobotStatus;
 import robocode.StatusEvent;
 import robocode.util.Utils;
+import roborio.utils.geo.AxisRectangle;
+import roborio.utils.geo.Point;
 
 import static roborio.utils.R.HALF_PI;
 
@@ -29,6 +31,38 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     public double getY() {
         return status.getY();
     }
+
+    @Override
+    public double getHeadingRadians() {
+        return status.getHeadingRadians();
+    }
+
+    @Override
+    public double getHeading() {
+        return status.getHeading();
+    }
+
+    @Override
+    public long getTime() {
+        return status.getTime();
+    }
+
+    @Override
+    public double getEnergy() {
+        return status.getEnergy();
+    }
+
+    @Override
+    public double getVelocity() {
+        return status.getVelocity();
+    }
+
+    @Override
+    public int getOthers() {
+        return status.getOthers();
+    }
+
+
 
     public Point getPoint() {
         return new Point(getX(), getY());
@@ -72,5 +106,9 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
             setMaxVelocity(0);
         else
             setMaxVelocity(8);
+    }
+
+    public AxisRectangle getHitBox() {
+        return new AxisRectangle(getX() - 18, getX() + 18, getY() - 18, getY() + 18);
     }
 }

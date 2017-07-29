@@ -15,7 +15,17 @@ public class HeadOnGun extends AutomaticGun {
     }
 
     @Override
+    public double wouldHit() {
+        return 0;
+    }
+
+    @Override
     public void doGunning() {}
+
+    @Override
+    public String getName() {
+        return "HeadOnGun";
+    }
 
     @Override
     public void onScan(ScannedRobotEvent e) {

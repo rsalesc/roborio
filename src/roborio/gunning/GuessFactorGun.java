@@ -6,10 +6,17 @@ import robocode.util.Utils;
 import roborio.enemies.ComplexEnemyRobot;
 import roborio.enemies.EnemyLog;
 import roborio.enemies.EnemyTracker;
-import roborio.gunning.utils.GuessFactorStats;
 import roborio.gunning.utils.PowerSelection;
 import roborio.myself.MyLog;
-import roborio.utils.*;
+import roborio.utils.BackAsFrontRobot;
+import roborio.utils.Physics;
+import roborio.utils.R;
+import roborio.utils.geo.G;
+import roborio.utils.geo.Point;
+import roborio.utils.geo.Range;
+import roborio.utils.stats.GuessFactorStats;
+import roborio.utils.stats.Segmentation;
+import roborio.utils.storage.NamedStorage;
 import roborio.utils.waves.MyFireWave;
 import roborio.utils.waves.MyWave;
 import roborio.utils.waves.Wave;
@@ -17,19 +24,13 @@ import roborio.utils.waves.WaveCollection;
 
 import java.awt.*;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by Roberto Sales on 25/07/17.
+ * TODO: check flattener and fast learning, something seems wrong with merge maybe?
+ * TODO: aim with base on my estimated position on next tick
  */
 public class GuessFactorGun extends AutomaticGun {
-    private static final int    DISTANCE_SEGMENTS = 4;
-    private static final int    LATERAL_SEGMENTS = 4;
-    private static final int    ADVANCING_SEGMENTS = 3;
-    private static final int    WALL_SEGMENTS = 2;
-    private static final int    POWER_SEGMENTS = 3;
-    private static GuessFactorStats[][][] stats;
-
     private GunFireEvent lastFireEvent;
     private double       absFireAngle;
     private double       absFireVelocity;
@@ -38,31 +39,96 @@ public class GuessFactorGun extends AutomaticGun {
     private ComplexEnemyRobot _lastEnemy;
     private Range _lastGfRange;
 
+    private Segmentation<GuessFactorStats> stats, fastStats, virtualStats;
+
+    private static int STATS_COUNT = 3;
+    private static double[] STATS_WEIGHTS = new double[]{0.5, 0.25, 0.25};
+    private static int  VIRTUAL_STATS_ID = 2;
+
+    private static double[][] statsSlices, fastStatsSlices, virtualStatsSlices;
+    private static double[] EMPTY_SLICE = {Double.POSITIVE_INFINITY};
+
     static {
-        stats = new GuessFactorStats[DISTANCE_SEGMENTS][LATERAL_SEGMENTS][WALL_SEGMENTS];
+        statsSlices = new double[][]{
+                {150.0, 275.0, 500.0}, // distance
+                {1.0, 2.5, 4.5}, // lateral velocity
+                EMPTY_SLICE,
+                {40.0, 140.0}, // wall distance
+                {1.0, 1.8, 2.7}, // bullet power
+                {-0.3, +0.3} // acceleration signed by direction
+        };
+
+        fastStatsSlices = new double[][]{
+                {150.0, 450.0},
+                {1.0, 4.0},
+                EMPTY_SLICE,
+                {100.0},
+                EMPTY_SLICE,
+                EMPTY_SLICE
+        };
+
+        virtualStatsSlices = new double[][]{
+                {150.0, 450.0}, // distance
+                {1.0, 3.0, 4.5}, // lateral velocity
+                EMPTY_SLICE,
+                {40.0, 140.0}, // wall distance
+                {1.0, 2.1}, // bullet power
+                {-0.3, +0.3} // acceleration signed by direcetion
+        };
     }
 
     private WaveCollection waves;
+    private double rollingDepth;
+    private double _wouldHit = 0;
 
-    public GuessFactorGun(BackAsFrontRobot robot, boolean isVirtual) {
-        super(robot, isVirtual);
-        waves = new WaveCollection();
+    public GuessFactorGun(BackAsFrontRobot robot, double rollOff, boolean isVirtual) {
+        this(robot, rollOff, isVirtual, "GuessFactorGun");
     }
 
-    public GuessFactorStats getStats(double distance, double lateralVelocity, double wallDistance, double bulletPower) {
-        int distanceSegment = Math.min((int)(distance / 300), DISTANCE_SEGMENTS - 1);
-        int lateralSegment = R.constrain(0,  (int)(Math.abs(lateralVelocity) / 2), LATERAL_SEGMENTS - 1);
-        int wallSegment = wallDistance <= 120 ? 1 : 0;
-        if(!R.isBetween(0, distanceSegment,DISTANCE_SEGMENTS -1)
-            || !R.isBetween(0, lateralSegment, LATERAL_SEGMENTS - 1)
-                //|| !R.isBetween(0, advancingSegment, ADVANCING_SEGMENTS - 1)
-                || !R.isBetween(0, wallSegment, WALL_SEGMENTS - 1))
-            return null;
+    public GuessFactorGun(BackAsFrontRobot robot, double rollOff, boolean isVirtual, String storageHint) {
+        super(robot, isVirtual);
 
-        if(stats[distanceSegment][lateralSegment][wallSegment] == null)
-            stats[distanceSegment][lateralSegment][wallSegment] = new GuessFactorStats(0.03, 1.0);
+        rollingDepth = rollOff;
+        waves = new WaveCollection();
 
-        return stats[distanceSegment][lateralSegment][wallSegment];
+        _wouldHit = 0;
+
+        NamedStorage storage = NamedStorage.getInstance();
+        if(!storage.contains(storageHint)) {
+            storage.add(storageHint, new Segmentation[]{
+                    new Segmentation<GuessFactorStats>(statsSlices),
+                    new Segmentation<GuessFactorStats>(fastStatsSlices),
+                    new Segmentation<GuessFactorStats>(virtualStatsSlices)
+            });
+        }
+
+        Segmentation[] segments = (Segmentation[]) storage.get(storageHint);
+        stats = (Segmentation<GuessFactorStats>) segments[0];
+        fastStats = (Segmentation<GuessFactorStats>) segments[1];
+        virtualStats = (Segmentation<GuessFactorStats>) segments[2];
+    }
+
+    private GuessFactorStats getStatsFromSegmentation(Segmentation<GuessFactorStats> segmentation, double[] values) {
+        GuessFactorStats res = segmentation.get(values);
+        if(res == null) {
+            res = new GuessFactorStats(rollingDepth);
+            segmentation.add(values, res);
+        }
+
+        return res;
+    }
+
+    private GuessFactorStats[] getStats(double[] values) {
+        return new GuessFactorStats[]{
+                getStatsFromSegmentation(stats, values),
+                getStatsFromSegmentation(fastStats, values),
+                getStatsFromSegmentation(virtualStats, values)
+        };
+    }
+
+    @Override
+    public String getName() {
+        return "GuessFactorGun";
     }
 
     @Override
@@ -70,11 +136,7 @@ public class GuessFactorGun extends AutomaticGun {
         if(lastFireEvent == null) return;
 
         MyLog log = MyLog.getInstance();
-        Wave wave;
-        if(lastFireEvent.getTime() == getTime())
-            wave = new MyFireWave(log, lastFireEvent.getAngle(), lastFireEvent.getVelocity());
-        else
-            wave = new MyWave(log, absFireVelocity);
+        Wave wave = new MyWave(log, absFireVelocity);
 
         waves.add(wave);
     }
@@ -83,14 +145,11 @@ public class GuessFactorGun extends AutomaticGun {
     public void onScan(ScannedRobotEvent e) {
         EnemyLog enemyLog = EnemyTracker.getInstance().getLog(e);
         ComplexEnemyRobot enemy = enemyLog.getLatest();
+        ComplexEnemyRobot pastEnemy = enemyLog.atLeastAt(getTime() - 1);
 
         double bulletPower = PowerSelection.naive(MyLog.getInstance().getLatest(), enemy, 0.0);
 
         checkHits(enemy);
-
-        //Range mea = MovementPredictor.getBetterMaximumEscapeAngle(getRobot().getBattleField(),
-          //      enemy.getPredictionPoint(), new Wave(MyLog.getInstance().takeSnapshot(10), getRobot().getPoint(),
-            //            getTime(), Rules.getBulletSpeed(bulletPower)));
 
         double amea = Physics.maxEscapeAngle(Rules.getBulletSpeed(bulletPower));
         Range mea = new Range(-amea, +amea);
@@ -100,14 +159,18 @@ public class GuessFactorGun extends AutomaticGun {
 
         double distance = enemy.getDistance();
         double lateralVelocity = enemy.getLateralVelocity();
-        // double advancingVelocity = enemy.getApproachingVelocity();
+        double advancingVelocity = enemy.getApproachingVelocity();
         double distanceToWall = enemy.getDistanceToWall();
+        double accel = Math.abs(enemy.getVelocity() - pastEnemy.getVelocity()) * pastEnemy.getDirection();
 
-        GuessFactorStats stats = getStats(distance, lateralVelocity, distanceToWall, bulletPower);
+        GuessFactorStats[] allStats = getStats(new double[]{distance, lateralVelocity, advancingVelocity,
+                                                distanceToWall, bulletPower, accel});
+
+        GuessFactorStats stats = GuessFactorStats.merge(allStats, STATS_WEIGHTS);
 
         int enemyDirection = enemy.getDirection();
         double bestGF = stats.getBestGuessFactor(gfRange);
-        double bearingOffset = enemyDirection * bestGF * Physics.maxEscapeAngle(Rules.getBulletSpeed(bulletPower));
+        double bearingOffset = enemyDirection * bestGF * amea;
 
         _lastStats = stats;
         _lastEnemy = enemy;
@@ -119,13 +182,16 @@ public class GuessFactorGun extends AutomaticGun {
     }
 
     private void checkHits(ComplexEnemyRobot enemy) {
-        List<Wave> waveList = waves.getWaves();
-        Iterator<Wave> iterator = waveList.iterator();
+        _wouldHit = 0;
+
+        Iterator<Wave> iterator = waves.iterator();
         while(iterator.hasNext()) {
             Wave wave = iterator.next();
             if(wave.hasTouchedRobot(enemy.getPoint(), getTime())) {
                 ComplexEnemyRobot pastEnemy =
                         EnemyTracker.getInstance().getLog(enemy).atLeastAt(wave.getTime() - 1);
+                ComplexEnemyRobot pastPastEnemy =
+                        EnemyTracker.getInstance().getLog(enemy).atLeastAt(wave.getTime() - 2);
 
                 int enemyDirection = pastEnemy.getDirection();
                 double offset = Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), enemy.getPoint())
@@ -134,21 +200,47 @@ public class GuessFactorGun extends AutomaticGun {
 
                 double distance = pastEnemy.getDistance();
                 double lateralVelocity = pastEnemy.getLateralVelocity();
-                //double advancingVelocity = pastEnemy.getApproachingVelocity();
+                double advancingVelocity = pastEnemy.getApproachingVelocity();
                 double wallDistance = pastEnemy.getDistanceToWall();
                 double bulletPower = Physics.bulletPower(wave.getVelocity());
+                double accel = Math.abs(pastEnemy.getVelocity() - pastPastEnemy.getVelocity()) * pastEnemy.getDirection();
 
-                GuessFactorStats stats = getStats(distance, lateralVelocity, wallDistance, bulletPower);
+                GuessFactorStats[] allStats = getStats(new double[]{distance, lateralVelocity, advancingVelocity,
+                                                    wallDistance, bulletPower, accel});
 
-                stats.logGuessFactor(gf, (wave instanceof MyFireWave) ? 1.6 : 1.0);
+                if(wave instanceof MyFireWave) {
+                    MyFireWave fireWave = (MyFireWave) wave;
+                    Point projection = fireWave.project(fireWave.getAngle(), getTime());
+                    if(enemy.getHitBox().contains(projection)) {
+                        _wouldHit = 1.0;
+                    }
+                }
+
+                if(!(wave instanceof MyFireWave)) {
+                    if(allStats[VIRTUAL_STATS_ID] != null)
+                        allStats[VIRTUAL_STATS_ID].logGuessFactor(gf);
+                } else {
+                    for(int i = 0; i < STATS_COUNT; i++)
+                        if(allStats[i] != null)
+                            allStats[i].logGuessFactor(gf);
+                }
+
                 iterator.remove();
             }
+
         }
     }
 
     @Override
     public void onFire(GunFireEvent e) {
         lastFireEvent = e;
+        Wave wave = new MyFireWave(MyLog.getInstance(), lastFireEvent.getAngle(), lastFireEvent.getVelocity());
+        waves.add(wave);
+    }
+
+    @Override
+    public double wouldHit() {
+        return _wouldHit;
     }
 
     @Override
@@ -157,12 +249,12 @@ public class GuessFactorGun extends AutomaticGun {
 
         if(_lastStats == null) return;
 
-        double maxValue = _lastStats.buffer[_lastStats.getBestBucket()];
+        double maxValue = _lastStats.get(_lastStats.getBestBucket());
 
-        for(int i = 0; i < _lastStats.buffer.length; i++) {
+        for(int i = 0; i < _lastStats.size(); i++) {
             double gf = _lastStats.getGuessFactor(i);
             if(!_lastGfRange.isNearlyContained(gf)) continue;
-            double gfValue = _lastStats.buffer[i];
+            double gfValue = _lastStats.get(i);
 
             double dangerPercent = Math.sqrt(gfValue / maxValue);
             double angle = _lastEnemy.getAbsoluteBearing() + gf * _lastGfRange.maxAbsolute() * _lastEnemy.getDirection();

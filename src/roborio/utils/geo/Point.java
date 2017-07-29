@@ -1,4 +1,6 @@
-package roborio.utils;
+package roborio.utils.geo;
+
+import roborio.utils.R;
 
 import java.awt.geom.Point2D;
 
@@ -129,5 +131,10 @@ public class Point {
 
     public Point project(double angle, double length) {
         return new Point(x + R.sin(angle) * length, y + R.cos(angle) * length);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
     }
 }

@@ -3,7 +3,7 @@ package roborio.utils.waves;
 import robocode.Bullet;
 import roborio.enemies.ComplexEnemyRobot;
 import roborio.myself.MySnapshot;
-import roborio.utils.Point;
+import roborio.utils.geo.Point;
 import roborio.utils.R;
 
 /**

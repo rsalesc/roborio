@@ -19,11 +19,11 @@ public abstract class PowerSelection {
         double hisEnergy = enemy.getEnergy();
 
         if(hisEnergy < myEnergy) {
-            basePower += 0.5;
+            basePower -= (myEnergy - hisEnergy) / 50 * 0.5;
         }
 
         if(distance < 200)
-            basePower += (distance - 200) / 300;
+            basePower += (200 - distance) / 300;
         else
             basePower -= Math.min((distance - 200) / 450, 1.0);
 
@@ -31,6 +31,9 @@ public abstract class PowerSelection {
 
         if(myEnergy < 10)
             power /= 4;
+
+        if(myEnergy < 1)
+            return 0;
 
         return R.constrain(0.1, power, 3.0);
     }

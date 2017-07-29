@@ -8,14 +8,19 @@ import robocode.util.Utils;
 import roborio.enemies.ComplexEnemyRobot;
 import roborio.enemies.EnemyLog;
 import roborio.enemies.EnemyTracker;
-import roborio.gunning.utils.GuessFactorStats;
+import roborio.utils.stats.GuessFactorStats;
 import roborio.movement.forces.DangerPoint;
 import roborio.movement.predictor.MovementPredictor;
 import roborio.myself.MyLog;
 import roborio.myself.MyRobot;
 import roborio.myself.MySnapshot;
-import roborio.utils.*;
-import roborio.utils.Point;
+import roborio.utils.BackAsFrontRobot;
+import roborio.utils.Physics;
+import roborio.utils.R;
+import roborio.utils.geo.AxisRectangle;
+import roborio.utils.geo.G;
+import roborio.utils.geo.Point;
+import roborio.utils.stats.Segmentation;
 import roborio.utils.waves.*;
 
 import java.awt.*;
@@ -29,33 +34,64 @@ import java.util.List;
  * TODO: keep my distance
  * TODO: take bot-width into account when getting stats of a point (crucial to close range fighting)
  * TODO: surf 2 waves just for the sake of being able to reach the first wave spot in a speed which makes it easier to reach the second's
- * TODO: improve my stats, the smoothing functions, rolling averages and that stuff
- * TODO: explicitly distinguish flattening buffer from the firing buffer
+ * TODO: tweak the slices and try to add new crazy attributes
+ * TODO: penalty for not moving
  *
  * http://robowiki.net/wiki/Wave_Suffering
  */
 public class GotoSurfingMovement extends Movement {
-    private static final int                BUCKET_COUNT = 31;
-    private static final int                BUCKET_MID = (BUCKET_COUNT - 1) / 2;
     private static final double             MAX_ESCAPE_ANGLE = 0.7;
-    private static final int                DISTANCE_SEGMENTS = 6;
-    private static final int                LATERAL_SEGMENTS = 4;
-    private static final int                WALL_SEGMENTS = 2;
-    private static GuessFactorStats[][][]   stats;
+
+    private static Segmentation<GuessFactorStats> stats, fastStats, flattening;
+    private static double[] STATS_WEIGHTS = new double[]{0.2, 0.5, 0.3};
+    private static int STATS_COUNT = 3;
+
+    private static int FAST_STATS_ID = 0;
+    private static int STATS_ID = 1;
+    private static int FLATTENING_ID = 2;
+
+    private static double[] EMPTY_SLICES = {Double.POSITIVE_INFINITY};
 
     static {
-        stats = new GuessFactorStats[DISTANCE_SEGMENTS][LATERAL_SEGMENTS][WALL_SEGMENTS];
+        fastStats = new Segmentation<>(new double[][] {
+                {150.0, 400.0}, // distance
+                {1.0, 4.0}, // lateralVelocity
+                EMPTY_SLICES,
+                EMPTY_SLICES,
+                {1.25}, // bullet power
+                EMPTY_SLICES
+        });
+
+        stats = new Segmentation<>(new double[][] {
+                {150.0, 350.0, 550.0}, // distance
+                {2.0, 4.0, 6.0}, // lateral velocity
+                {-5.0, -3.0, -1.0, 2.0}, // advancing velocity
+                {40.0, 140.0}, // wall distance
+                {1.0, 1.5, 2.1}, // bullet power
+                {-0.3, +0.3} // acceleration signed by direction
+        });
+
+        flattening = new Segmentation<>(new double[][] {
+                {150.0, 450.0, 575.0},
+                {1.5, 5.0},
+                {3.0, 1.0, 2.0},
+                {40.0, 140.0},
+                {1.0, 1.5, 2.1},
+                {-2.0, -0.3, +0.3}
+        });
     }
 
-    private WaveMap<GuessFactorStats>         waves;
+    private WaveMap<GuessFactorStats[]>         waves;
     private HashMap<String, Double>           lastEnergy;
 
     private EnemyWave       _surfedWave;
 
-    private AxisRectangle   field;
+    private AxisRectangle field;
     private EnemyLog        targetLog;
     private MyLog           myLog;
     private PowerGuesser    powerGuess;
+
+    private ComplexEnemyRobot lastEnemy;
 
     /* used for panting */
     private static final int        WAVE_DIVISIONS = 81;
@@ -63,7 +99,7 @@ public class GotoSurfingMovement extends Movement {
     private int                   _lastAwayDirection;
     private int                   _wavesPassed;
     private int                   _shotsTaken;
-    private GuessFactorStats      _lastStats;
+    private GuessFactorStats _lastStats;
     private DangerPoint           _gotoPoint;
     private List<Point>           _predicted;
 
@@ -81,20 +117,22 @@ public class GotoSurfingMovement extends Movement {
         _lastAwayDirection = 1;
     }
 
-    private GuessFactorStats getStats(double distance, double lateralVelocity, double wallDistance) {
-        int distanceSegment = Math.min((int)(distance / 300), DISTANCE_SEGMENTS - 1);
-        int lateralSegment = R.constrain(0,  (int)(Math.abs(lateralVelocity / 2)), LATERAL_SEGMENTS - 1);
-        int wallSegment = wallDistance <= 120 ? 0 : 1;
-        if(!R.isBetween(0, distanceSegment,DISTANCE_SEGMENTS -1)
-                || !R.isBetween(0, lateralSegment, LATERAL_SEGMENTS - 1)
-                //|| !R.isBetween(0, advancingSegment, ADVANCING_SEGMENTS - 1)
-                || !R.isBetween(0, wallSegment, WALL_SEGMENTS - 1))
-            return null;
+    private GuessFactorStats getStatsFromSegmentation(Segmentation<GuessFactorStats> segmentation, double[] values) {
+        GuessFactorStats res = segmentation.get(values);
+        if(res == null) {
+            res = new GuessFactorStats(0.5);
+            segmentation.add(values, res);
+        }
 
-        if(stats[distanceSegment][lateralSegment][wallSegment] == null)
-            stats[distanceSegment][lateralSegment][wallSegment] = new GuessFactorStats(0.03, 1.0);
+        return res;
+    }
 
-        return stats[distanceSegment][lateralSegment][wallSegment];
+    private GuessFactorStats[] getStats(double[] values) {
+        return new GuessFactorStats[]{
+                getStatsFromSegmentation(fastStats, values),
+                getStatsFromSegmentation(stats, values),
+                getStatsFromSegmentation(flattening, values)
+        };
     }
 
     @Override
@@ -116,8 +154,7 @@ public class GotoSurfingMovement extends Movement {
 
         Point hitPoint = new Point(e.getBullet().getX(), e.getBullet().getY());
 
-        List<Wave> waveList = waves.getWaves();
-        Iterator<Wave> iterator = waveList.iterator();
+        Iterator<Wave> iterator = waves.iterator();
 
         while(iterator.hasNext()) {
             Wave wave = iterator.next();
@@ -133,18 +170,30 @@ public class GotoSurfingMovement extends Movement {
         }
     }
 
-    private GuessFactorStats getStatsFromWave(Wave nextWave) {
+    private GuessFactorStats[] getStatsFromWave(Wave nextWave) {
         MyRobot me = nextWave.getSnapshot().getOffset(-1);
+        MyRobot pastMe = nextWave.getSnapshot().getOffset(-2);
         double distance = nextWave.getSource().distance(me.getPoint());
         double lateralVelocity = me.getLateralVelocity(nextWave.getSource());
         double wallDistance = me.getDistanceToWall();
+        double advVelocity = me.getApproachingVelocity(nextWave.getSource());
+        double power = Physics.bulletPower(nextWave.getVelocity());
+        double accel = Math.abs(me.getVelocity() - pastMe.getVelocity()) * me.getDirection(nextWave.getSource());
 
-        return getStats(distance, lateralVelocity, wallDistance);
+        GuessFactorStats[] sts = getStats(new double[]{distance, lateralVelocity, advVelocity, wallDistance, power, accel});
+        GuessFactorStats[] clonedStats = new GuessFactorStats[]{
+                (GuessFactorStats) (sts[FAST_STATS_ID].clone()),
+                (GuessFactorStats) (sts[STATS_ID].clone()),
+                sts[FLATTENING_ID]
+        };
+
+        return clonedStats;
     }
 
     @Override
     public void onScan(ScannedRobotEvent e) {
         targetLog = EnemyTracker.getInstance().getLog(e);
+        lastEnemy = targetLog.getLatest();
 
         double energyDelta = lastEnergy.containsKey(e.getName()) ? lastEnergy.get(e.getName())
                 : e.getEnergy();
@@ -159,7 +208,7 @@ public class GotoSurfingMovement extends Movement {
             MySnapshot snap = myLog.takeSnapshot(R.WAVE_SNAPSHOT_DIAMETER);
             EnemyFireWave wave = new EnemyFireWave(snap, targetLog.atLeastAt(getTime() - 1), velocity);
 
-            waves.add(wave, (GuessFactorStats) getStatsFromWave(wave).clone());
+            waves.add(wave, getStatsFromWave(wave));
         } else {
             // flattening
             double power = powerGuess.getGuess();
@@ -168,13 +217,12 @@ public class GotoSurfingMovement extends Movement {
             MySnapshot snap = myLog.takeSnapshot(R.WAVE_SNAPSHOT_DIAMETER);
             EnemyWave wave = new EnemyWave(snap, targetLog.atLeastAt(getTime() - 1), velocity);
 
-            waves.add(wave, (GuessFactorStats) getStatsFromWave(wave).clone());
+            waves.add(wave, getStatsFromWave(wave));
         }
     }
 
     private void checkHits() {
-        List<Wave> waveList = waves.getWaves();
-        Iterator<Wave> iterator = waveList.iterator();
+        Iterator<Wave> iterator = waves.iterator();
 
         while(iterator.hasNext()) {
             EnemyWave wave = (EnemyWave) iterator.next();
@@ -216,10 +264,8 @@ public class GotoSurfingMovement extends Movement {
 
         ComplexEnemyRobot enemy = nextWave.getEnemy();
 
-        GuessFactorStats st = waves.getData(nextWave);
-//        MyRobot me = nextWave.getSnapshot().getOffset(-1);
-//        GuessFactorStats st = getStats(me.getPoint().distance(enemy.getPoint()),
-//                            me.getLateralVelocity(enemy.getPoint()), me.getDistanceToWall());
+        GuessFactorStats[] sts = waves.getData(nextWave);
+        GuessFactorStats st = mergeStats(sts);
 
         DangerPoint dangerClockwise = getDanger(nextWave, +1, st);
         DangerPoint dangerCounterClockwise = getDanger(nextWave, -1, st);
@@ -342,20 +388,36 @@ public class GotoSurfingMovement extends Movement {
 
     private void log(EnemyWave wave, Point hitPoint) {
         MyRobot me = wave.getSnapshot().getOffset(-1);
+        MyRobot pastMe = wave.getSnapshot().getOffset(-2);
         double distance = wave.getSource().distance(me.getPoint());
         double lateralVelocity = me.getLateralVelocity(wave.getSource());
         double wallDistance = me.getDistanceToWall();
+        double advVelocity = me.getApproachingVelocity(wave.getSource());
+        double power = Physics.bulletPower(wave.getVelocity());
+        double accel = Math.abs(me.getVelocity() - pastMe.getVelocity()) * me.getDirection(wave.getSource());
 
         double gf = getGf(wave, hitPoint);
+        GuessFactorStats[] sts = getStats(new double[]{distance, lateralVelocity, advVelocity, wallDistance, power, accel});
 
-        GuessFactorStats stats = getStats(distance, lateralVelocity, wallDistance);
-        if(stats != null)
-            stats.logGuessFactor(gf);
+        // make sure flattening waves are only logged to flattening array
+        if(!(wave instanceof EnemyFireWave)) {
+            if(sts[FLATTENING_ID] != null)
+                sts[FLATTENING_ID].logGuessFactor(gf);
+        } else {
+            for (int i = 0; i < STATS_COUNT; i++) {
+                if (sts[i] != null)
+                    sts[i].logGuessFactor(gf);
+            }
+        }
     }
 
     @Override
     public void onPaint(Graphics2D graphics) {
         G g = new G(graphics);
+
+        if(lastEnemy != null) {
+            g.drawPoint(lastEnemy.getPoint(), 36, Color.WHITE);
+        }
 
         if(_surfedWave != null && _gotoPoint != null) {
             g.drawPoint(_gotoPoint, 6.0, Color.GREEN);
@@ -370,7 +432,7 @@ public class GotoSurfingMovement extends Movement {
 
         Wave earliestWave = waves.earliestFireWave(myLog.getLatest());
 
-        for(Wave cur : waves.getWaves()) {
+        for(Wave cur : waves) {
             if(!(cur instanceof EnemyFireWave))
                 continue;
 
@@ -382,7 +444,8 @@ public class GotoSurfingMovement extends Movement {
             ComplexEnemyRobot enemy = wave.getEnemy();
             MyRobot me = wave.getSnapshot().getOffset(-1);
 
-            GuessFactorStats st = waves.getData(wave);
+            GuessFactorStats[] sts = waves.getData(wave);
+            GuessFactorStats st = mergeStats(sts);
 
             double angle = 0;
             double ratio = R.DOUBLE_PI / WAVE_DIVISIONS;
@@ -414,6 +477,10 @@ public class GotoSurfingMovement extends Movement {
                 g.drawCircle(dangerPoints[i], 3.0, dangerColor);
             }
         }
+    }
+
+    private GuessFactorStats mergeStats(GuessFactorStats[] sts) {
+        return GuessFactorStats.merge(sts, STATS_WEIGHTS);
     }
 
     public void printLog() {

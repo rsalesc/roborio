@@ -1,7 +1,7 @@
 package roborio.utils.waves;
 
 import roborio.myself.MySnapshot;
-import roborio.utils.Point;
+import roborio.utils.geo.Point;
 
 /**
  * Created by Roberto Sales on 23/07/17.

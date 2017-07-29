@@ -31,15 +31,44 @@ public class WaveMap<T> extends WaveCollection {
         map.put(wave, data);
     }
 
-    @Override
-    protected void removeFromIterator(Wave wave, Iterator<Wave> iterator) {
-        super.removeFromIterator(wave, iterator);
-        map.remove(wave);
-    }
-
     public T getData(Wave wave) {
         if(!map.containsKey(wave))
             throw new IllegalStateException();
         return map.get(wave);
+    }
+
+    @Override
+    public void remove(Wave wave) {
+        super.remove(wave);
+        map.remove(wave);
+    }
+
+    @Override
+    public Iterator<Wave> iterator() {
+        return new Iterator<Wave>() {
+
+            private Iterator<Wave> it = waves.iterator();
+            private Wave current = null;
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public Wave next() {
+                return current = it.next();
+            }
+
+            @Override
+            public void remove() {
+                if(current == null)
+                    throw new IllegalStateException();
+
+                map.remove(current);
+                current = null;
+                it.remove();
+            }
+        };
     }
 }

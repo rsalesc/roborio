@@ -2,10 +2,10 @@ package roborio.enemies;
 
 import robocode.ScannedRobotEvent;
 import roborio.movement.predictor.MovementPredictor;
-import roborio.utils.AxisRectangle;
+import roborio.utils.geo.AxisRectangle;
 import roborio.utils.BackAsFrontRobot;
 import roborio.utils.Physics;
-import roborio.utils.Point;
+import roborio.utils.geo.Point;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -97,4 +97,7 @@ public class ComplexEnemyRobot extends EnemyRobot {
     public int getDirection() {
         return lateralVelocity >= 0 ? 1 : -1;
     }
+
+    public AxisRectangle getHitBox() {
+        return new AxisRectangle(x - 18, x + 18, y - 18,  y + 18);    }
 }

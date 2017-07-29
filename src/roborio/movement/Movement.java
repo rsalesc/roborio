@@ -4,7 +4,7 @@ import robocode.BulletHitEvent;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
 import roborio.utils.BackAsFrontRobot;
-import roborio.utils.Point;
+import roborio.utils.geo.Point;
 
 import java.awt.*;
 

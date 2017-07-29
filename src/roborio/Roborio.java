@@ -1,12 +1,13 @@
 package roborio;
 
+import robocode.BulletHitEvent;
 import robocode.HitByBulletEvent;
 import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
 import roborio.enemies.EnemyTracker;
 import roborio.gunning.AutomaticGun;
-import roborio.gunning.GuessFactorGun;
+import roborio.gunning.DualGuessFactorGun;
 import roborio.movement.RoborioMovement;
 import roborio.myself.MyLog;
 import roborio.myself.MyRobot;
@@ -36,19 +37,19 @@ public class Roborio extends BackAsFrontRobot {
         setupColors();
         setupRadar();
         movement = new RoborioMovement(this);
-        gun = new GuessFactorGun(this, false);
+        gun = new DualGuessFactorGun(this);
+//        gun = new DCGuessFactorGun(this, false, "dcgf_gun");
 
         while(true) {
             double startTime = System.nanoTime();
 
             trackMe();
+            gun.doFiring();
             gun.doGunning();
             movement.doMovement();
 
             if(getRadarTurnRemaining() == 0)
                 setTurnRadarRight(1);
-
-            gun.doFiring();
 
             double timeTaken = System.nanoTime() - startTime;
             timedTicks++;
@@ -78,6 +79,12 @@ public class Roborio extends BackAsFrontRobot {
     @Override
     public void onHitByBullet(HitByBulletEvent e) {
         movement.onHitByBullet(e);
+    }
+
+    @Override
+    public void onBulletHit(BulletHitEvent e) {
+        movement.onBulletHit(e);
+        gun.onBulletHit(e);
     }
 
     @Override

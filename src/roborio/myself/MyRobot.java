@@ -2,6 +2,8 @@ package roborio.myself;
 
 import roborio.movement.predictor.MovementPredictor;
 import roborio.utils.*;
+import roborio.utils.geo.AxisRectangle;
+import roborio.utils.geo.Point;
 
 /**
  * Created by Roberto Sales on 22/07/17.
@@ -106,6 +108,11 @@ public class MyRobot {
     public double getLateralVelocity(Point from) {
         double absBearing = Physics.absoluteBearing(from, getPoint());
         return Physics.getLateralVelocityFromStationary(absBearing, getVelocity(), getHeading());
+    }
+
+    public double getApproachingVelocity(Point from) {
+        double absBearing = Physics.absoluteBearing(from, getPoint());
+        return Physics.getApproachingVelocityFromStationary(absBearing, getVelocity(), getHeading());
     }
 
     public int getDirection(Point from) {

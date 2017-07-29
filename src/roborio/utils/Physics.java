@@ -2,6 +2,7 @@ package roborio.utils;
 
 import robocode.Robot;
 import robocode.Rules;
+import roborio.utils.geo.Point;
 
 /**
  * Created by Roberto Sales on 21/07/17.
@@ -67,6 +68,10 @@ public abstract class Physics {
     }
 
     public static double bulletPower(double velocity){
-        return (20.0 - velocity) / 3;
+        return (20.0 - Math.abs(velocity)) / 3.0;
+    }
+
+    public static double hitAngle(double distance) {
+        return 36.0 / distance;
     }
 }

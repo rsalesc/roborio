@@ -4,7 +4,7 @@ import roborio.enemies.ComplexEnemyRobot;
 import roborio.myself.MyRobot;
 import roborio.myself.MySnapshot;
 import roborio.utils.Physics;
-import roborio.utils.Point;
+import roborio.utils.geo.Point;
 import roborio.utils.R;
 
 /**
@@ -105,5 +105,9 @@ public class Wave {
 
     public void setSnapshot(MySnapshot snapshot) {
         this.snapshot = snapshot;
+    }
+
+    public Point project(double angle, long time) {
+        return getSource().project(angle, getDistanceTraveled(time));
     }
 }
