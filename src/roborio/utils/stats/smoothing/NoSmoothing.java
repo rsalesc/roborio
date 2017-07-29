@@ -8,14 +8,4 @@ public class NoSmoothing extends Smoothing {
     public double[] smooth(double[] input) {
         return input;
     }
-
-    @Override
-    public double binToX(int bin) {
-        return bin;
-    }
-
-    @Override
-    public int XToBin(double x) {
-        return (int) x;
-    }
 }

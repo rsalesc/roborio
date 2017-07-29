@@ -20,16 +20,6 @@ public class HarmonicSmoothing extends Smoothing {
         return output;
     }
 
-    @Override
-    public double binToX(int bin) {
-        return bin;
-    }
-
-    @Override
-    public int XToBin(double x) {
-        return (int) x;
-    }
-
     private double sqr(double v) {
         return v*v;
     }

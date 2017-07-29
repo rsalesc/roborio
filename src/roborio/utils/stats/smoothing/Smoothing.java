@@ -5,6 +5,4 @@ package roborio.utils.stats.smoothing;
  */
 public abstract class Smoothing {
     public abstract double[] smooth(double[] input);
-    public abstract double binToX(int bin);
-    public abstract int XToBin(double x);
 }

@@ -16,6 +16,8 @@ import roborio.utils.geo.Point;
 import roborio.utils.geo.Range;
 import roborio.utils.stats.GuessFactorStats;
 import roborio.utils.stats.Segmentation;
+import roborio.utils.stats.smoothing.GaussianSmoothing;
+import roborio.utils.stats.smoothing.Smoothing;
 import roborio.utils.storage.NamedStorage;
 import roborio.utils.waves.MyFireWave;
 import roborio.utils.waves.MyWave;
@@ -167,6 +169,12 @@ public class GuessFactorGun extends AutomaticGun {
                                                 distanceToWall, bulletPower, accel});
 
         GuessFactorStats stats = GuessFactorStats.merge(allStats, STATS_WEIGHTS);
+
+        double bandwidth = Physics.hitAngle(distance) / (2.0*amea)
+                * GuessFactorStats.BUCKET_COUNT;
+        Smoothing smoother = new GaussianSmoothing(bandwidth);
+
+        stats.setSmoother(smoother);
 
         int enemyDirection = enemy.getDirection();
         double bestGF = stats.getBestGuessFactor(gfRange);

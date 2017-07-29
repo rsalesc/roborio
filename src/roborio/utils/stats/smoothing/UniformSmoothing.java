@@ -10,20 +10,10 @@ public class UniformSmoothing extends KernelSmoothing {
     }
 
     @Override
-    public double evaluateKernel(double x, double x0) {
-        double parameter = (x - x0) / bandwidth;
+    public double evaluateKernel(int diff) {
+        double parameter = (diff) / bandwidth;
         if(Math.abs(parameter) > 1)
             return 0.0;
-        return (x - x0) / bandwidth * 0.5;
-    }
-
-    @Override
-    public double binToX(int bin) {
-        return bin;
-    }
-
-    @Override
-    public int XToBin(double x) {
-        return (int) x;
+        return parameter * 0.5;
     }
 }
