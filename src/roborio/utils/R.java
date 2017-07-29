@@ -47,8 +47,20 @@ public class R {
         return Math.sqrt(x);
     }
 
+    public static double exp(double val) {
+        final long tmp = (long) (1512775 * val + (1072693248 - 60801));
+        return Double.longBitsToDouble(tmp << 32);
+    }
+
+    public static double pow(final double a, final double b) {
+//        final long tmp = Double.doubleToLongBits(a);
+//        final long tmp2 = (long)(b * (tmp - 4606921280493453312L)) + 4606921280493453312L;
+//        return Double.longBitsToDouble(tmp2);
+        return Math.pow(a, b);
+    }
+
     public static double logisticFunction(double x, double x0, double k) {
-        return 1.0 / (1.0 + Math.exp(-k * (x-x0)));
+        return 1.0 / (1.0 + R.exp(-k * (x-x0)));
     }
 
     public static double logisticFunction(double x) {
