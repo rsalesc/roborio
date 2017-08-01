@@ -2,42 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1bfe1332-a40a-442f-b09a-aa2c235ab82f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/appframework_1_0_3.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/roborio/gunning/Targeting.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/roborio/gunning/utils/TargetingLog.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/roborio/learning/DCClassifier.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/roborio/learning/DCFitnessFunction.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/roborio/learning/DCWaveSim.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/roborio/utils/RTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/GunFireEvent.java" afterPath="$PROJECT_DIR$/src/roborio/gunning/utils/GunFireEvent.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/GunHitEvent.java" afterPath="$PROJECT_DIR$/src/roborio/gunning/utils/GunHitEvent.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/robocode_1_9_2_6.xml" afterPath="$PROJECT_DIR$/.idea/libraries/robocode_1_9_2_6.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Roborio.iml" afterPath="$PROJECT_DIR$/Roborio.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/Roborio.java" afterPath="$PROJECT_DIR$/src/roborio/Roborio.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/enemies/ComplexEnemyRobot.java" afterPath="$PROJECT_DIR$/src/roborio/enemies/ComplexEnemyRobot.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/enemies/EnemyLog.java" afterPath="$PROJECT_DIR$/src/roborio/enemies/EnemyLog.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/gunning/AutomaticGun.java" afterPath="$PROJECT_DIR$/src/roborio/gunning/AutomaticGun.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorGun.java" afterPath="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorGun.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/gunning/DualGuessFactorGun.java" afterPath="$PROJECT_DIR$/src/roborio/gunning/DualGuessFactorGun.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/gunning/GuessFactorGun.java" afterPath="$PROJECT_DIR$/src/roborio/gunning/GuessFactorGun.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/gunning/Gun.java" afterPath="$PROJECT_DIR$/src/roborio/gunning/Gun.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/movement/GotoSurfingMovement.java" afterPath="$PROJECT_DIR$/src/roborio/movement/GotoSurfingMovement.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/movement/predictor/MovementPredictor.java" afterPath="$PROJECT_DIR$/src/roborio/movement/predictor/MovementPredictor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/myself/MyLog.java" afterPath="$PROJECT_DIR$/src/roborio/myself/MyLog.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/structures/KdTree.java" afterPath="$PROJECT_DIR$/src/roborio/structures/KdTree.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/structures/KdTreeTest.java" afterPath="$PROJECT_DIR$/src/roborio/structures/KdTreeTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/structures/WeightedManhattanKdTree.java" afterPath="$PROJECT_DIR$/src/roborio/structures/WeightedManhattanKdTree.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/BackAsFrontRobot.java" afterPath="$PROJECT_DIR$/src/roborio/utils/BackAsFrontRobot.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/Physics.java" afterPath="$PROJECT_DIR$/src/roborio/utils/Physics.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/R.java" afterPath="$PROJECT_DIR$/src/roborio/utils/R.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/AxisRectangle.java" afterPath="$PROJECT_DIR$/src/roborio/utils/geo/AxisRectangle.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/G.java" afterPath="$PROJECT_DIR$/src/roborio/utils/geo/G.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/Point.java" afterPath="$PROJECT_DIR$/src/roborio/utils/geo/Point.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/VCS.java" afterPath="$PROJECT_DIR$/src/roborio/utils/stats/VCS.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/smoothing/GaussianSmoothing.java" afterPath="$PROJECT_DIR$/src/roborio/utils/stats/smoothing/GaussianSmoothing.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/utils/storage/NamedStorage.java" afterPath="$PROJECT_DIR$/src/roborio/utils/storage/NamedStorage.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java" afterPath="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -78,7 +43,7 @@
       <file leaf-file-name="DCGuessFactorGun.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorGun.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="560">
+            <state relative-caret-position="604">
               <caret line="124" column="39" lean-forward="false" selection-start-line="124" selection-start-column="39" selection-end-line="124" selection-end-column="39" />
               <folding />
             </state>
@@ -100,7 +65,7 @@
       <file leaf-file-name="AbstractGFStats.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/roborio/utils/stats/AbstractGFStats.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-96">
+            <state relative-caret-position="154">
               <caret line="61" column="0" lean-forward="false" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
               <folding>
                 <element signature="e#1837#1838#0" expanded="true" />
@@ -136,8 +101,8 @@
       <file leaf-file-name="DCGuessFactorTargeting.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-32">
-              <caret line="22" column="3" lean-forward="false" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
+            <state relative-caret-position="208">
+              <caret line="31" column="138" lean-forward="false" selection-start-line="31" selection-start-column="138" selection-end-line="31" selection-end-column="138" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -255,9 +220,9 @@
         <option value="$PROJECT_DIR$/src/roborio/learning/DCClassifier.java" />
         <option value="$PROJECT_DIR$/src/roborio/utils/storage/NamedStorage.java" />
         <option value="$PROJECT_DIR$/src/roborio/utils/BackAsFrontRobot.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java" />
         <option value="$PROJECT_DIR$/src/roborio/gunning/utils/TargetingLog.java" />
         <option value="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorGun.java" />
+        <option value="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java" />
       </list>
     </option>
   </component>
@@ -1229,7 +1194,7 @@
       <workItem from="1501078754983" duration="921000" />
       <workItem from="1501286462051" duration="5581000" />
       <workItem from="1501310364933" duration="24106000" />
-      <workItem from="1501446798004" duration="74811000" />
+      <workItem from="1501446798004" duration="75314000" />
     </task>
     <servers />
   </component>
@@ -1266,7 +1231,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="384887000" />
+    <option name="totallyTimeSpent" value="385390000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1291,7 +1256,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.46182495" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.46167558" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1702,16 +1667,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/roborio/utils/stats/AbstractGFStats.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-96">
-          <caret line="61" column="0" lean-forward="false" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
-          <folding>
-            <element signature="e#1837#1838#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/roborio/learning/DCClassifier.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="76">
@@ -1738,16 +1693,6 @@
             <element signature="imports" expanded="true" />
             <element signature="e#343#344#0" expanded="true" />
             <element signature="e#390#391#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/roborio/learning/DCWaveSim.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="652">
-          <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1786,9 +1731,29 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/roborio/utils/stats/AbstractGFStats.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="61" column="0" lean-forward="false" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+          <folding>
+            <element signature="e#1837#1838#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/roborio/learning/DCWaveSim.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="652">
+          <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorGun.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
+        <state relative-caret-position="604">
           <caret line="124" column="39" lean-forward="false" selection-start-line="124" selection-start-column="39" selection-end-line="124" selection-end-column="39" />
           <folding />
         </state>
@@ -1796,8 +1761,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-32">
-          <caret line="22" column="3" lean-forward="false" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
+        <state relative-caret-position="208">
+          <caret line="31" column="138" lean-forward="false" selection-start-line="31" selection-start-column="138" selection-end-line="31" selection-end-column="138" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
