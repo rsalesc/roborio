@@ -12,11 +12,15 @@ public class R {
     public static final double  WAVE_EXTRA = 50;
 
     public static double sin(double radians) {
-        return Math.sin(radians);
+        double offset = radians - DOUBLE_PI * Math.floor((radians + PI) / DOUBLE_PI);
+        if(Math.abs(offset) > HALF_PI)
+            return -xsin((offset - Math.signum(offset) * PI) / HALF_PI);
+        else
+            return xsin(offset / HALF_PI);
     }
 
     public static double cos(double radians) {
-        return Math.cos(radians);
+        return R.sin(radians + HALF_PI);
     }
 
     public static double asin(double x) {
@@ -32,11 +36,11 @@ public class R {
     }
 
     public static double atan2(double y, double x) {
-        return Math.atan2(y, x);
+        return fastAtan2(y, x);
     }
 
     public static double tan(double radians) {
-        return Math.tan(radians);
+        return Math.atan(radians);
     }
 
     public static double abs(double x) {
@@ -48,8 +52,9 @@ public class R {
     }
 
     public static double exp(double val) {
-        final long tmp = (long) (1512775 * val + (1072693248 - 60801));
-        return Double.longBitsToDouble(tmp << 32);
+        return Math.exp(val);
+//        final long tmp = (long) (1512775 * val + (1072693248 - 60801));
+//        return Double.longBitsToDouble(tmp << 32);
     }
 
     public static double pow(final double a, final double b) {
@@ -57,6 +62,40 @@ public class R {
 //        final long tmp2 = (long)(b * (tmp - 4606921280493453312L)) + 4606921280493453312L;
 //        return Double.longBitsToDouble(tmp2);
         return Math.pow(a, b);
+    }
+
+    private static double xsin (double x) {
+        double x2 = x * x;
+        return ((((.00015148419 * x2
+                - .00467376557) * x2
+                + .07968967928) * x2
+                - .64596371106) * x2
+                + 1.57079631847) * x;
+    }
+
+    private static double fastAtan2(double y, double x) {
+        if (x == 0.0f) {
+            if (y > 0.0f) {
+                return HALF_PI;
+            }
+            if (y == 0.0f) {
+                return 0.0f;
+            }
+            return -HALF_PI;
+        }
+
+        final double atan;
+        final double z = y / x;
+        if (Math.abs(z) < 1.0f) {
+            atan = z / (1.0f + 0.28f * z * z);
+            if (x < 0.0f) {
+                return (y < 0.0f) ? atan - PI : atan + PI;
+            }
+            return atan;
+        } else {
+            atan = HALF_PI - z / (z * z + 0.28f);
+            return (y < 0.0f) ? atan - PI : atan;
+        }
     }
 
     public static double logisticFunction(double x, double x0, double k) {

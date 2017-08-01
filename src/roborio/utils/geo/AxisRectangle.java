@@ -67,7 +67,7 @@ public class AxisRectangle {
     public double distance(Point point) {
         double x = point.getX();
         double y = point.getY();
-        return Math.sqrt(
+        return R.sqrt(
                 Math.min(sqr(minx - x), sqr(maxx - x)) +
                 Math.min(sqr(miny - y), sqr(maxy - y)));
     }

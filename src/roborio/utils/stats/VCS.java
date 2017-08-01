@@ -9,7 +9,6 @@ import roborio.utils.stats.smoothing.Smoothing;
 public abstract class VCS extends Stats {
     private final double rolling;
     private final double factor;
-    private boolean needsSmoothing;
     protected double[] smoothed;
 
     private Smoothing smoother;
@@ -18,13 +17,13 @@ public abstract class VCS extends Stats {
         super(bins);
         this.rolling = rollingDepth;
         factor = 1.0 - 1.0 / (rolling + 1);
-        needsSmoothing = true;
+        smoothed = null;
         smoother = new NoSmoothing();
     }
 
     public void setSmoother(Smoothing smoother) {
         this.smoother = smoother;
-        needsSmoothing = true;
+        smoothed = null;
     }
 
     public Smoothing getSmoother() {
@@ -43,7 +42,7 @@ public abstract class VCS extends Stats {
     public void add(int i, double weight) {
         unroll();
         buffer[i] += weight;
-        needsSmoothing = true;
+        smoothed = null;
     }
 
     public void add(int i) {
@@ -51,10 +50,8 @@ public abstract class VCS extends Stats {
     }
 
     public double get(int i) {
-        if(needsSmoothing) {
+        if(smoothed == null)
             smooth();
-            needsSmoothing = false;
-        }
 
         return smoothed[i];
     }

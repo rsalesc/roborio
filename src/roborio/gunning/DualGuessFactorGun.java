@@ -1,6 +1,7 @@
 package roborio.gunning;
 
 import robocode.ScannedRobotEvent;
+import roborio.gunning.utils.GunFireEvent;
 import roborio.utils.BackAsFrontRobot;
 import roborio.utils.R;
 

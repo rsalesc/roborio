@@ -13,7 +13,7 @@ import roborio.utils.BackAsFrontRobot;
  */
 
 public class EnemyLog {
-    private static int              LOG_SIZE = 500;
+    private static int              LOG_SIZE = 200;
 
     private ComplexEnemyRobot[]     log;
     private int                     length;
@@ -78,6 +78,16 @@ public class EnemyLog {
     }
 
     public ComplexEnemyRobot push(ComplexEnemyRobot enemy) {
+        int direction = (int) Math.signum(enemy.getLateralVelocity());
+        if(length > 0) {
+            ComplexEnemyRobot last = getLatest();
+            if(direction == 0)
+                direction = last.getDirection();
+        }
+
+        if(direction != 0)
+            enemy.setDirection(direction);
+
         log[realAt(length++)] = enemy;
         if(length > LOG_SIZE) {
             length = LOG_SIZE;

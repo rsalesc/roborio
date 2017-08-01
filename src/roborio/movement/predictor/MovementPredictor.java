@@ -51,17 +51,18 @@ public abstract class MovementPredictor {
         return res;
     }
 
-    public static Range getBetterMaximumEscapeAngle(AxisRectangle field, PredictedPoint initialPoint, Wave wave) {
-        List<PredictedPoint> cwList = predictOnWaveImpact(field, initialPoint, wave, 1, R.HALF_PI);
-        List<PredictedPoint> ccwList = predictOnWaveImpact(field, initialPoint, wave, -1, R.HALF_PI);
+    public static Range getBetterMaximumEscapeAngle(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
+        int direction) {
+        List<PredictedPoint> posList = predictOnWaveImpact(field, initialPoint, wave, direction, R.HALF_PI);
+        List<PredictedPoint> negList = predictOnWaveImpact(field, initialPoint, wave, -direction, R.HALF_PI);
 
-        Point cw = cwList.get(cwList.size() - 1);
-        Point ccw = ccwList.get(ccwList.size() - 1);
+        Point pos = posList.get(posList.size() - 1);
+        Point neg = negList.get(negList.size() - 1);
 
         double absBearing = Physics.absoluteBearing(wave.getSource(), initialPoint);
         Range res = new Range();
-        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), cw) - absBearing));
-        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), ccw) - absBearing));
+        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), pos) - absBearing));
+        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), neg) - absBearing));
 
         return res;
     }

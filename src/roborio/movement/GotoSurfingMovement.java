@@ -8,7 +8,6 @@ import robocode.util.Utils;
 import roborio.enemies.ComplexEnemyRobot;
 import roborio.enemies.EnemyLog;
 import roborio.enemies.EnemyTracker;
-import roborio.utils.stats.GuessFactorStats;
 import roborio.movement.forces.DangerPoint;
 import roborio.movement.predictor.MovementPredictor;
 import roborio.myself.MyLog;
@@ -20,6 +19,7 @@ import roborio.utils.R;
 import roborio.utils.geo.AxisRectangle;
 import roborio.utils.geo.G;
 import roborio.utils.geo.Point;
+import roborio.utils.stats.GuessFactorStats;
 import roborio.utils.stats.Segmentation;
 import roborio.utils.waves.*;
 
@@ -266,6 +266,13 @@ public class GotoSurfingMovement extends Movement {
 
         GuessFactorStats[] sts = waves.getData(nextWave);
         GuessFactorStats st = mergeStats(sts);
+
+//        double distance = getRobot().getPoint().distance(nextWave.getSource());
+//        double mea = Physics.maxEscapeAngle(nextWave.getVelocity());
+//        double bandwidth = Physics.hitAngle(distance) / (2.0*mea)
+//                * GuessFactorStats.BUCKET_COUNT;
+//
+//        st.setSmoother(new GaussianSmoothing(bandwidth));
 
         DangerPoint dangerClockwise = getDanger(nextWave, +1, st);
         DangerPoint dangerCounterClockwise = getDanger(nextWave, -1, st);

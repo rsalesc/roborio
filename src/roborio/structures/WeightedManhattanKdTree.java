@@ -31,9 +31,9 @@ public class WeightedManhattanKdTree<T> extends KdTree<T> {
     public double minkowskiDistance(double[] a, double[] b) {
         double res = 0;
         for(int i = 0; i < this.dim; i++) {
-            double acc = (a[i]-b[i]) * weights[i];
+            double acc = Math.abs(a[i]-b[i]) * weights[i];
             if(!Double.isNaN(acc))
-                res += Math.abs(acc);
+                res += acc;
         }
         return res;
     }

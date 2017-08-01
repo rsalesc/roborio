@@ -4,6 +4,7 @@ import robocode.Bullet;
 import robocode.BulletHitEvent;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
+import roborio.gunning.utils.GunHitEvent;
 import roborio.utils.BackAsFrontRobot;
 
 import java.awt.*;

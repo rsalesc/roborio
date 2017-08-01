@@ -5,7 +5,7 @@ package roborio.myself;
  */
 public class MyLog {
     private static final MyLog  SINGLETON = new MyLog();
-    private static final int    LOG_SIZE = 2000;
+    private static final int    LOG_SIZE = 1000;
 
     private MyRobot[]           log;
     private int                 length;

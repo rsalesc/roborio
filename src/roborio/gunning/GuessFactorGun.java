@@ -6,6 +6,7 @@ import robocode.util.Utils;
 import roborio.enemies.ComplexEnemyRobot;
 import roborio.enemies.EnemyLog;
 import roborio.enemies.EnemyTracker;
+import roborio.gunning.utils.GunFireEvent;
 import roborio.gunning.utils.PowerSelection;
 import roborio.myself.MyLog;
 import roborio.utils.BackAsFrontRobot;

@@ -7,7 +7,7 @@ import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
 import roborio.enemies.EnemyTracker;
 import roborio.gunning.AutomaticGun;
-import roborio.gunning.DualGuessFactorGun;
+import roborio.gunning.DCGuessFactorGun;
 import roborio.movement.RoborioMovement;
 import roborio.myself.MyLog;
 import roborio.myself.MyRobot;
@@ -37,8 +37,8 @@ public class Roborio extends BackAsFrontRobot {
         setupColors();
         setupRadar();
         movement = new RoborioMovement(this);
-        gun = new DualGuessFactorGun(this);
-//        gun = new DCGuessFactorGun(this, false, "dcgf_gun");
+//        gun = new DualGuessFactorGun(this);
+        gun = new DCGuessFactorGun(this, false, "dcgf_gun");
 
         while(true) {
             double startTime = System.nanoTime();

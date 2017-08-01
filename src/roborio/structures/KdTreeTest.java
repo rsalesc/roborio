@@ -47,10 +47,10 @@ public class KdTreeTest {
     @BeforeEach
     public void setup() {
         hasDump = false;
-        dimension = 4;
-        K = 8;
+        dimension = 8;
+        K = 100;
         pointsCount = 30000;
-        queriesCount = 1000;
+        queriesCount = 10000;
 
         points = new double[pointsCount][];
         for(int i = 0; i < pointsCount; i++) {

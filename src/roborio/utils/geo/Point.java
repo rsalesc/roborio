@@ -26,6 +26,11 @@ public class Point {
         setY(b.y - a.y);
     }
 
+    public Point(Point2D.Double p) {
+        setX(p.x);
+        setY(p.y);
+    }
+
     public Point2D.Double to2D() {
         return new Point2D.Double(x, y);
     }
@@ -51,7 +56,7 @@ public class Point {
     }
 
     public double distance(Point rhs) {
-        return Math.sqrt(squaredDistance(rhs));
+        return R.sqrt(squaredDistance(rhs));
     }
 
     public double manhattanDistance(Point rhs) {
@@ -75,7 +80,7 @@ public class Point {
     }
 
     public double norm() {
-        return Math.sqrt(squaredNorm());
+        return R.sqrt(squaredNorm());
     }
 
     public Point add(Point rhs) {

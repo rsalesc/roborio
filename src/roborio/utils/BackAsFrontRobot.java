@@ -111,4 +111,13 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     public AxisRectangle getHitBox() {
         return new AxisRectangle(getX() - 18, getX() + 18, getY() - 18, getY() + 18);
     }
+
+    public Point impreciseNextPosition() {
+        double maxTurn = Physics.maxTurningRate(getVelocity());
+        double turn = R.constrain(-maxTurn, getTurnRemainingRadians(), +maxTurn);
+        double absHeading = Utils.normalAbsoluteAngle(getHeadingRadians() + turn);
+
+        return new Point(getX() + Math.sin(absHeading) * getVelocity(),
+                getY() + Math.cos(absHeading) * getVelocity());
+    }
 }

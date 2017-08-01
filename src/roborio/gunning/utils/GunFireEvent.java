@@ -1,8 +1,9 @@
-package roborio.gunning;
+package roborio.gunning.utils;
 
 import robocode.Bullet;
 import robocode.Event;
 import robocode.Rules;
+import roborio.gunning.Gun;
 import roborio.utils.geo.Point;
 
 /**

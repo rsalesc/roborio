@@ -19,11 +19,11 @@ public abstract class Physics {
     }
 
     public static double getX(Robot robot, double absBearing, double distance) {
-        return robot.getX() + Math.sin(absBearing) * distance;
+        return robot.getX() + R.sin(absBearing) * distance;
     }
 
     public static double getY(Robot robot, double absBearing, double distance) {
-        return robot.getY() + Math.cos(absBearing) * distance;
+        return robot.getY() + R.cos(absBearing) * distance;
     }
 
     /** Returns lateral velocity relative to robot, but
@@ -35,7 +35,7 @@ public abstract class Physics {
      * @return
      */
     public static double getLateralVelocityFromStationary(double absBearing, double velocity, double heading) {
-        return Math.sin(heading - absBearing) * velocity;
+        return R.sin(heading - absBearing) * velocity;
     }
 
     /** Return angular velocity, assuming that the enemy
@@ -52,11 +52,11 @@ public abstract class Physics {
 
     public static double getApproachingVelocityFromStationary(double absBearing,
                                                               double velocity, double heading) {
-        return -Math.cos(heading - absBearing) * velocity;
+        return -R.cos(heading - absBearing) * velocity;
     }
 
     public static double maxEscapeAngle(double velocity) {
-        return Math.asin(MAX_VELOCITY / Math.abs(velocity));
+        return R.asin(MAX_VELOCITY / Math.abs(velocity));
     }
 
     public static double maxTurningRate(double velocity) {

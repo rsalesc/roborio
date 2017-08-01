@@ -2,9 +2,10 @@ package roborio.enemies;
 
 import robocode.ScannedRobotEvent;
 import roborio.movement.predictor.MovementPredictor;
-import roborio.utils.geo.AxisRectangle;
 import roborio.utils.BackAsFrontRobot;
 import roborio.utils.Physics;
+import roborio.utils.R;
+import roborio.utils.geo.AxisRectangle;
 import roborio.utils.geo.Point;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -22,6 +23,8 @@ public class ComplexEnemyRobot extends EnemyRobot {
     private double lateralVelocity;
     private double approachingVelocity;
     private double distanceToWall;
+
+    public Integer direction;
 
     ComplexEnemyRobot() {
         super();
@@ -48,7 +51,7 @@ public class ComplexEnemyRobot extends EnemyRobot {
         lateralVelocity = Physics.getLateralVelocityFromStationary(absBearing, getVelocity(), getHeading());
         angularVelocity = Physics.getAngularVelocityFromStationary(absBearing, getDistance(), getVelocity(), getHeading());
         approachingVelocity = Physics.getApproachingVelocityFromStationary(absBearing, getVelocity(), getHeading());
-        distanceToWall = Math.sqrt(sqr(Math.min(getX(), field.getWidth() - getX())) +
+        distanceToWall = R.sqrt(sqr(Math.min(getX(), field.getWidth() - getX())) +
                                     sqr(Math.min(getY(), field.getHeight() - getY())));
     }
 
@@ -94,10 +97,16 @@ public class ComplexEnemyRobot extends EnemyRobot {
         return absBearing;
     }
 
-    public int getDirection() {
-        return lateralVelocity >= 0 ? 1 : -1;
-    }
-
     public AxisRectangle getHitBox() {
         return new AxisRectangle(x - 18, x + 18, y - 18,  y + 18);    }
+
+    public void setDirection(int dir) {
+        direction = dir;
+    }
+
+    public int getDirection() {
+        if(direction != null)
+            return direction;
+        return lateralVelocity >= 0 ? 1 : -1;
+    }
 }

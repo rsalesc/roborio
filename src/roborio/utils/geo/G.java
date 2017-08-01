@@ -104,4 +104,8 @@ public class G {
     public static Color getDangerColor(double alpha) {
         return DANGER_GRADIENT.evaluate(alpha);
     }
+
+    public void drawString(Point p, String s) {
+        g.drawString(s, (float) p.x, (float) p.y);
+    }
 }

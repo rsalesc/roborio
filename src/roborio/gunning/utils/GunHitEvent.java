@@ -1,4 +1,4 @@
-package roborio.gunning;
+package roborio.gunning.utils;
 
 import robocode.Bullet;
 import robocode.BulletHitEvent;

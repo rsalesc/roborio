@@ -65,7 +65,7 @@ abstract public class KdTree<T> {
     private KdTree<T>       parent;
 
     // old points
-    Queue<double[]>         pointQueue;
+    private Queue<double[]>         pointQueue;
 
     public KdTree(int dimensions, int sizeLimit, int bucketLimit) {
         this.dim = dimensions;
@@ -174,11 +174,17 @@ abstract public class KdTree<T> {
                 current.hyperplane = this.minkowskiBestHyperplane(current);
                 current.cutPosition = (current.max[current.hyperplane] + current.min[current.hyperplane]) / 2;
 
-                if(current.max[current.hyperplane] == current.min[current.hyperplane])
-                    current.cutPosition = current.max[current.hyperplane];
-
-                if(Double.isNaN(current.cutPosition))
+                if(current.cutPosition == Double.POSITIVE_INFINITY)
+                    current.cutPosition = Double.MAX_VALUE;
+                else if(current.cutPosition == Double.NEGATIVE_INFINITY)
+                    current.cutPosition = Double.MIN_VALUE;
+                else if(Double.isNaN(current.cutPosition))
                     current.cutPosition = 0;
+
+                if(current.max[current.hyperplane] == current.min[current.hyperplane]) {
+                    current.stretch();
+                    break;
+                }
 
                 KdTree<T> left = new KdNode(current);
                 KdTree<T> right = new KdNode(current);
@@ -211,6 +217,16 @@ abstract public class KdTree<T> {
         if(this.maxLength != null && this.maxLength < this.length) {
             this.remove(this.pointQueue.poll());
         }
+    }
+
+    private void stretch() {
+        double[][] newPoints = new double[this.length * 2][];
+        System.arraycopy(this.points, 0, newPoints, 0, this.length);
+        this.points = newPoints;
+
+        Object[] newData = new Object[this.length * 2];
+        System.arraycopy(this.data, 0, newData, 0, this.length);
+        this.data = newData;
     }
 
     private void extendNode(double[] point, Object payload) {
@@ -362,9 +378,11 @@ abstract public class KdTree<T> {
                     current.length--;
                     current = current.parent;
                 }
-                break;
+                return;
             }
         }
+
+        throw new IllegalStateException("point was not found");
     }
 
     public static class Entry<T> {
@@ -380,7 +398,6 @@ abstract public class KdTree<T> {
     private boolean isLeaf() {
         return this.data != null;
     }
-
     private boolean isHeavy() {
         return this.length >= this.data.length;
     }

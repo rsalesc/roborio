@@ -1,0 +1,30 @@
+<component name="libraryTable">
+  <library name="appframework-1.0.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/appframework-1.0.3.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/commons-cli-1.2.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/commons-codec-1.3.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/commons-lang-2.1.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/commons-math-2.0.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/jcgrid.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/jcommon-1.0.14.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/jettison-1.3.1.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/jfreechart-1.0.11.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/junit-addons-1.4.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/junit3.8.1.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/jxl.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/log4j.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/swing-layout-1.0.3.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/swing-worker-1.1.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/TableLayout.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/trove-2.0.2.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/xpp3_min-1.1.3.4.O.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/xpp3_min-1.1.4c.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/xstream-1.2.2.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/lib/xstream-1.3.1.jar!/" />
+      <root url="jar://$USER_HOME$/robocode/jgap/jgap.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

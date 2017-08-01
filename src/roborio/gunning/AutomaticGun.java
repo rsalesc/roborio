@@ -2,6 +2,7 @@ package roborio.gunning;
 
 import robocode.Bullet;
 import robocode.util.Utils;
+import roborio.gunning.utils.GunFireEvent;
 import roborio.utils.BackAsFrontRobot;
 import roborio.utils.Physics;
 
@@ -13,7 +14,7 @@ import java.util.HashSet;
 public abstract class AutomaticGun extends Gun {
     private HashSet<Bullet> firedBullets;
     private long    lastFire;
-    private GunFireEvent  lastGunFireEvent;
+    private GunFireEvent lastGunFireEvent;
     private boolean firePending;
     private double  firePower;
     private double  fireAngle;
