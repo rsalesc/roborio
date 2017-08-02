@@ -1,9 +1,15 @@
 package roborio.learning;
 
 import org.jgap.FitnessFunction;
+import org.jgap.Gene;
 import org.jgap.IChromosome;
+import org.jgap.impl.CompositeGene;
 import roborio.gunning.DCGuessFactorTargeting;
+import roborio.learning.functions.NormFunction;
+import roborio.utils.storage.NamedStorage;
 import voidious.wavesim.WaveRunner;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created by Roberto Sales on 30/07/17.
@@ -11,61 +17,98 @@ import voidious.wavesim.WaveRunner;
 public class DCFitnessFunction extends FitnessFunction {
     @Override
     protected double evaluate(IChromosome chromo) {
-        return getHitPercentage(chromo);
+        try {
+            setup(chromo);
+            return getScore(chromo);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+
+        return 0.0;
+    }
+
+    private double getScore(IChromosome chromo) {
+        WaveRunner runner = new WaveRunner(DCClassifier.class, true);
+        String[] op = new String[]{
+                "jk.mega.DrussGT 1.3.8fTC",
+                "jk.mini.CunobelinDC 0.1TC",
+                "voidious.Dookious 1.573cTC",
+                "abc.Shadow 3.66dTC",
+                "wiki.BasicGFSurfer 1.02"
+        };
+        runner.simBattles(op, 10);
+
+        NamedStorage.getInstance().clear();
+
+        return runner.getTotals().getHitPercentage();
     }
 
     public static double[][] getWeights(IChromosome chromo) {
-        double[][] weights = new double[3][];
-        weights[0] = new double[10];
-        weights[1] = new double[10];
-        weights[2] = new double[5];
+        double[][] weights = new double[2][];
+        for(int i = 0; i < 2; i++) {
+            weights[i] = new double[DCWaveSim.DIMENSIONS];
+            CompositeGene dimensionGene = (CompositeGene) chromo.getGene(i);
 
-        for(int i = 0; i < 25; i++) {
-            weights[i/10][i%10] = (Double) chromo.getGene(i).getAllele();
+            for(int j = 0; j < DCWaveSim.DIMENSIONS; j++) {
+                Gene gene = dimensionGene.geneAt(j);
+                weights[i][j] = (Double) gene.getAllele();
+            }
         }
-
         return weights;
     }
 
-    public static double[] getPercents(IChromosome chromo) {
-        double percent = (Double) chromo.getGene(25).getAllele();
-        return new double[]{percent, 1.0 - percent};
-    };
+    public static Class<? extends NormFunction>[] getFunctions(IChromosome chromo) {
+        Class<? extends NormFunction>[] fns = new Class[DCWaveSim.DIMENSIONS];
+        for(int i = 0; i < DCWaveSim.DIMENSIONS; i++) {
+            fns[i] = DCGuessFactorTargeting.NORM_FUNCTIONS[i].getClass();
+        }
 
-    public static int[] getK(IChromosome chromo) {
-        return new int[]{
-                (Integer) chromo.getGene(26).getAllele(),
-                (Integer) chromo.getGene(27).getAllele()
-        };
+        return fns;
     }
 
-    public static double getHitPercentage(IChromosome chromo) {
-        DCGuessFactorTargeting.TREE_WEIGHTS = new double[10];
-        DCGuessFactorTargeting.FAST_TREE_WEIGHTS = new double[10];
-        DCGuessFactorTargeting.NORMALIZING_PARAMS = new double[5];
+    public static double[][] getParams(IChromosome chromo) {
+        NormFunction[] funcs = DCGuessFactorTargeting.NORM_FUNCTIONS;
+        double[][] fns = new double[DCWaveSim.DIMENSIONS][];
+        CompositeGene dimensionGene = (CompositeGene) chromo.getGene(2);
+        int ptr = 0;
 
-        for(int i = 0; i < 10; i++)
-            DCGuessFactorTargeting.TREE_WEIGHTS[i] = (Double) chromo.getGene(i).getAllele();
-        for(int i = 10; i < 20; i++)
-            DCGuessFactorTargeting.FAST_TREE_WEIGHTS[i-10] = (Double) chromo.getGene(i).getAllele();
-        for(int i = 20; i < 25; i++)
-            DCGuessFactorTargeting.NORMALIZING_PARAMS[i-20] = (Double) chromo.getGene(i).getAllele();
+        for(int i = 0; i < DCWaveSim.DIMENSIONS; i++) {
+            if(funcs[i].arity() > 0) {
+                double[] cur = new double[funcs[i].arity()];
+                for(int j = 0; j < funcs[i].arity(); j++) {
+                    cur[j] = (Double) dimensionGene.geneAt(ptr).getAllele();
+                    ptr++;
+                }
 
-        double percent = (Double) chromo.getGene(25).getAllele();
-        DCGuessFactorTargeting.STATS_WEIGHTS = new double[]{percent, 1.0 - percent};
-        DCGuessFactorTargeting.STATS_K = new int[]{
-                (Integer) chromo.getGene(26).getAllele(),
-                (Integer) chromo.getGene(27).getAllele()
-        };
+                fns[i] = cur;
+            } else {
+                fns[i] = new double[0];
+            }
+        }
 
-        WaveRunner runner = new WaveRunner(DCClassifier.class, true);
-        runner.simBattles(new String[]{
-                "cx.mini.Cigaret 1.31",
-                "BIRL.Monstro 1.0",
-                "wiki.BasicGFSurfer 1.02",
-                "abc.Shadow 3.84"
-        }, 10);
+        return fns;
+    }
 
-        return runner.getTotals().getHitPercentage();
+    public static void setup(IChromosome chromo) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        double[][] weights = getWeights(chromo);
+        DCGuessFactorTargeting.TREE_WEIGHTS = weights[0];
+        DCGuessFactorTargeting.FAST_TREE_WEIGHTS = weights[1];
+
+        Class<? extends NormFunction>[] fns = getFunctions(chromo);
+        double[][] params = getParams(chromo);
+
+        DCGuessFactorTargeting.NORM_FUNCTIONS = new NormFunction[DCWaveSim.DIMENSIONS];
+        for(int i = 0; i < fns.length; i++) {
+            DCGuessFactorTargeting.NORM_FUNCTIONS[i] =
+                    fns[i].getDeclaredConstructor(double[].class).newInstance(params[i]);
+        }
+
+        DCGuessFactorTargeting.EUCLIDEAN_TREE = (Boolean) chromo.getGene(3).getAllele();
     }
 }

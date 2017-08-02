@@ -25,11 +25,13 @@ public class TargetingLog {
     public long timeAccel;
     public long timeDecel;
     public long timeRevert;
+    public long revertLast20;
 
     // for miss
     public double hitAngle;
     public double hitDistance;
     public Point hitPosition;
+    public double coveredLast20;
 
 //    public double wallDistance;
 

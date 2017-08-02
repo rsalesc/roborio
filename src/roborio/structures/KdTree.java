@@ -4,6 +4,7 @@ package roborio.structures;
  * Created by rsalesc on 20/07/17.
  */
 
+import roborio.utils.R;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayDeque;
@@ -166,6 +167,11 @@ abstract public class KdTree<T> {
         if(point.length != dim)
             throw new IllegalArgumentException();
 
+        for(int i = 0; i < this.dim; i++) {
+            if(Double.isNaN(point[i]))
+                throw new IllegalStateException("NaN on query point");
+        }
+
         KdTree<T> current = this;
 
         while(!current.isLeaf() || current.isHeavy()) {
@@ -181,16 +187,19 @@ abstract public class KdTree<T> {
                 else if(Double.isNaN(current.cutPosition))
                     current.cutPosition = 0;
 
-                if(current.max[current.hyperplane] == current.min[current.hyperplane]) {
+                if(R.isNear(current.max[current.hyperplane], current.min[current.hyperplane])) {
                     current.stretch();
                     break;
                 }
+
+                if(current.cutPosition == current.max[current.hyperplane])
+                    current.cutPosition = current.min[current.hyperplane];
 
                 KdTree<T> left = new KdNode(current);
                 KdTree<T> right = new KdNode(current);
 
                 for(int i = 0; i < current.length; i++) {
-                    KdTree<T> addOn = current.points[i][current.hyperplane] < current.cutPosition ? left : right;
+                    KdTree<T> addOn = current.points[i][current.hyperplane] <= current.cutPosition ? left : right;
                     addOn.extendNode(current.points[i], current.data[i]);
                 }
 
@@ -203,7 +212,7 @@ abstract public class KdTree<T> {
             current.updateClippingWindow(point);
             current.length++;
 
-            if(point[current.hyperplane] < current.cutPosition)
+            if(point[current.hyperplane] <= current.cutPosition)
                 current = current.left;
             else
                 current = current.right;
@@ -273,6 +282,11 @@ abstract public class KdTree<T> {
     public List<Entry<T>> kNN(double[] query, int K, double alpha) {
         if(query.length != dim)
             throw new IllegalArgumentException();
+
+        for(int i = 0; i < this.dim; i++) {
+            if(Double.isNaN(query[i]))
+                throw new IllegalStateException("NaN on kNN point");
+        }
 
         if(this.size() == 0)
             return new ArrayList<Entry<T>>();
@@ -360,7 +374,7 @@ abstract public class KdTree<T> {
         KdTree<T> current = this;
 
         while(!current.isLeaf()) {
-            if(point[current.hyperplane] < current.cutPosition)
+            if(point[current.hyperplane] <= current.cutPosition)
                 current = current.left;
             else
                 current = current.right;

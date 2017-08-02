@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public class NamedStorage {
     private static final NamedStorage SINGLETON = new NamedStorage();
-    private static final int SIZE_LIMIT = 12;
+    private static final int SIZE_LIMIT = 4;
 
     ConcurrentHashMap<String, Object> store;
     Queue<String> keys;

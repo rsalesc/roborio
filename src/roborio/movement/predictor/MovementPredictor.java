@@ -61,8 +61,8 @@ public abstract class MovementPredictor {
 
         double absBearing = Physics.absoluteBearing(wave.getSource(), initialPoint);
         Range res = new Range();
-        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), pos) - absBearing));
-        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), neg) - absBearing));
+        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), pos) - absBearing) * direction);
+        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), neg) - absBearing) * direction);
 
         return res;
     }

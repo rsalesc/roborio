@@ -1,46 +1,73 @@
 package roborio.learning;
 
 import org.jgap.*;
+import org.jgap.impl.BooleanGene;
+import org.jgap.impl.CompositeGene;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
-import org.jgap.impl.IntegerGene;
+import roborio.gunning.DCGuessFactorTargeting;
+import roborio.learning.functions.NormFunction;
+import roborio.learning.functions.PowerFunction;
 import voidious.wavesim.WaveRunner;
 
 /**
  * Created by Roberto Sales on 29/07/17.
  */
 public class DCWaveSim {
-    private static final int POPULATION_SIZE = 100;
-    private static final int GENERATIONS = 100;
+    private static final int POPULATION_SIZE = 500;
+    private static final int GENERATIONS = 50;
+
+    public static final int DIMENSIONS = 12;
 
     public static void main(String[] args) throws InvalidConfigurationException {
         WaveRunner.BASEDIR = "/home/rsalesc/robocode/wavesim/data";
         WaveRunner.initializeThreads();
-        doGA();
+//        doGenetics();
+        bulletTest();
         WaveRunner.shutdownThreads();
     }
 
-    private static void doGA() throws InvalidConfigurationException {
+    private static void bulletTest() {
+        WaveRunner runner = new WaveRunner(DCClassifier.class, true);
+        String[] op = new String[]{
+                "jk.mega.DrussGT 1.3.8fTC",
+                "jk.mini.CunobelinDC 0.1TC",
+                "voidious.Dookious 1.573cTC",
+                "abc.Shadow 3.66dTC"
+                //"wiki.BasicGFSurfer 1.02"
+        };
+        runner.simBattles(op, 10);
+        System.out.println(runner.getTotals().getHitPercentage());
+    }
+
+    private static void doGenetics() throws InvalidConfigurationException {
         Configuration conf = new DefaultConfiguration();
         conf.setFitnessFunction(new DCFitnessFunction());
 
-        Gene[] genes = new Gene[28];
+        Gene[] genes = new Gene[4];
 
-        for(int i = 0; i < 20; i++) {
-            genes[i] = new DoubleGene(conf, 0, 4);
+        for(int i = 0; i < 2; i++) {
+            CompositeGene dimensionGene = new CompositeGene(conf);
+            for(int j = 0; j < DIMENSIONS; j++) {
+                dimensionGene.addGene(new DoubleGene(conf, 0, 2.5));
+            }
+            genes[i] = dimensionGene;
         }
 
-        genes[20] = new DoubleGene(conf, 0,1);
-        genes[21] = new DoubleGene(conf, 0, 4);
-        genes[22] = new DoubleGene(conf, 0.85, 1.3);
-        genes[23] = new DoubleGene(conf, 0, 4);
-        genes[24] = new DoubleGene(conf, 1.0, 1.2);
+        CompositeGene comp = new CompositeGene(conf);
+        for(int j = 0; j < DIMENSIONS; j++) {
+            NormFunction func = DCGuessFactorTargeting.NORM_FUNCTIONS[j];
+            if(func.arity() > 0) {
+                comp.addGene(new DoubleGene(conf, 0, 10));
+                if(func.getClass() == PowerFunction.class) {
+                    comp.addGene(new DoubleGene(conf, 1.0, 1.2));
+                }
 
-        // percent
-        genes[25] = new DoubleGene(conf, 0.0, 1.0);
+            }
+        }
 
-        genes[26] = new IntegerGene(conf, 8, 100);
-        genes[27] = new IntegerGene(conf, 8, 50);
+        genes[2] = comp;
+        genes[3] = new BooleanGene(conf);
 
         Chromosome sample = new Chromosome(conf, genes);
         conf.setSampleChromosome(sample);
@@ -60,41 +87,56 @@ public class DCWaveSim {
                 bestSoFar = cur;
             }
 
-            dumpWeights(bestSoFar);
+            dump(bestSoFar);
 
             System.out.println("Best on generation " + i + ": " + value);
         }
 
         System.out.println();
         System.out.println("Finished!");
-        dumpWeights(bestSoFar);
+        dump(bestSoFar);
     }
 
-    private static void dumpWeights(IChromosome chromo) {
-        double[][] res = DCFitnessFunction.getWeights(chromo);
-        for(int ii = 0; ii < 3; ii++) {
-            System.out.print("new double[]{");
-            for(int j = 0; j < res[ii].length; j++) {
-                if(j > 0) System.out.print(", ");
-                System.out.printf("%.8f", (float) res[ii][j]);
-            }
-            System.out.println("};");
+    private static void dump(IChromosome chromo) {
+        double[][] weights = DCFitnessFunction.getWeights(chromo);
+        for(int i = 0; i < 2; i++) {
+            dump(weights[i]);
         }
 
-        double[] percents = DCFitnessFunction.getPercents(chromo);
+        dumpFunctions(DCFitnessFunction.getFunctions(chromo), DCFitnessFunction.getParams(chromo));
+        if((Boolean) chromo.getGene(3).getAllele()) {
+            System.out.println("Using EUCLIDEAN!");
+        } else {
+            System.out.println("Using Manhattan :(");
+        }
+    }
+
+    private static void dumpArray(double[] a) {
         System.out.print("new double[]{");
-        for(int i = 0; i < 2; i++) {
+        for(int i = 0; i < a.length; i++) {
             if(i > 0) System.out.print(", ");
-            System.out.printf("%.8f", (float) percents[i]);
+            System.out.printf("%.8f", a[i]);
         }
-        System.out.println("};");
+        System.out.print("}");
+    }
 
-        int[] K = DCFitnessFunction.getK(chromo);
-        System.out.print("new int[]{");
-        for(int i = 0; i < 2; i++) {
-            if(i > 0) System.out.print(", ");
-            System.out.printf("%.8f", (float) K[i]);
+    private static void dump(double[] a) {
+        dumpArray(a);
+        System.out.println("");
+    }
+
+    private static void dumpFunctions(Class[] fns, double[][] params) {
+        System.out.println("new NormFunction[]{");
+        for(int i = 0; i < fns.length; i++) {
+            if(i > 0)
+                System.out.println(",");
+            System.out.print("\t");
+            System.out.print("new " + fns[i].getSimpleName() + "(");
+            dumpArray(params[i]);
+            System.out.print(")");
         }
+
+        System.out.println("");
         System.out.println("};");
     }
 }

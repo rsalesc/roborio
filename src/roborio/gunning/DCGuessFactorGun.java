@@ -88,6 +88,7 @@ public class DCGuessFactorGun extends AutomaticGun {
         double mea = Physics.maxEscapeAngle(bulletSpeed);
 
         TargetingLog firingLog = new TargetingLog();
+        firingLog.source = getRobot().getPoint();
         firingLog.direction = enemy.getDirection();
         firingLog.distance = enemy.getDistance();
         firingLog.lateralVelocity = enemy.getLateralVelocity();
@@ -106,11 +107,14 @@ public class DCGuessFactorGun extends AutomaticGun {
             firingLog.accelDirection = firingLog.direction;
 
         // doideira
-        firingLog.direction = firingLog.accelDirection;
+        //firingLog.direction = firingLog.accelDirection;
 
         firingLog.timeAccel = firingLog.accel > 0 ? 0 : 1;
         firingLog.timeDecel = firingLog.accel < 0 ? 0 : 1;
         firingLog.timeRevert = enemy.getDirection() * pastEnemy.getDirection() < 0 ? 0 : 1;
+        firingLog.revertLast20 = firingLog.timeRevert ^ 1;
+
+        Range coveredLast20 = new Range();
 
         for(int i = 1; i < Math.min(50, enemyLog.size() - 1); i++) {
             ComplexEnemyRobot curEnemy = enemyLog.atLeastAt(getTime() - i);
@@ -123,7 +127,19 @@ public class DCGuessFactorGun extends AutomaticGun {
                 firingLog.timeDecel++;
             if(curEnemy.getDirection() * lastEnemy.getDirection() >= 0 && firingLog.timeRevert == i)
                 firingLog.timeRevert++;
+
+            if(i <= 20) {
+                double curBearing = Physics.absoluteBearing(getRobot().getPoint(), curEnemy.getPoint());
+                double curOffset = curBearing - firingLog.absBearing;
+                double curGf = curOffset * firingLog.direction / mea;
+                coveredLast20.push(curGf);
+
+                if(curEnemy.getDirection() * lastEnemy.getDirection() < 0)
+                    firingLog.revertLast20++;
+            }
         }
+
+        firingLog.coveredLast20 = coveredLast20.maxAbsolute();
 
         absFireAngle = targeting.generateFiringAngle(firingLog);
         _lastEnemy = enemy;
@@ -201,6 +217,17 @@ public class DCGuessFactorGun extends AutomaticGun {
             g.drawPoint(missLog.hitPosition, 36, Color.YELLOW);
 
             g.drawString(new Point(20, 20),"Corrected GF: " + targeting._lastFiringGf);
+        }
+
+        if(lastFiringLog != null) {
+            double angle1 = lastFiringLog.getPreciseMea().max * lastFiringLog.direction
+                    + lastFiringLog.absBearing;
+            double angle2 = lastFiringLog.getPreciseMea().min * lastFiringLog.direction
+                    + lastFiringLog.absBearing;
+            double distance = lastFiringLog.distance;
+
+            g.drawPoint(lastFiringLog.source.project(angle1, distance), 3, Color.WHITE);
+            g.drawPoint(lastFiringLog.source.project(angle2, distance), 3, Color.WHITE);
         }
 
         if(targeting._lastGf != null)

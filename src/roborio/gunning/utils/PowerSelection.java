@@ -22,10 +22,8 @@ public abstract class PowerSelection {
             basePower -= (myEnergy - hisEnergy) / 50 * 0.5;
         }
 
-        if(distance < 200)
+        if(distance < 300)
             basePower += (200 - distance) / 300;
-        else
-            basePower -= Math.min((distance - 200) / 450, 1.0);
 
         double power = R.constrain(0.1, basePower, 3.0);
 
