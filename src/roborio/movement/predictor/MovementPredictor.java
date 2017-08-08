@@ -25,7 +25,7 @@ public abstract class MovementPredictor {
         List<PredictedPoint> res = new ArrayList<PredictedPoint>();
 
         PredictedPoint cur = initialPoint;
-        while(!wave.hasTouchedRobot(cur, cur.time)) {
+        while(!wave.hasPassed(cur, cur.time)) {
             double angle = Utils.normalAbsoluteAngle(WallSmoothing.naive(shrinkedField, cur,
                     Physics.absoluteBearing(wave.getSource(), cur)
                     + perpendiculator * direction, direction));
@@ -43,8 +43,8 @@ public abstract class MovementPredictor {
         PredictedPoint cur = initialPoint;
         while(!wave.hasTouchedRobot(cur, cur.time)) {
             double distance = cur.distance(dest);
-            double angle = R.isNear(distance, 0) ? 0 : Physics.absoluteBearing(cur, dest);
-            cur = _tick(cur, angle, Rules.MAX_VELOCITY, cur.distance(dest));
+            double angle = R.isNear(distance, 0) ? cur.heading : Physics.absoluteBearing(cur, dest);
+            cur = _tick(cur, angle, Rules.MAX_VELOCITY, distance);
             res.add(cur);
         }
 
@@ -55,6 +55,9 @@ public abstract class MovementPredictor {
         int direction) {
         List<PredictedPoint> posList = predictOnWaveImpact(field, initialPoint, wave, direction, R.HALF_PI);
         List<PredictedPoint> negList = predictOnWaveImpact(field, initialPoint, wave, -direction, R.HALF_PI);
+
+        posList.add(0, initialPoint);
+        negList.add(0, initialPoint);
 
         Point pos = posList.get(posList.size() - 1);
         Point neg = negList.get(negList.size() - 1);
@@ -67,6 +70,44 @@ public abstract class MovementPredictor {
         return res;
     }
 
+    public static PredictedWaveImpact preciselyPredictOnWaveImpact(PredictedPoint initialPoint, Wave wave, Point dest) {
+        double absBearing = wave.getAngle(initialPoint);
+
+        ArrayList<PredictedPoint> points = new ArrayList<>();
+        Range res = new Range();
+        PredictedPoint cur = initialPoint;
+        while(!wave.hasPassedRobot(cur, cur.time)) {
+            double distance = cur.distance(dest);
+            double angle = R.isNear(distance, 0 ) ? cur.heading : Physics.absoluteBearing(cur, dest);
+            PredictedPoint next = _tick(cur, angle, Rules.MAX_VELOCITY, distance);
+            AxisRectangle botRect = new AxisRectangle(next, 36);
+
+            if(!wave.hasTouchedRobot(next, next.time)) {
+                cur = next;
+                continue;
+            }
+
+            for(Point corner : botRect.getCorners()) {
+                if(wave.hasPassed(corner, next.time) && !wave.hasPassed(corner, cur.time)) {
+                    res.push(Utils.normalRelativeAngle(wave.getAngle(corner) - absBearing));
+                }
+            }
+
+            for(Point intersect : wave.getCircle(cur.time).intersect(botRect)) {
+                res.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - absBearing));
+            }
+
+            for(Point intersect : wave.getCircle(next.time).intersect(botRect)) {
+                res.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - absBearing));
+            }
+
+            cur = next;
+            points.add(cur);
+        }
+
+        return new PredictedWaveImpact(wave, initialPoint, points, res);
+    }
+
 
     /** This method, different from _tick, predicts assuming that the robot will attempt
      * to move infinitely (hit the maximum speed and never break)
@@ -76,7 +117,7 @@ public abstract class MovementPredictor {
      * and stop at the destination. There is no real destination here. You can tick, for
      * example, while the enemy's wave does not hit you.
      *
-     * @param last point predicted in the last tick (or inital point)
+     * @param last point predicted in the last tick (or initial point)
      * @param angle the absolute angle the bot is trying to move, normalized
      * @param maxVelocity the maximum velocity the bot should move
      *                    usually: Physics.MAX_VELOCITY
@@ -85,12 +126,12 @@ public abstract class MovementPredictor {
     private static PredictedPoint _fastTick(PredictedPoint last, double angle, double maxVelocity) {
         double offset = Utils.normalRelativeAngle(angle - last.heading);
         double turn = BackAsFrontRobot.getQuickestTurn(offset);
-        int ahead = offset == turn ? 1 : -1;
+        int ahead = offset == turn ? +1 : -1;
 
         double maxTurning = Physics.maxTurningRate(last.velocity);
         double newHeading = Utils.normalAbsoluteAngle(R.constrain(-maxTurning, turn, maxTurning) + last.heading);
 
-        double newVelocity = getFastVelocity(last.velocity, maxVelocity, ahead);
+        double newVelocity = getNewVelocity(last.velocity, maxVelocity, ahead, Double.POSITIVE_INFINITY);
 
         double newX = last.x + R.sin(newHeading) * newVelocity;
         double newY = last.y + R.cos(newHeading) * newVelocity;
@@ -244,35 +285,6 @@ public abstract class MovementPredictor {
         }
 
         return R.constrain(-maxVelocity, newVelocity, maxVelocity);
-    }
-
-    public static class PredictedPoint extends Point {
-        private final double     heading;
-        private final double     velocity;
-        private final long       time;
-
-        public PredictedPoint(double x, double y, double heading, double velocity, long time) {
-            super(x, y);
-            this.heading = heading;
-            this.velocity = velocity;
-            this.time = time;
-        }
-
-        public PredictedPoint(Point point, double heading, double velocity, long time) {
-            this(point.x, point.y, heading, velocity, time);
-        }
-
-        public double getHeading() {
-            return heading;
-        }
-
-        public double getVelocity() {
-            return velocity;
-        }
-
-        public long getTime() {
-            return time;
-        }
     }
 
 }

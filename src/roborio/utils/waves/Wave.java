@@ -4,8 +4,8 @@ import roborio.enemies.ComplexEnemyRobot;
 import roborio.myself.MyRobot;
 import roborio.myself.MySnapshot;
 import roborio.utils.Physics;
+import roborio.utils.geo.Circle;
 import roborio.utils.geo.Point;
-import roborio.utils.R;
 
 /**
  * Created by Roberto Sales on 22/07/17.
@@ -68,15 +68,19 @@ public class Wave {
     }
 
     public boolean hasTouchedRobot(Point point, long time) {
-        return point.distance(source) - Physics.BOT_WIDTH < getDistanceTraveled(time);
+        return point.distance(source) - Physics.BOT_WIDTH <= getDistanceTraveled(time);
     }
 
     public boolean hasPassedRobot(MyRobot robot) {
-        return robot.getPosition().distance(source) + R.WAVE_EXTRA < getDistanceTraveled(robot.getTime());
+        return robot.getPosition().distance(source) + Physics.BOT_WIDTH < getDistanceTraveled(robot.getTime());
     }
 
     public boolean hasPassedRobot(ComplexEnemyRobot robot) {
-        return robot.getPoint().distance(source) + R.WAVE_EXTRA < getDistanceTraveled(robot.getTime());
+        return robot.getPoint().distance(source) + Physics.BOT_WIDTH < getDistanceTraveled(robot.getTime());
+    }
+
+    public boolean hasPassedRobot(Point point, long time) {
+        return point.distance(source) + Physics.BOT_WIDTH < getDistanceTraveled(time);
     }
 
     public boolean hasPassed(Point point, long time) {
@@ -105,6 +109,14 @@ public class Wave {
 
     public void setSnapshot(MySnapshot snapshot) {
         this.snapshot = snapshot;
+    }
+
+    public double getAngle(Point point) {
+        return Physics.absoluteBearing(source, point);
+    }
+
+    public Circle getCircle(long time) {
+        return new Circle(source, getDistanceTraveled(time));
     }
 
     public Point project(double angle, long time) {

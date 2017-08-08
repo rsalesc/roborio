@@ -71,4 +71,6 @@ public abstract class Movement {
     public void runAwayWithBackAsFront(Point dest, double distance) {
         robot.runAwayWithBackAsFront(dest, distance);
     }
+
+    public void printLog() {}
 }

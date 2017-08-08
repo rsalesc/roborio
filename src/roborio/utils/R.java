@@ -53,15 +53,14 @@ public class R {
 
     public static double exp(double val) {
         return Math.exp(val);
-//        final long tmp = (long) (1512775 * val + (1072693248 - 60801));
-//        return Double.longBitsToDouble(tmp << 32);
     }
 
     public static double pow(final double a, final double b) {
-//        final long tmp = Double.doubleToLongBits(a);
-//        final long tmp2 = (long)(b * (tmp - 4606921280493453312L)) + 4606921280493453312L;
-//        return Double.longBitsToDouble(tmp2);
         return Math.pow(a, b);
+    }
+
+    public static double exp7(double x) {
+        return (362880+x*(362880+x*(181440+x*(60480+x*(15120+x*(3024+x*(504+x*(72+x*(9+x)))))))))*2.75573192e-6;
     }
 
     private static double xsin (double x) {

@@ -1,7 +1,7 @@
 package roborio.enemies;
 
 import robocode.ScannedRobotEvent;
-import roborio.movement.predictor.MovementPredictor;
+import roborio.movement.predictor.PredictedPoint;
 import roborio.utils.BackAsFrontRobot;
 import roborio.utils.Physics;
 import roborio.utils.R;
@@ -85,8 +85,8 @@ public class ComplexEnemyRobot extends EnemyRobot {
         return approachingVelocity;
     }
 
-    public MovementPredictor.PredictedPoint getPredictionPoint() {
-        return new MovementPredictor.PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
+    public PredictedPoint getPredictionPoint() {
+        return new PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
     }
 
     public double getDistanceToWall() {

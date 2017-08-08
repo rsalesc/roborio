@@ -1,5 +1,6 @@
 package roborio.utils.geo;
 
+import robocode.util.Utils;
 import roborio.utils.R;
 
 import java.awt.geom.Point2D;
@@ -136,6 +137,19 @@ public class Point {
 
     public Point project(double angle, double length) {
         return new Point(x + R.sin(angle) * length, y + R.cos(angle) * length);
+    }
+
+    public double similarity(Point rhs) {
+        return dot(rhs) / norm() / rhs.norm();
+    }
+
+    public Point rotate(double theta) {
+        theta = Utils.normalRelativeAngle(theta);
+        return new Point(R.cos(-theta) * x - R.sin(-theta)  * y, R.sin(-theta) * x + R.cos(-theta) * y);
+    }
+
+    public Point rotate(double theta, Point pivot) {
+        return this.subtract(pivot).rotate(theta).add(pivot);
     }
 
     @Override

@@ -13,10 +13,17 @@ import java.util.LinkedList;
  */
 public class G {
     private static final Gradient   DANGER_GRADIENT;
+    private static final Gradient   SAFE_GRADIENT;
 
     static {
         DANGER_GRADIENT = new Gradient(new Gradient.GradientColor[]{
                 new Gradient.GradientColor(Color.WHITE, 0),
+                new Gradient.GradientColor(Color.YELLOW, 0.5),
+                new Gradient.GradientColor(Color.RED, 1)
+        });
+
+        SAFE_GRADIENT = new Gradient(new Gradient.GradientColor[]{
+                new Gradient.GradientColor(Color.GREEN, 0),
                 new Gradient.GradientColor(Color.YELLOW, 0.5),
                 new Gradient.GradientColor(Color.RED, 1)
         });
@@ -104,6 +111,8 @@ public class G {
     public static Color getDangerColor(double alpha) {
         return DANGER_GRADIENT.evaluate(alpha);
     }
+
+    public static Color getSafeColor(double alpha) { return SAFE_GRADIENT.evaluate(alpha); }
 
     public void drawString(Point p, String s) {
         g.drawString(s, (float) p.x, (float) p.y);

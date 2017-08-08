@@ -10,6 +10,8 @@ import roborio.enemies.EnemyLog;
 import roborio.enemies.EnemyTracker;
 import roborio.movement.forces.DangerPoint;
 import roborio.movement.predictor.MovementPredictor;
+import roborio.movement.predictor.PredictedPoint;
+import roborio.movement.predictor.PredictedWaveImpact;
 import roborio.myself.MyLog;
 import roborio.myself.MyRobot;
 import roborio.myself.MySnapshot;
@@ -19,6 +21,7 @@ import roborio.utils.R;
 import roborio.utils.geo.AxisRectangle;
 import roborio.utils.geo.G;
 import roborio.utils.geo.Point;
+import roborio.utils.geo.Range;
 import roborio.utils.stats.GuessFactorStats;
 import roborio.utils.stats.Segmentation;
 import roborio.utils.waves.*;
@@ -35,7 +38,7 @@ import java.util.List;
  * TODO: take bot-width into account when getting stats of a point (crucial to close range fighting)
  * TODO: surf 2 waves just for the sake of being able to reach the first wave spot in a speed which makes it easier to reach the second's
  * TODO: tweak the slices and try to add new crazy attributes
- * TODO: penalty for not moving
+ * TODO: penalty for not moving (though flattening usually takes care of that, its worth it to penalize more)
  *
  * http://robowiki.net/wiki/Wave_Suffering
  */
@@ -211,7 +214,7 @@ public class GotoSurfingMovement extends Movement {
             waves.add(wave, getStatsFromWave(wave));
         } else {
             // flattening
-            double power = powerGuess.getGuess();
+            double power = 1.0;
             double velocity = Rules.getBulletSpeed(power);
 
             MySnapshot snap = myLog.takeSnapshot(R.WAVE_SNAPSHOT_DIAMETER);
@@ -240,16 +243,16 @@ public class GotoSurfingMovement extends Movement {
         checkHits();
 
         Point currentLocation = myLog.getLatest().getPoint();
-        MyRobot my = myLog.getLatest();
+        final MyRobot my = myLog.getLatest();
         EnemyFireWave nextWave = (EnemyFireWave) waves.earliestWave(my.getPoint(), getTime(),
                 new WaveCollection.EnemyFireWaveCondition() {
                     @Override
                     public boolean test(Wave wave) {
-                        return super.test(wave) && !wave.hasTouchedRobot(my.getPoint(), my.getTime());
+                        return super.test(wave) && !wave.hasPassed(my.getPoint(), my.getTime());
                     }
                 });
 
-        if(nextWave == null || nextWave.getEnemy().getPoint().distance(my.getPoint()) < 60) {
+        if(nextWave == null || nextWave.getEnemy().getPoint().distance(my.getPoint()) < 100) {
             _surfedWave = null;
             fallback();
             return;
@@ -312,9 +315,15 @@ public class GotoSurfingMovement extends Movement {
         }
     }
 
-    private double getUnconstrainedGf(EnemyWave wave, Point hitPoint) {
-        double absoluteBearing = Physics.absoluteBearing(wave.getSource(), hitPoint);
+    private double getGf(EnemyWave wave, Point hitPoint) {
+        return getGf(wave, Physics.absoluteBearing(wave.getSource(), hitPoint));
+    }
 
+    private double getUnconstrainedGf(EnemyWave wave, Point hitPoint) {
+        return getUnconstrainedGf(wave, Physics.absoluteBearing(wave.getSource(), hitPoint));
+    }
+
+    private double getUnconstrainedGf(EnemyWave wave, double absoluteBearing) {
         MySnapshot snap = wave.getSnapshot();
         MyRobot bot = snap.getOffset(-1); // -1 because enemy has aimed 1 tick before firing
 
@@ -329,17 +338,18 @@ public class GotoSurfingMovement extends Movement {
         return factor;
     }
 
-    private double getGf(EnemyWave wave, Point hitPoint) {
-        return R.constrain(-1, getUnconstrainedGf(wave, hitPoint), +1);
+    private double getGf(EnemyWave wave, double absoluteBearing) {
+        return R.constrain(-1, getUnconstrainedGf(wave, absoluteBearing), +1);
     }
 
     private DangerPoint getDanger(EnemyFireWave wave, int direction, GuessFactorStats st) {
         ComplexEnemyRobot enemy = wave.getEnemy();
         double distance = getRobot().getPoint().distance(enemy.getPoint());
 
-        MovementPredictor.PredictedPoint initialPoint = myLog.getLatest().getPredictionPoint();
+        PredictedPoint initialPoint = myLog.getLatest().getPredictionPoint();
+        double absBearing = Physics.absoluteBearing(wave.getSource(), initialPoint);
 
-        List<MovementPredictor.PredictedPoint> genPoints = MovementPredictor.predictOnWaveImpact(
+        List<PredictedPoint> genPoints = MovementPredictor.predictOnWaveImpact(
                 field, initialPoint,
                 wave, direction, R.HALF_PI - (1 - (distance / 400)) * 0.7);
 
@@ -355,18 +365,37 @@ public class GotoSurfingMovement extends Movement {
         Point last = null;
         Point back = genPoints.get(genPoints.size() - 1);
 
-        for(MovementPredictor.PredictedPoint predicted : genPoints) {
+        for(PredictedPoint predicted : genPoints) {
             if(last == null || predicted == back || last.distance(predicted) > 20) {
                 last = predicted;
-                List<MovementPredictor.PredictedPoint> possiblePoints = MovementPredictor.predictOnWaveImpact(
-                        myLog.getLatest().getPredictionPoint(),
-                        wave,
-                        predicted);
 
-                Point impactPoint = possiblePoints.get(possiblePoints.size() - 1);
+                PredictedWaveImpact data = MovementPredictor.preciselyPredictOnWaveImpact(
+                        initialPoint,
+                        wave,
+                        predicted
+                );
+
+                Point impactPoint = data.getMidwayImpactPoint();
                 _predicted.add(impactPoint);
 
-                double value = st.getValue(getGf(wave, impactPoint));
+                double impactGf = getGf(wave, impactPoint);
+
+                Range gfRange = new Range();
+                gfRange.push(getGf(wave, Utils.normalAbsoluteAngle(data.getIntersection().min + absBearing)));
+                gfRange.push(getGf(wave, Utils.normalAbsoluteAngle(data.getIntersection().max + absBearing)));
+
+                int iBucket = st.getBucket(gfRange.min);
+                int jBucket = st.getBucket(gfRange.max);
+
+                // TODO: use gauss smoothing over here
+                double value = 0;
+                for(int i = iBucket; i <= jBucket; i++) {
+                    double gf = st.getGuessFactor(i);
+                    value += st.getValueFromBucket(i) * ( 1.0 / (Math.pow(Math.abs(gf - impactGf) + 1.0, 2)));
+                }
+
+//                double value = st.getValue(gfRange.getCenter());
+
                 if (best > value) {
                     best = value;
                     res = predicted;

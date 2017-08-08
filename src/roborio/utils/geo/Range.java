@@ -33,4 +33,8 @@ public class Range {
     public double maxAbsolute() {
         return Math.max(Math.abs(min), Math.abs(max));
     }
+
+    public double getCenter() {
+        return (min + max) * 0.5;
+    }
 }

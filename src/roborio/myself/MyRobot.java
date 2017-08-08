@@ -1,6 +1,6 @@
 package roborio.myself;
 
-import roborio.movement.predictor.MovementPredictor;
+import roborio.movement.predictor.PredictedPoint;
 import roborio.utils.*;
 import roborio.utils.geo.AxisRectangle;
 import roborio.utils.geo.Point;
@@ -120,8 +120,8 @@ public class MyRobot {
         return lateralVelocity >= 0 ? 1 : -1;
     }
 
-    public MovementPredictor.PredictedPoint getPredictionPoint() {
-        return new MovementPredictor.PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
+    public PredictedPoint getPredictionPoint() {
+        return new PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
     }
 
     public double getDistanceToWall() {

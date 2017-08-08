@@ -1,14 +1,12 @@
 package roborio;
 
-import robocode.BulletHitEvent;
-import robocode.HitByBulletEvent;
-import robocode.RoundEndedEvent;
-import robocode.ScannedRobotEvent;
+import robocode.*;
 import robocode.util.Utils;
 import roborio.enemies.EnemyTracker;
 import roborio.gunning.AutomaticGun;
 import roborio.gunning.DCGuessFactorGun;
-import roborio.movement.RoborioMovement;
+import roborio.movement.DCSurfingMovement;
+import roborio.movement.Movement;
 import roborio.myself.MyLog;
 import roborio.myself.MyRobot;
 import roborio.utils.BackAsFrontRobot;
@@ -23,7 +21,7 @@ public class Roborio extends BackAsFrontRobot {
     private double worstTime = 0;
     private double totalTime = 0;
     private int timedTicks = 0;
-    private RoborioMovement movement;
+    private Movement movement;
     private AutomaticGun gun;
 
     public void run() {
@@ -36,7 +34,7 @@ public class Roborio extends BackAsFrontRobot {
 
         setupColors();
         setupRadar();
-        movement = new RoborioMovement(this);
+        movement = new DCSurfingMovement(this, "dcsurfing");
 //        gun = new DualGuessFactorGun(this);
         gun = new DCGuessFactorGun(this, false, "dcgf_gun");
 
@@ -135,5 +133,9 @@ public class Roborio extends BackAsFrontRobot {
         System.out.println("Timing Info");
         System.out.println("Average time per tick: " + totalTime / timedTicks / 1000000);
         System.out.println("Worst time: " + worstTime / 1000000);
+    }
+
+    public void onSkippedTurn(SkippedTurnEvent e) {
+        System.out.println("Skipped turn " + e.getSkippedTurn());
     }
 }

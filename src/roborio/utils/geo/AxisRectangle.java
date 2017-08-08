@@ -6,16 +6,23 @@ import roborio.utils.R;
  * Created by Roberto Sales on 23/07/17.
  */
 public class AxisRectangle {
-    private double minx;
-    private double maxx;
-    private double miny;
-    private double maxy;
+    public double minx;
+    public double maxx;
+    public double miny;
+    public double maxy;
 
     public AxisRectangle(double minx, double maxx, double miny, double maxy) {
         this.minx = minx;
         this.maxx = maxx;
         this.miny = miny;
         this.maxy = maxy;
+    }
+
+    public AxisRectangle(Point center, double size) {
+        this.minx = center.x - size / 2;
+        this.maxx = center.x + size / 2;
+        this.miny = center.y - size / 2;
+        this.maxy = center.y + size / 2;
     }
 
     public void add(Point point) {
@@ -74,5 +81,14 @@ public class AxisRectangle {
 
     public double sqr(double x) {
         return x*x;
+    }
+
+    public Point[] getCorners() {
+        Point[] corners = new Point[4];
+        corners[0] = new Point(minx, miny);
+        corners[1] = new Point(maxx, miny);
+        corners[2] = new Point(maxx, maxy);
+        corners[3] = new Point(minx, maxy);
+        return corners;
     }
 }

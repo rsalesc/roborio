@@ -52,11 +52,15 @@ public class DCGuessFactorGun extends AutomaticGun {
             store.add(storageHint, new DCGuessFactorTargeting(storageHint + "_targeting"));
         }
 
+        if(!store.contains(storageHint + "-fired")) {
+            store.add(storageHint + "-fired", 0L);
+        }
+
+        _bulletsFired = (Long) store.get(storageHint + "-fired");
         targeting = (DCGuessFactorTargeting) store.get(storageHint);
 
         waves = new WaveMap<>();
         _wouldHit = 0;
-        _bulletsFired = 0;
     }
 
     @Override
@@ -144,7 +148,8 @@ public class DCGuessFactorGun extends AutomaticGun {
         absFireAngle = targeting.generateFiringAngle(firingLog);
         _lastEnemy = enemy;
         lastFiringLog = firingLog;
-        setFireTo(absFireAngle, bulletPower);
+        if(bulletPower > 0)
+            setFireTo(absFireAngle, bulletPower);
     }
 
 
