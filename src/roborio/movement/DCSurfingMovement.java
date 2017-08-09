@@ -38,13 +38,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by Roberto Sales on 07/08/17.
- * TODO: fix my direction (use ahead = 1 / -1)
- * TODO: preciseMea seems to be wrong
+ * Created by Roberto Sales on 07/08/17
  */
 public class DCSurfingMovement extends Movement {
     static private double[] BASE_WEIGHTS =
-            new double[]{1, 1, 1, 1, 1, 1, 1};
+            new double[]{1.3, 3, 2, 1, 1, 1, 0.5};
 
     private WaveMap<TargetingLog> waves;
     private AxisRectangle field;
@@ -56,13 +54,13 @@ public class DCSurfingMovement extends Movement {
 
     private long _bulletsFired = 0;
 
-    private ArrayList<PredictedWaveImpact> _predicted;
+    private ArrayList<Point> _predicted;
 
     private long _wavesPassed = 0;
     private long _shotsTaken = 0;
     private Point _gotoPoint;
 
-    private int                   _lastAwayDirection = 1;
+    private int _lastAwayDirection = 1;
 
     private KdTree<GuessFactorRange> tree, flatTree;
 
@@ -77,11 +75,11 @@ public class DCSurfingMovement extends Movement {
         NamedStorage store = NamedStorage.getInstance();
 
         if(!store.contains(storageHint + "-tree")) {
-            store.add(storageHint + "-tree", new WeightedManhattanKdTree<GuessFactorRange>(BASE_WEIGHTS, 3000));
+            store.add(storageHint + "-tree", new WeightedManhattanKdTree<GuessFactorRange>(BASE_WEIGHTS, 10000));
         }
 
         if(!store.contains(storageHint + "-flat")) {
-            store.add(storageHint + "-flat", new WeightedManhattanKdTree<GuessFactorRange>(BASE_WEIGHTS, 2000));
+            store.add(storageHint + "-flat", new WeightedManhattanKdTree<GuessFactorRange>(BASE_WEIGHTS, 1500));
         }
 
         if(!store.contains(storageHint + "-fired")) {
@@ -183,7 +181,7 @@ public class DCSurfingMovement extends Movement {
 
         double bandwidth = Physics.hitAngle(log.distance) / preciseMea.getLength()
                 * GuessFactorStats.BUCKET_COUNT;
-        stats.setSmoother(new GaussianSmoothing(bandwidth * 0.4));
+        stats.setSmoother(new GaussianSmoothing(bandwidth * 0.6));
 
         _predicted = new ArrayList<>();
         DangerPoint dangerClockwise = getDanger(nextWave, +1, stats, preciseMea);
@@ -233,7 +231,6 @@ public class DCSurfingMovement extends Movement {
                 this.log(wave, getRobot().getPoint());
                 iterator.remove();
                 _wavesPassed++;
-                break;
             }
         }
     }
@@ -273,6 +270,7 @@ public class DCSurfingMovement extends Movement {
         PredictedPoint res = null;
 
         for(PredictedPoint predicted : genPoints) {
+            _predicted.add(predicted);
             if(last == null || predicted == back || last.distance(predicted) > 20) {
                 last = predicted;
 
@@ -281,8 +279,6 @@ public class DCSurfingMovement extends Movement {
                         wave,
                         predicted
                 );
-
-                _predicted.add(data);
 
                 Point impactPoint = data.getMidwayImpactPoint();
                 double impactGf = getGf(wave, impactPoint, preciseMea);
@@ -301,8 +297,6 @@ public class DCSurfingMovement extends Movement {
                     value += stats.getValueFromBucket(i) * ( 1.0 / (Math.pow(Math.abs(gf - impactGf) + 1.0, 2)));
                 }
 
-//                double value = stats.getValue(impactGf);
-
                 if(value < best || R.isNear(best, value) && predicted.distance(initialPoint) > res.distance(initialPoint)) {
                     best = value;
                     res = predicted;
@@ -320,7 +314,7 @@ public class DCSurfingMovement extends Movement {
         double absBearingWhenShot = Physics.absoluteBearing(wave.getSource(), me.getPoint());
         double offset = Utils.normalRelativeAngle(absBearing - absBearingWhenShot);
 
-        if(offset >= 0)
+        if(offset * direction >= 0)
             return offset * direction / preciseMea.max;
         else
             return -offset * direction / preciseMea.min;
@@ -379,8 +373,8 @@ public class DCSurfingMovement extends Movement {
     private GuessFactorStats getStats(TargetingLog log) {
         double[] location = getLocation(log);
 
-        GuessFactorStats treeStats = getStatsFromTree(tree, location, 48);
-        GuessFactorStats flatStats = getStatsFromTree(tree, location, 24);
+        GuessFactorStats treeStats = getStatsFromTree(tree, location, 56);
+        GuessFactorStats flatStats = getStatsFromTree(tree, location, 32);
 
         return GuessFactorStats.merge(new GuessFactorStats[]{treeStats, flatStats},
                 new double[]{0.65, 0.35});
@@ -432,8 +426,8 @@ public class DCSurfingMovement extends Movement {
         G g = new G(graphics);
 
         if(_predicted != null) {
-            for (PredictedWaveImpact data : _predicted) {
-                g.drawPoint(data.getMidwayImpactPoint(), 8.0, Color.RED);
+            for (Point data : _predicted) {
+                g.drawPoint(data, 8.0, Color.RED);
             }
         }
 
@@ -462,7 +456,7 @@ public class DCSurfingMovement extends Movement {
             GuessFactorStats st = getStats(log);
             double bandwidth = Physics.hitAngle(log.distance) / preciseMea.getLength()
                     * GuessFactorStats.BUCKET_COUNT;
-            st.setSmoother(new GaussianSmoothing(bandwidth * 0.4));
+            st.setSmoother(new GaussianSmoothing(bandwidth * 0.6));
 
             double angle = 0;
             double ratio = R.DOUBLE_PI / WAVE_DIVISIONS;

@@ -10,6 +10,15 @@ import roborio.utils.R;
 public abstract class PowerSelection {
 
     public static double naive(MyRobot robot, ComplexEnemyRobot enemy, double confidence) {
+        return simple(robot, enemy, confidence);
+    }
+
+    public static double simple(MyRobot robot, ComplexEnemyRobot enemy, double confidence) {
+        return R.constrain(0.1, (150. / robot.getPoint().distance(enemy.getPoint()))
+                    + Math.min(Math.min(enemy.getEnergy() / 4, robot.getEnergy() / 16), 2), 3.0);
+    }
+
+    public static double mine(MyRobot robot, ComplexEnemyRobot enemy, double confidence) {
 
         double distance = robot.getPoint().distance(enemy.getPoint());
         double myEnergy = robot.getEnergy();

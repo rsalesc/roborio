@@ -1,5 +1,6 @@
 package roborio.myself;
 
+import robocode.util.Utils;
 import roborio.movement.predictor.PredictedPoint;
 import roborio.utils.*;
 import roborio.utils.geo.AxisRectangle;
@@ -18,6 +19,8 @@ public class MyRobot {
     private double gunHeat;
     private double distanceToWall;
     private long time;
+
+    private int ahead;
 
     public MyRobot(BackAsFrontRobot robot) {
         this.update(robot);
@@ -116,8 +119,14 @@ public class MyRobot {
     }
 
     public int getDirection(Point from) {
-        double lateralVelocity = getLateralVelocity(from);
-        return lateralVelocity >= 0 ? 1 : -1;
+        double head = getHeading();
+        if(ahead < 0)
+            head += R.PI;
+        double absBearing = Physics.absoluteBearing(getPoint(), from);
+        double off = Utils.normalRelativeAngle(head - absBearing);
+        if(off > 0) return -1;
+        else if(off < 0) return 1;
+        else return 0;
     }
 
     public PredictedPoint getPredictionPoint() {
@@ -126,5 +135,13 @@ public class MyRobot {
 
     public double getDistanceToWall() {
         return distanceToWall;
+    }
+
+    public int getAhead() {
+        return ahead;
+    }
+
+    public void setAhead(int ahead) {
+        this.ahead = ahead;
     }
 }

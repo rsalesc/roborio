@@ -62,8 +62,6 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         return status.getOthers();
     }
 
-
-
     public Point getPoint() {
         return new Point(getX(), getY());
     }

@@ -62,7 +62,7 @@ public class DCGuessFactorTargeting extends Targeting {
     private static final double    DIMENSION_COUNT = 13;
     public static double[]   STATS_WEIGHTS =
             new double[]{0.8, 0.2};
-    public static int[]         STATS_K = new int[]{72, 12};
+    public static int[]         STATS_K = new int[]{72, 18};
     public static boolean       EUCLIDEAN_TREE = false;
 
     public KdTree<GuessFactorRange>    tree, fastTree;

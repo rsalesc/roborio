@@ -4,6 +4,7 @@ import roborio.enemies.ComplexEnemyRobot;
 import roborio.myself.MyRobot;
 import roborio.utils.geo.Point;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,21 +24,36 @@ public class WaveCollection implements Iterable<Wave> {
         waves.add(wave);
     }
 
-    public Wave earliestWave(Point dest, long time, WaveCondition condition) {
-        double earliestTime = Double.POSITIVE_INFINITY;
-        Wave earliest = null;
+    public Wave[] earliestWaves(int K, Point dest, long time, WaveCondition condition) {
+        K = Math.min(K, waves.size());
+        Wave[] res = new Wave[K];
+        HashSet<Wave> seen = new HashSet<>();
+        for(int i = 0; i < K; i++) {
+            double earliestTime = Double.POSITIVE_INFINITY;
+            Wave earliest = null;
 
-        for(Wave wave : waves) {
-            if(condition.test(wave)) {
-                double breakAt = wave.getBreakTime(dest);
-                if (breakAt > time && breakAt < earliestTime) {
-                    earliestTime = breakAt;
-                    earliest = wave;
+            for (Wave wave : waves) {
+                if (!seen.contains(wave) && condition.test(wave)) {
+                    double breakAt = wave.getBreakTime(dest);
+                    if (breakAt > time && breakAt < earliestTime) {
+                        earliestTime = breakAt;
+                        earliest = wave;
+                    }
                 }
             }
+
+            seen.add(earliest);
+            res[i] = earliest;
         }
 
-        return earliest;
+        return res;
+    }
+
+    public Wave earliestWave(Point dest, long time, WaveCondition condition) {
+        Wave[] res = earliestWaves(1, dest, time, condition);
+        if(res.length == 0)
+            return null;
+        return res[0];
     }
 
     public void remove(Wave wave) {

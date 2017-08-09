@@ -41,7 +41,6 @@ public class Roborio extends BackAsFrontRobot {
         while(true) {
             double startTime = System.nanoTime();
 
-            trackMe();
             gun.doFiring();
             gun.doGunning();
             movement.doMovement();
@@ -60,6 +59,12 @@ public class Roborio extends BackAsFrontRobot {
 
     private void trackMe() {
         MyLog.getInstance().push(new MyRobot(this));
+    }
+
+    @Override
+    public void onStatus(StatusEvent e) {
+        super.onStatus(e);
+        trackMe();
     }
 
     void activateSpinningLock() {

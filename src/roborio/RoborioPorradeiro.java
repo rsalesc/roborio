@@ -18,6 +18,7 @@ import java.util.*;
 /**
  * Created by Roberto Sales on 02/08/17.
  * TODO: lock radar (and possibly gun) on targeted enemy when gun heat <= 0.2
+ * TODO: wave-like random movement on 1v1
  */
 public class RoborioPorradeiro extends BackAsFrontRobot {
     private static HashMap<String, Scan> scans = new HashMap<>();

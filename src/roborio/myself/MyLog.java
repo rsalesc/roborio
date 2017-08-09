@@ -68,6 +68,12 @@ public class MyLog {
     }
 
     public MyRobot push(MyRobot me) {
+        int newAhead = (int) Math.signum(me.getVelocity());
+        if(newAhead == 0 && length > 0)
+            newAhead = log[realAt(length - 1)].getAhead();
+
+        me.setAhead(newAhead);
+
         log[realAt(length++)] = me;
         if(length > LOG_SIZE) {
             length = LOG_SIZE;
