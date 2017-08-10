@@ -123,6 +123,10 @@ public class Point {
         return new Point(-x, -y);
     }
 
+    public Point weighted(Point rhs, double alpha) {
+        return this.multiply(1.0 - alpha).add(rhs.multiply(alpha));
+    }
+
 
     /** Note that the angle return isn't in
      * an arabic reference system, but is related
@@ -137,6 +141,14 @@ public class Point {
 
     public Point project(double angle, double length) {
         return new Point(x + R.sin(angle) * length, y + R.cos(angle) * length);
+    }
+
+    public Point project(Point rhs) {
+        return rhs.multiply(this.dot(rhs)).divide(rhs.squaredNorm());
+    }
+
+    public boolean isNear(Point rhs) {
+        return R.isNear(this.distance(rhs), 0);
     }
 
     public double similarity(Point rhs) {

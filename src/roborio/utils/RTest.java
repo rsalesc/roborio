@@ -118,4 +118,63 @@ class RTest {
         System.out.println("Avg error: " + (avgError / ITERATIONS));
         System.out.println("Worst error: " + worstError);
     }
+
+    private static final int ITERATIONS_EXP = 5000000;
+
+    private double[] dumbExp(double[] values) {
+        double[] res = new double[values.length];
+
+        long         init = System.nanoTime();
+
+        for(int i = 0; i < values.length; i++) {
+            res[i] = Math.exp(values[i]);
+        }
+
+        long end = System.nanoTime();
+        double took = (end - init) / 1e6;
+
+        System.out.println("Math exp: " + took + " ms");
+
+        return res;
+    }
+
+    private double[] smartExp(double[] values) {
+        double[] res = new double[values.length];
+
+        long         init = System.nanoTime();
+
+        for(int i = 0; i < values.length; i++) {
+            res[i] = R.exp(values[i]);
+        }
+
+        long end = System.nanoTime();
+        double took = (end - init) / 1e6;
+
+        System.out.println("R exp: " + took + " ms");
+
+        return res;
+    }
+
+    @Test
+    void exp() {
+        double[] values = new double[ITERATIONS_EXP];
+        for(int i = 0; i < ITERATIONS_EXP; i++) {
+            values[i] = Math.random() * 100;
+        }
+
+        double[] dumbass = dumbExp(values);
+        double[] smartass = smartExp(values);
+
+        double worstError = 0;
+        double avgError = 0;
+        for(int i = 0; i < ITERATIONS_EXP; i++) {
+            worstError = Math.max(worstError, Math.abs(dumbass[i] - smartass[i]));
+            avgError += Math.abs(Math.abs(dumbass[i] - smartass[i]));
+        }
+
+        System.out.println("Avg error: " + (avgError / ITERATIONS_EXP));
+        System.out.println("Worst error: " + worstError);
+
+        System.out.println(R.exp(0));
+    }
 }

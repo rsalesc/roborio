@@ -30,14 +30,14 @@ public class DCWaveSim {
     private static void bulletTest() {
         WaveRunner runner = new WaveRunner(DCClassifier.class, true);
         String[] op = new String[]{
-                "jk.mega.DrussGT 1.3.8fTC",
+//                "jk.mega.DrussGT 1.3.8fTC",
                 "jk.mini.CunobelinDC 0.1TC",
-                "voidious.Dookious 1.573cTC",
-                "abc.Shadow 3.66dTC"
-                //"wiki.BasicGFSurfer 1.02"
+//                "voidious.Dookious 1.573cTC",
+//                "abc.Shadow 3.66dTC",
+//                "wiki.BasicGFSurfer 1.02"
         };
         runner.simBattles(op, 10);
-        System.out.println(runner.getTotals().getHitPercentage());
+        System.out.println(runner.getTotals().damageDone / (35*op.length));
     }
 
     private static void doGenetics() throws InvalidConfigurationException {

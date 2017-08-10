@@ -66,7 +66,7 @@ public class RoborioPorradeiro extends BackAsFrontRobot {
             }
 
             aim();
-            move();
+//            move();
 
             if(isMelee()) {
                 int aliveCnt = 0;

@@ -5,7 +5,7 @@ import roborio.utils.geo.Point;
 /**
  * Created by Roberto Sales on 24/07/17.
  */
-public class DangerPoint extends Point {
+public class DangerPoint extends Point implements Comparable<DangerPoint> {
     private double  danger;
 
     public DangerPoint(double x, double y, double danger) {
@@ -23,5 +23,10 @@ public class DangerPoint extends Point {
 
     public void setDanger(double danger) {
         this.danger = danger;
+    }
+
+    @Override
+    public int compareTo(DangerPoint o) {
+        return (int) Math.signum(this.danger - o.danger);
     }
 }

@@ -1,11 +1,15 @@
 package roborio.utils;
 
 import robocode.AdvancedRobot;
+import robocode.RobocodeFileOutputStream;
 import robocode.RobotStatus;
 import robocode.StatusEvent;
 import robocode.util.Utils;
 import roborio.utils.geo.AxisRectangle;
 import roborio.utils.geo.Point;
+
+import java.io.IOException;
+import java.io.PrintStream;
 
 import static roborio.utils.R.HALF_PI;
 
@@ -14,6 +18,7 @@ import static roborio.utils.R.HALF_PI;
  */
 public abstract class BackAsFrontRobot extends AdvancedRobot {
     private RobotStatus status;
+    private AxisRectangle field;
 
     public BackAsFrontRobot() {
         super();
@@ -22,6 +27,7 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     @Override
     public void onStatus(StatusEvent e) {
         status = e.getStatus();
+        field = _getBattleField();
     }
 
     public double getX() {
@@ -62,11 +68,25 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         return status.getOthers();
     }
 
+    @Override
+    public double getGunHeat() {
+        return status.getGunHeat();
+    }
+
+    @Override
+    public double getGunHeadingRadians() {
+        return status.getGunHeadingRadians();
+    }
+
     public Point getPoint() {
         return new Point(getX(), getY());
     }
-    public AxisRectangle getBattleField() {
+    private AxisRectangle _getBattleField() {
         return new AxisRectangle(0, getBattleFieldWidth(), 0, getBattleFieldHeight());
+    }
+
+    public AxisRectangle getBattleField() {
+        return field;
     }
 
     public static double getQuickestTurn(double originalTurn) {
@@ -117,5 +137,17 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
 
         return new Point(getX() + Math.sin(absHeading) * getVelocity(),
                 getY() + Math.cos(absHeading) * getVelocity());
+    }
+
+    public void handle(Exception e) {
+        e.printStackTrace();
+
+        try{
+            PrintStream out = new PrintStream(new RobocodeFileOutputStream(getDataFile((int)(Math.random()*1000) + ".error")));
+            e.printStackTrace(out);
+            out.flush();
+            out.close();
+        }
+        catch (IOException ioex){}
     }
 }

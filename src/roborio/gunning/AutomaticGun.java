@@ -3,16 +3,18 @@ package roborio.gunning;
 import robocode.Bullet;
 import robocode.util.Utils;
 import roborio.gunning.utils.GunFireEvent;
+import roborio.gunning.utils.VirtualBullet;
 import roborio.utils.BackAsFrontRobot;
 import roborio.utils.Physics;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Created by Roberto Sales on 24/07/17.
  */
 public abstract class AutomaticGun extends Gun {
-    private HashSet<Bullet> firedBullets;
+    private HashSet<VirtualBullet> firedBullets;
     private long    lastFire;
     private GunFireEvent lastGunFireEvent;
     private boolean firePending;
@@ -48,9 +50,25 @@ public abstract class AutomaticGun extends Gun {
     }
 
     public void doFiring() {
+        checkActive();
+
         if(shouldFire()) {
             fire(firePower);
         }
+    }
+
+    public void checkActive() {
+        Iterator<VirtualBullet> iterator = firedBullets.iterator();
+        while(iterator.hasNext()) {
+            VirtualBullet bullet = iterator.next();
+            if(!bullet.isActive())
+                iterator.remove();
+        }
+    }
+
+    public VirtualBullet[] getVirtualBullets() {
+        checkActive();
+        return firedBullets.toArray(new VirtualBullet[0]);
     }
 
     public void setFireTo(double angle, double power) {
@@ -83,10 +101,9 @@ public abstract class AutomaticGun extends Gun {
         if(bullet == null)
             return;
 
-
         lastFire = getTime();
         firePending = false;
-        firedBullets.add(bullet);
+        firedBullets.add(new VirtualBullet(getRobot().getPoint(), bullet, getTime()));
         GunFireEvent event = new GunFireEvent(this, getRobot().getPoint(), bullet, getTime());
         lastGunFireEvent = event;
         onFire(event);
@@ -101,10 +118,6 @@ public abstract class AutomaticGun extends Gun {
     }
 
     public void onFire(GunFireEvent e) {}
-
-    public boolean hasFiredBullet(Bullet bullet) {
-        return firedBullets.contains(bullet);
-    }
 
     public boolean hasJustFired() {
         return lastFire == getTime();

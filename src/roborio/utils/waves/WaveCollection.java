@@ -4,10 +4,7 @@ import roborio.enemies.ComplexEnemyRobot;
 import roborio.myself.MyRobot;
 import roborio.utils.geo.Point;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Roberto Sales on 23/07/17.
@@ -26,7 +23,7 @@ public class WaveCollection implements Iterable<Wave> {
 
     public Wave[] earliestWaves(int K, Point dest, long time, WaveCondition condition) {
         K = Math.min(K, waves.size());
-        Wave[] res = new Wave[K];
+        ArrayList<Wave> res = new ArrayList<>();
         HashSet<Wave> seen = new HashSet<>();
         for(int i = 0; i < K; i++) {
             double earliestTime = Double.POSITIVE_INFINITY;
@@ -42,11 +39,13 @@ public class WaveCollection implements Iterable<Wave> {
                 }
             }
 
-            seen.add(earliest);
-            res[i] = earliest;
+            if(earliest != null) {
+                seen.add(earliest);
+                res.add(earliest);
+            }
         }
 
-        return res;
+        return res.toArray(new Wave[0]);
     }
 
     public Wave earliestWave(Point dest, long time, WaveCondition condition) {
@@ -113,6 +112,10 @@ public class WaveCollection implements Iterable<Wave> {
     @Override
     public Iterator<Wave> iterator() {
         return waves.iterator();
+    }
+
+    public Wave[] toArray() {
+        return waves.toArray(new Wave[0]);
     }
 
     public static class EnemyFireWaveCondition extends WaveCondition {

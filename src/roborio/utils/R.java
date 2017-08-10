@@ -52,6 +52,7 @@ public class R {
     }
 
     public static double exp(double val) {
+//        return fastexp((float) val);
         return Math.exp(val);
     }
 
@@ -61,6 +62,21 @@ public class R {
 
     public static double exp7(double x) {
         return (362880+x*(362880+x*(181440+x*(60480+x*(15120+x*(3024+x*(504+x*(72+x*(9+x)))))))))*2.75573192e-6;
+    }
+
+    private static float fastpow2(float pp) {
+        float p = Math.abs(pp);
+        float offset = p < 0.f ? 1.0f : 0.0f;
+        int w = p < -126.f ? -126 : (int) p;
+        float z = p - w + offset;
+        int raw = (int) ((1 << 23) * (p + 121.2740838f + 27.728023f / (4.84252568f - z) - 1.49012907f * z));
+        if(pp < -R.EPSILON)
+            return 1.0f / Float.intBitsToFloat(raw);
+        return Float.intBitsToFloat(raw);
+    }
+
+    private static float fastexp(float p) {
+        return fastpow2(1.442695040f * p);
     }
 
     private static double xsin (double x) {

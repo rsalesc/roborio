@@ -5,8 +5,8 @@ import robocode.util.Utils;
 import roborio.enemies.EnemyTracker;
 import roborio.gunning.AutomaticGun;
 import roborio.gunning.DCGuessFactorGun;
-import roborio.movement.DCSurfingMovement;
 import roborio.movement.Movement;
+import roborio.movement.TCMovement;
 import roborio.myself.MyLog;
 import roborio.myself.MyRobot;
 import roborio.utils.BackAsFrontRobot;
@@ -34,15 +34,21 @@ public class Roborio extends BackAsFrontRobot {
 
         setupColors();
         setupRadar();
-        movement = new DCSurfingMovement(this, "dcsurfing");
+
+        movement = new TCMovement(this);
+//        movement = new DCSurfingMovement(this, "dcsurfing");
+//        movement = new GotoSurfingMovement(this);
+
 //        gun = new DualGuessFactorGun(this);
         gun = new DCGuessFactorGun(this, false, "dcgf_gun");
+//        gun = new HeadOnGun(this, false);
 
         while(true) {
             double startTime = System.nanoTime();
 
             gun.doFiring();
             gun.doGunning();
+            movement.doShadowing(gun.getVirtualBullets());
             movement.doMovement();
 
             if(getRadarTurnRemaining() == 0)
@@ -63,8 +69,12 @@ public class Roborio extends BackAsFrontRobot {
 
     @Override
     public void onStatus(StatusEvent e) {
-        super.onStatus(e);
-        trackMe();
+        try {
+            super.onStatus(e);
+            trackMe();
+        } catch(Exception ex) {
+            handle(ex);
+        }
     }
 
     void activateSpinningLock() {
@@ -81,22 +91,39 @@ public class Roborio extends BackAsFrontRobot {
 
     @Override
     public void onHitByBullet(HitByBulletEvent e) {
-        movement.onHitByBullet(e);
+
+        try {
+            movement.onHitByBullet(e);
+        } catch(Exception ex) {
+            handle(ex);
+        }
     }
 
     @Override
     public void onBulletHit(BulletHitEvent e) {
-        movement.onBulletHit(e);
-        gun.onBulletHit(e);
+        try {
+            movement.onBulletHit(e);
+            gun.onBulletHit(e);
+        } catch(Exception ex) {
+            handle(ex);
+        }
     }
 
     @Override
     public void onScannedRobot(ScannedRobotEvent e) {
-        trackEnemy(e);
+        try {
+            trackEnemy(e);
+        } catch(Exception ex) {
+            handle(ex);
+        }
 
-        gun.onScan(e);
-        movement.onScan(e);
-        doOnScan(e);
+        try {
+            gun.onScan(e);
+            movement.onScan(e);
+            doOnScan(e);
+        } catch(Exception ex) {
+            handle(ex);
+        }
     }
 
     public void trackEnemy(ScannedRobotEvent e) {
@@ -115,11 +142,11 @@ public class Roborio extends BackAsFrontRobot {
         return !isOn1v1();
     }
 
-    void clearLastRoundData() {
+    private void clearLastRoundData() {
         EnemyTracker.getInstance().clear();
     }
 
-    void recoverLastRoundData() {
+    private void recoverLastRoundData() {
 
     }
 
@@ -140,6 +167,7 @@ public class Roborio extends BackAsFrontRobot {
         System.out.println("Worst time: " + worstTime / 1000000);
     }
 
+    @Override
     public void onSkippedTurn(SkippedTurnEvent e) {
         System.out.println("Skipped turn " + e.getSkippedTurn());
     }

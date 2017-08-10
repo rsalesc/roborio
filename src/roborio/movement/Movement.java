@@ -3,6 +3,7 @@ package roborio.movement;
 import robocode.BulletHitEvent;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
+import roborio.gunning.utils.VirtualBullet;
 import roborio.utils.BackAsFrontRobot;
 import roborio.utils.geo.Point;
 
@@ -27,6 +28,7 @@ public abstract class Movement {
     }
 
     public abstract void doMovement();
+    public void doShadowing(VirtualBullet[] bullets) {}
     public void onScan(ScannedRobotEvent e) {}
 
     public void onBulletHit(BulletHitEvent e) {}

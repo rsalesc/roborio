@@ -166,8 +166,6 @@ public class DCGuessFactorGun extends AutomaticGun {
                 missLog.hitAngle = Physics.absoluteBearing(wave.getSource(), enemy.getPoint());
                 missLog.hitDistance = wave.getSource().distance(enemy.getPoint());
 
-                targeting.log(missLog, !(wave instanceof MyFireWave));
-
                 if(wave instanceof MyFireWave) {
                     MyFireWave fireWave = (MyFireWave) wave;
                     Point projection = fireWave.project(fireWave.getAngle(), getTime());
@@ -175,6 +173,8 @@ public class DCGuessFactorGun extends AutomaticGun {
                         _wouldHit = 1.0;
                     }
                 }
+
+                targeting.log(missLog, !(wave instanceof MyFireWave));
 
                 iterator.remove();
             }

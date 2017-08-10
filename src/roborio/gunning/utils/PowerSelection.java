@@ -10,7 +10,8 @@ import roborio.utils.R;
 public abstract class PowerSelection {
 
     public static double naive(MyRobot robot, ComplexEnemyRobot enemy, double confidence) {
-        return simple(robot, enemy, confidence);
+//        return simple(robot, enemy, confidence);
+        return 3.0;
     }
 
     public static double simple(MyRobot robot, ComplexEnemyRobot enemy, double confidence) {

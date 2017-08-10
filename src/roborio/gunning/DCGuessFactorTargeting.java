@@ -26,6 +26,23 @@ import java.util.List;
  * Created by Roberto Sales on 30/07/17.
  */
 public class DCGuessFactorTargeting extends Targeting {
+    private double[] getQuery(TargetingLog firingLog) {
+        return normalizeQuery(new double[]{
+                firingLog.distance / Physics.bulletVelocity(firingLog.bulletPower),
+                firingLog.lateralVelocity,
+                firingLog.advancingVelocity,
+                firingLog.positiveEscape,
+                firingLog.negativeEscape,
+                firingLog.bulletPower,
+                firingLog.accel,
+                firingLog.bulletsFired,
+                firingLog.timeAccel,
+                firingLog.timeDecel,
+                firingLog.timeRevert,
+                firingLog.coveredLast20,
+                firingLog.revertLast20
+        });
+    }
     public static double[]   TREE_WEIGHTS =
 //            new double[]{1.10960507, 1.25116754, 0.74747866, 3.79628778, 3.46687841, 0.27820012, 0.64978600, 0.03063299, 0.63320994, 1.03030407};
 //    new double[]{1.95475399, 1.25116754, 0.74747866, 3.79628778, 3.46687841, 0.27820012, 0.64978600, 0.03063299, 0.63320994, 0.62950402, 0.63};
@@ -61,8 +78,8 @@ public class DCGuessFactorTargeting extends Targeting {
 
     private static final double    DIMENSION_COUNT = 13;
     public static double[]   STATS_WEIGHTS =
-            new double[]{0.8, 0.2};
-    public static int[]         STATS_K = new int[]{72, 18};
+            new double[]{0.9, 0.1};
+    public static int[]         STATS_K = new int[]{70, 32};
     public static boolean       EUCLIDEAN_TREE = false;
 
     public KdTree<GuessFactorRange>    tree, fastTree;
@@ -78,10 +95,10 @@ public class DCGuessFactorTargeting extends Targeting {
         NamedStorage store = NamedStorage.getInstance();
         if(!store.contains(storageHint)) {
             store.add(storageHint, EUCLIDEAN_TREE ? new KdTree[] {
-                    new WeightedEuclideanKdTree<GuessFactorRange>(TREE_WEIGHTS, 10000),
+                    new WeightedEuclideanKdTree<GuessFactorRange>(TREE_WEIGHTS, 5000),
                     new WeightedEuclideanKdTree<GuessFactorRange>(FAST_TREE_WEIGHTS, 1000)
             } : new KdTree[] {
-                    new WeightedManhattanKdTree<GuessFactorRange>(TREE_WEIGHTS, 10000),
+                    new WeightedManhattanKdTree<GuessFactorRange>(TREE_WEIGHTS, 5000),
                     new WeightedManhattanKdTree<GuessFactorRange>(FAST_TREE_WEIGHTS, 1000)
             });
         }
@@ -89,24 +106,6 @@ public class DCGuessFactorTargeting extends Targeting {
         KdTree[] trees = (KdTree[]) (store.get(storageHint));
         tree = trees[0];
         fastTree = trees[1];
-    }
-
-    private double[] getQuery(TargetingLog firingLog) {
-        return normalizeQuery(new double[]{
-                firingLog.distance / Physics.bulletVelocity(firingLog.bulletPower),
-                firingLog.lateralVelocity,
-                firingLog.advancingVelocity,
-                firingLog.positiveEscape,
-                firingLog.negativeEscape,
-                firingLog.bulletPower,
-                firingLog.accel,
-                firingLog.bulletsFired,
-                firingLog.timeAccel,
-                firingLog.timeDecel,
-                firingLog.timeRevert,
-                firingLog.coveredLast20,
-                firingLog.revertLast20
-        });
     }
 
     public double generateFiringAngle(TargetingLog firingLog) {
@@ -119,12 +118,13 @@ public class DCGuessFactorTargeting extends Targeting {
                 * GuessFactorStats.BUCKET_COUNT;
         Smoothing smoother = new GaussianSmoothing(bandwidth);
 
-        GuessFactorStats gfRange = getGf(tree, query, STATS_K[0]);
-        GuessFactorStats fastRange = getGf(fastTree, query, STATS_K[1]);
+        GuessFactorStats gfRange = getStats(tree, query, STATS_K[0]);
+        GuessFactorStats fastRange = getStats(fastTree, query, STATS_K[1]);
         GuessFactorStats stats = GuessFactorStats.merge(new GuessFactorStats[]{
                 gfRange, fastRange}, STATS_WEIGHTS);
 
         stats.setSmoother(smoother);
+//        stats.setSmoother(new NoSmoothing());
 
         int enemyDirection = firingLog.direction;
         double bestGF = stats.getBestGuessFactor();
@@ -162,7 +162,7 @@ public class DCGuessFactorTargeting extends Targeting {
     }
 
 
-    public GuessFactorStats getGf(KdTree<GuessFactorRange> tree, double[] query, int K) {
+    public GuessFactorStats getStats(KdTree<GuessFactorRange> tree, double[] query, int K) {
         int up = (int)Math.ceil(Math.sqrt(tree.size()) + 4);
         List<KdTree.Entry<GuessFactorRange>> found =
                 tree.kNN(normalizeQuery(query), Math.min(K, up), 1.0);
@@ -178,9 +178,7 @@ public class DCGuessFactorTargeting extends Targeting {
             GuessFactorRange range = entry.payload;
 
             double diff = entry.distance * found.size() / distanceSum;
-//            double weight = 1.0 / (Math.sqrt(entry.distance));
-            double weight = Math.exp(-0.5 * diff * diff);
-//            double weight = 1.0;
+            double weight = R.exp(-0.5 * diff * diff);
 
             stats.logGuessFactor(range.mean, weight);
         }
@@ -199,8 +197,8 @@ public class DCGuessFactorTargeting extends Targeting {
                 (query[6] < 0 ? query[6] * 0.5 : query[6]) / 2 + 1,
                 query[7],
                 query[8],
-                query[9],
-                query[10],
+                1.0 / (0.5*query[9]+1),
+                1.0 / (0.5*query[10]+1),
                 query[11],
                 query[12]
         };
