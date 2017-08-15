@@ -81,8 +81,10 @@ public class MirrorPowerManager extends EnergyManager {
 
     @Override
     public double selectPower(MyRobot robot, ComplexEnemyRobot enemy, double myScore, double hisScore) {
+        if(enemy.getDistance() < 150)
+            return Math.min(2.9999, Math.max(robot.getEnergy() - 0.4, 0));
+
         double hisPower = predictEnemyPower(robot, enemy, myScore, hisScore);
-//        double hisPower = 3.0;
 
         double distance = robot.getPoint().distance(enemy.getPoint());
         double myEnergy = robot.getEnergy();

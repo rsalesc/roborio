@@ -2,147 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1bfe1332-a40a-442f-b09a-aa2c235ab82f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/codesize_1_1.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ags/tree/KdTree.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ags/tree/RedManhattanTree.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/Roborio.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/Skip.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/energy/EnergyManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/energy/TCManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiShadowTargeting.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurferTargeting.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorTargeting.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/GeneralPurposeTargeting.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/RoborioGunArray.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/Targeting.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/VirtualGunArray.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiShadowStrategy.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurferStrategy.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/GeneralPurposeStrategy.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/BestScoreStrategy.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/GunChoosingStrategy.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/GunScoring.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/HitRateScoring.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/WeightedHitRateScoring.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/Knn.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnSet.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnTree.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/Checkpoint.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/Clock.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/Strategy.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/roborio.Roborio_1.0.1gf.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/roborio.Roborio_1.0.2gf.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/roborio.Roborio_1.0.3gf.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/roborio.Roborio_1.0.4gf.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/roborio.Roborio_1.0gc.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/roborio.Roborio_1.0gf.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/Roborio.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/gunning/Targeting.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/gunning/VirtualArrayGun.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/DCClassifier.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/DCFitnessFunction.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/DCFunctionGene.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/DCWaveSim.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/data/surf1" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/data/surf2" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/functions/IdentityFunction.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/functions/InverseFunction.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/functions/NormFunction.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/roborio/learning/functions/PowerFunction.java" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/RoborioPorradeiro.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/RoborioPorradeiro.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/enemies/ComplexEnemyRobot.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/enemies/ComplexEnemyRobot.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/enemies/EnemyLog.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/enemies/EnemyLog.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/enemies/EnemyRobot.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/enemies/EnemyRobot.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/enemies/EnemySnapshot.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/enemies/EnemySnapshot.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/enemies/EnemyTracker.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/enemies/EnemyTracker.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/AutomaticGun.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AutomaticGun.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorGun.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorGun.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/DualGuessFactorGun.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DualGuessFactorGun.java.bkp" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/GuessFactorGun.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/GuessFactorGun.java.bkp" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/Gun.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/Gun.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/HeadOnGun.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/HeadOnGun.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/utils/GuessFactorRange.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/GuessFactorRange.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/utils/GunFireEvent.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/GunFireEvent.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/utils/GunHitEvent.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/GunHitEvent.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/utils/LinearGuessFactorRange.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/LinearGuessFactorRange.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/utils/PowerSelection.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/PowerSelection.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/utils/TargetingLog.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/TargetingLog.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/gunning/utils/VirtualBullet.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/VirtualBullet.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/DCSurfingMovement.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/DCSurfingMovement.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/GotoSurfingMovement.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/GotoSurfingMovement.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/Movement.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/Movement.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/PowerGuesser.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/PowerGuesser.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/RoborioMovement.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/RoborioMovement.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/Shadow.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/Shadow.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/ShadowManager.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/ShadowManager.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/TCMovement.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/TCMovement.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/WallSmoothing.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/WallSmoothing.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/forces/ConstantForce.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/forces/ConstantForce.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/forces/DangerPoint.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/forces/DangerPoint.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/forces/DangerWavePoint.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/forces/DangerWavePoint.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/forces/Force.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/forces/Force.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/forces/LinearForce.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/forces/LinearForce.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/forces/SigmoidForce.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/forces/SigmoidForce.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/predictor/MovementPredictor.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/MovementPredictor.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/predictor/PredictedPoint.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/PredictedPoint.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/movement/predictor/PredictedWaveImpact.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/PredictedWaveImpact.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/myself/MyLog.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/myself/MyLog.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/myself/MyRobot.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/myself/MyRobot.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/myself/MySnapshot.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/myself/MySnapshot.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/structures/EuclideanKdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/EuclideanKdTree.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/structures/FloatingHeap.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/FloatingHeap.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/structures/FloatingHeapTest.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/FloatingHeapTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/structures/KdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTree.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/structures/KdTreeTest.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTreeTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/structures/WeightedEuclideanKdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedEuclideanKdTree.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/structures/WeightedManhattanKdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedManhattanKdTree.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/BackAsFrontRobot.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/BackAsFrontRobot.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/Physics.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/Physics.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/R.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/R.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/RTest.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/RTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/colors/ColorUtils.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/colors/ColorUtils.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/colors/Gradient.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/colors/Gradient.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/conditions/Tautology.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/conditions/Tautology.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/AxisRectangle.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/AxisRectangle.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/Circle.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/Circle.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/G.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/G.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/LineSegment.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/LineSegment.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/Point.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/Point.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/geo/Range.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/Range.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/AbstractGFStats.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/AbstractGFStats.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/GuessFactorStats.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/GuessFactorStats.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/SegmentTrie.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/SegmentTrie.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/Segmentation.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/Segmentation.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/Stats.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/Stats.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/VCS.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/VCS.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/smoothing/GaussianSmoothing.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/smoothing/GaussianSmoothing.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/smoothing/HarmonicSmoothing.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/smoothing/HarmonicSmoothing.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/smoothing/KernelSmoothing.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/smoothing/KernelSmoothing.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/smoothing/NoSmoothing.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/smoothing/NoSmoothing.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/smoothing/Smoothing.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/smoothing/Smoothing.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/stats/smoothing/UniformSmoothing.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/smoothing/UniformSmoothing.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/storage/NamedStorage.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/storage/NamedStorage.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/EnemyFireWave.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/EnemyFireWave.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/EnemyWave.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/EnemyWave.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/MyBulletWave.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/MyBulletWave.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/MyFireWave.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/MyFireWave.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/MyWave.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/MyWave.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/RobotWave.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/RobotWave.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/Wave.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/Wave.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/WaveCollection.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/WaveCollection.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/WaveCondition.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/WaveCondition.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/roborio/utils/waves/WaveMap.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/waves/WaveMap.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/robocode_1_9_2_6.xml" afterPath="$PROJECT_DIR$/.idea/libraries/robocode_1_9_2_6.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MANIFEST.MF" afterPath="$PROJECT_DIR$/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Roborio.iml" afterPath="$PROJECT_DIR$/Roborio.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Roborio.properties.erb" afterPath="$PROJECT_DIR$/Roborio.properties.erb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.rb" afterPath="$PROJECT_DIR$/build.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.sh" afterPath="$PROJECT_DIR$/build.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build_melee.sh" afterPath="$PROJECT_DIR$/build_melee.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -192,11 +52,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Roborio.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Roborio.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/Roborio.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1344">
               <caret line="106" column="0" lean-forward="false" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MirrorPowerManager.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-224">
+              <caret line="84" column="68" lean-forward="false" selection-start-line="84" selection-start-column="68" selection-end-line="84" selection-end-column="68" />
               <folding />
             </state>
           </provider>
@@ -317,7 +187,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/roborio/utils/stats/VCS.java" />
         <option value="$PROJECT_DIR$/src/roborio/enemies/EnemyLog.java" />
         <option value="$PROJECT_DIR$/src/roborio/enemies/ComplexEnemyRobot.java" />
         <option value="$PROJECT_DIR$/src/roborio/utils/geo/Point.java" />
@@ -368,6 +237,7 @@
         <option value="$PROJECT_DIR$/Roborio.properties.erb" />
         <option value="$PROJECT_DIR$/build.sh" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/movement/DCSurfingMovement.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java" />
       </list>
     </option>
   </component>
@@ -460,6 +330,50 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="myself" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Roborio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Roborio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="roborio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="energy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Roborio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Roborio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="roborio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="enemies" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1142,7 +1056,7 @@
       <workItem from="1502665692854" duration="1786000" />
       <workItem from="1502674966090" duration="53447000" />
       <workItem from="1502766759823" duration="573000" />
-      <workItem from="1502767696958" duration="8456000" />
+      <workItem from="1502767696958" duration="9268000" />
     </task>
     <servers />
   </component>
@@ -1179,7 +1093,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="758603000" />
+    <option name="totallyTimeSpent" value="759415000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1203,7 +1117,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2905526" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2888889" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1406,16 +1320,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3">
           <caret line="852" column="0" lean-forward="false" selection-start-line="852" selection-start-column="0" selection-end-line="852" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="85" column="0" lean-forward="true" selection-start-line="85" selection-start-column="0" selection-end-line="85" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1687,6 +1591,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1344">
           <caret line="106" column="0" lean-forward="false" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-224">
+          <caret line="84" column="68" lean-forward="false" selection-start-line="84" selection-start-column="68" selection-end-line="84" selection-end-column="68" />
           <folding />
         </state>
       </provider>
