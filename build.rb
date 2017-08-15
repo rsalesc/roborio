@@ -18,7 +18,7 @@ props = {
 props[:name] = props[:path].split(".")[-1]
 
 generated = Erba.new(props).render(File.read("Roborio.properties.erb"))
-File.open("out/roborio/#{props[:name]}.properties", "w") {|f|
+File.open("out/#{props[:path].gsub(".", "/")}.properties", "w") {|f|
     f.write(generated)
 }
 

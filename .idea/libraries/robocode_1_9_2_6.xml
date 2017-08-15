@@ -1,17 +1,6 @@
 <component name="libraryTable">
   <library name="robocode 1.9.2.6">
     <CLASSES>
-      <root url="jar://$USER_HOME$/robocode/libs/codesize-1.1.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/picocontainer-2.14.2.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/robocode.battle-1.9.2.6.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/robocode.core-1.9.2.6.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/robocode.host-1.9.2.6.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/robocode.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/robocode.repository-1.9.2.6.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/robocode.sound-1.9.2.6.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/robocode.ui-1.9.2.6.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/robocode.ui.editor-1.9.2.6.jar!/" />
-      <root url="jar://$USER_HOME$/robocode/libs/roborumble.jar!/" />
       <root url="file://$USER_HOME$/robocode/wavesim" />
     </CLASSES>
     <JAVADOC>
