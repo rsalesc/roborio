@@ -67,7 +67,7 @@ abstract public class KdTree<T> {
     // old points
     private Queue<double[]>         pointQueue;
 
-    public KdTree(int dimensions, int sizeLimit, int bucketLimit) {
+    public KdTree(int dimensions, Integer sizeLimit, int bucketLimit) {
         this.dim = dimensions;
         this.bucketSize = bucketLimit;
 
@@ -85,7 +85,7 @@ abstract public class KdTree<T> {
 //        Arrays.fill(this.max, Double.NEGATIVE_INFINITY);
     }
 
-    public KdTree(int dimensions, int sizeLimit) {
+    public KdTree(int dimensions, Integer sizeLimit) {
         this(dimensions, sizeLimit, BUCKET_SIZE);
     }
 

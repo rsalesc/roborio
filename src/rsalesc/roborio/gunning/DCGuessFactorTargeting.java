@@ -44,12 +44,9 @@ public abstract class DCGuessFactorTargeting extends Targeting {
     public double generateFiringAngle(TargetingLog firingLog) {
         Range preciseMea = firingLog.getPreciseMea();
 
-        double bandwidth = Physics.hitAngle(firingLog.distance) / preciseMea.minAbsolute()
+        double bandwidth = Physics.hitAngle(firingLog.distance) * 0.4 / preciseMea.minAbsolute()
                 * GuessFactorStats.BUCKET_COUNT;
 
-//        double bulletSpeed = Rules.getBulletSpeed(firingLog.bulletPower);
-//        double bandwidth = Physics.hitAngle(firingLog.distance) / (2.0*Physics.maxEscapeAngle(bulletSpeed))
-//                    * GuessFactorStats.BUCKET_COUNT;
         Smoothing smoother = new GaussianSmoothing(bandwidth);
 
         GuessFactorStats gfRange = getStats(firingLog);
@@ -96,8 +93,7 @@ public abstract class DCGuessFactorTargeting extends Targeting {
             double gf = entry.payload;
 
             double diff = entry.distance * found.size() / distanceSum;
-            double weight = R.exp(-0.5 * diff * diff) * entry.weight;
-//            double weight = entry.weight / R.sqrt(entry.distance);
+            double weight = R.exp(-0.25 * diff * diff) * entry.weight;
 
             stats.logGuessFactor(gf, weight);
         }

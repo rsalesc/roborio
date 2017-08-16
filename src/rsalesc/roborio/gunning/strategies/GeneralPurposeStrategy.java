@@ -13,16 +13,18 @@ public class GeneralPurposeStrategy extends Strategy {
                 Math.min(f.bft() / 81., 1),
                 f.lateralVelocity / 8.,
                 (f.advancingVelocity / 16. + 1) / 2,
-                Math.min(f.positiveEscape / 400., 1),
-                Math.min(f.negativeEscape / 400., 1),
+                Math.min(f.positiveEscape / 300., 1),
+                Math.min(f.negativeEscape / 250., 1),
                 (f.accel + 1) / 2.0,
                 f.aiming ? 0 : Math.min((f.gunHeat + 0.1) / 1.5, 1.0),
-                1.0 / (0.5 * f.timeRevert + 1)
+                Math.min(f.run / f.bft(), 1),
+                Math.min(f.displaceLast10 / 80., 1),
+                Math.min((f.lastMissGF + 1) / 2, 1)
         };
     }
 
     @Override
     public double[] getWeights() {
-        return new double[]{5, 4, 1, 4, 1, 2, 2, 2};
+        return new double[]{3, 4, 2, 4, 2, 2, 3, 2, 1.5, 2};
     }
 }

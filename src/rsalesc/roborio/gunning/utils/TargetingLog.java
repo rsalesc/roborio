@@ -28,6 +28,7 @@ public class TargetingLog {
     public long timeAccel;
     public long timeDecel;
     public long timeRevert;
+    public double displaceLast10;
     public long revertLast20;
     public double coveredLast20;
     public double gunHeat;

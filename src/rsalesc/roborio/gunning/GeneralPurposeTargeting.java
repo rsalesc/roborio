@@ -12,10 +12,9 @@ public class GeneralPurposeTargeting extends DCGuessFactorTargeting {
     public KnnSet<Double> getKnnSet() {
         return new KnnSet<Double>()
                 .add(new KnnTree<Double>()
-                    .setLimit(6000)
                     .setMode(KnnTree.Mode.MANHATTAN)
-                    .setK(60)
-                    .setRatio(0.10)
+                    .setK(72)
+                    .setRatio(0.20)
                     .setStrategy(new GeneralPurposeStrategy()));
     }
 }

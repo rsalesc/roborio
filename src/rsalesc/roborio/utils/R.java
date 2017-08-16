@@ -1,8 +1,12 @@
 package rsalesc.roborio.utils;
 
 import robocode.util.Utils;
+import rsalesc.roborio.enemies.ComplexEnemyRobot;
+import rsalesc.roborio.enemies.EnemyLog;
 import rsalesc.roborio.utils.geo.AxisRectangle;
 import rsalesc.roborio.utils.geo.Point;
+import rsalesc.roborio.utils.geo.Range;
+import rsalesc.roborio.utils.waves.Wave;
 
 import java.text.DecimalFormat;
 
@@ -172,5 +176,37 @@ public class R {
 
     public static String formattedPercentage(double v) {
         return PERCENTAGE_FORMATTER.format(v * 100).replace(",", ".") + " %";
+    }
+
+    public static Range preciseIntersection(EnemyLog log, Wave wave, long passTime, double refAngle) {
+        long curTime = passTime;
+        while(wave.hasTouchedRobot(log.atLeastAt(curTime).getPoint(), curTime))
+            curTime--;
+
+        Range range = new Range();
+        ComplexEnemyRobot enemy = log.atLeastAt(curTime);
+        do {
+            ComplexEnemyRobot nextEnemy = log.atLeastAt(curTime + 1);
+            AxisRectangle botRect = nextEnemy.getHitBox();
+
+            for(Point corner : botRect.getCorners()) {
+                if(wave.hasPassed(corner, nextEnemy.getTime()) && !wave.hasPassed(corner, enemy.getTime())) {
+                    range.push(Utils.normalRelativeAngle(wave.getAngle(corner) - refAngle));
+                }
+            }
+
+            for(Point intersect : wave.getCircle(enemy.getTime()).intersect(botRect)) {
+                range.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - refAngle));
+            }
+
+            for(Point intersect : wave.getCircle(nextEnemy.getTime()).intersect(botRect)) {
+                range.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - refAngle));
+            }
+
+            enemy = nextEnemy;
+            curTime++;
+        } while (curTime != passTime);
+
+        return range;
     }
 }

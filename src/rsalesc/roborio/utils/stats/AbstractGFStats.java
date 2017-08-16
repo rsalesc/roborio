@@ -7,7 +7,7 @@ import rsalesc.roborio.utils.geo.Range;
  * Created by Roberto Sales on 25/07/17.
  */
 public abstract class AbstractGFStats extends VCS implements Cloneable {
-    public static final int BUCKET_COUNT = 101;
+    public static final int BUCKET_COUNT = 121;
     public static final int BUCKET_MID = (BUCKET_COUNT - 1) / 2;
     private static final double BUCKET_RATIO = 2.0 / BUCKET_COUNT;
     private final double reward;

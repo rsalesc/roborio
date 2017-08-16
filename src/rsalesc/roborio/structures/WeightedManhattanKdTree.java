@@ -5,7 +5,7 @@ package rsalesc.roborio.structures;
  */
 public class WeightedManhattanKdTree<T> extends KdTree<T> {
     private double[] weights;
-    public WeightedManhattanKdTree(double[] weights, int sizeLimit) {
+    public WeightedManhattanKdTree(double[] weights, Integer sizeLimit) {
         super(weights.length, sizeLimit);
         this.weights = weights;
     }

@@ -13,6 +13,7 @@ import java.util.*;
 
 /**
  * Created by Roberto Sales on 09/08/17.
+ * TODO: remove shadows of bullets which became inactive because of hit
  */
 public class ShadowManager {
     private static final int THRESHOLD = 2000;

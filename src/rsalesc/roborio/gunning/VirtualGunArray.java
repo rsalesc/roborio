@@ -135,7 +135,8 @@ public abstract class VirtualGunArray extends AutomaticGun {
 
     @Override
     public void onPaint(Graphics2D g) {
-        getActive().onPaint(g);
+        if(getActive() != null)
+            getActive().onPaint(g);
     }
 
     @Override

@@ -166,7 +166,7 @@ public abstract class AutomaticGun extends Gun {
         return fireAngle;
     }
 
-    public long getLastFire() {
+    public long getLastFireTime() {
         return lastFire;
     }
 

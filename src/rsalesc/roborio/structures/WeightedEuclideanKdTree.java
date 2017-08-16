@@ -1,11 +1,13 @@
 package rsalesc.roborio.structures;
 
+import rsalesc.roborio.utils.R;
+
 /**
  * Created by Roberto Sales on 20/07/17.
  */
 public class WeightedEuclideanKdTree<T> extends KdTree<T> {
     private double[] weights;
-    public WeightedEuclideanKdTree(double[] weights, int sizeLimit) {
+    public WeightedEuclideanKdTree(double[] weights, Integer sizeLimit) {
         super(weights.length, sizeLimit);
         this.weights = weights;
     }
@@ -36,7 +38,7 @@ public class WeightedEuclideanKdTree<T> extends KdTree<T> {
             if(!Double.isNaN(acc))
                 res += acc*acc;
         }
-        return res;
+        return R.sqrt(res);
     }
 
     @Override
@@ -55,6 +57,6 @@ public class WeightedEuclideanKdTree<T> extends KdTree<T> {
                 res += acc*acc;
         }
 
-        return res;
+        return R.sqrt(res);
     }
 }

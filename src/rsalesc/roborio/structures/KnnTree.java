@@ -13,7 +13,7 @@ public class KnnTree<T> extends Knn<T> {
     }
 
     private Mode mode;
-    private Integer limit;
+    private Integer limit = null;
     private KdTree<T> tree;
 
     public KnnTree<T> setLimit(int limit) {
