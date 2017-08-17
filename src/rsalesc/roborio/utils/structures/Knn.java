@@ -1,4 +1,4 @@
-package rsalesc.roborio.structures;
+package rsalesc.roborio.utils.structures;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.utils.R;
@@ -93,7 +93,7 @@ public abstract class Knn<T> {
         public final double distance;
         public final T payload;
 
-        private Entry(double weight, double distance, T payload) {
+        public Entry(double weight, double distance, T payload) {
             this.weight = weight;
             this.distance = distance;
             this.payload = payload;

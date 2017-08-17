@@ -3,8 +3,8 @@ package rsalesc.roborio.energy;
 import rsalesc.roborio.enemies.ComplexEnemyRobot;
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.myself.MyRobot;
-import rsalesc.roborio.structures.Knn;
-import rsalesc.roborio.structures.KnnTree;
+import rsalesc.roborio.utils.structures.Knn;
+import rsalesc.roborio.utils.structures.KnnTree;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.Strategy;
 import rsalesc.roborio.utils.storage.NamedStorage;
@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class MirrorPowerManager extends EnergyManager {
     Knn<Double> knn;
+    private double myScore = 0;
+    private double hisScore = 0;
 
     public MirrorPowerManager(String name) {
         NamedStorage store = NamedStorage.getInstance();
@@ -30,6 +32,10 @@ public class MirrorPowerManager extends EnergyManager {
         }
 
         knn = (Knn) store.get(name);
+    }
+
+    public void setScore(double x) {
+        myScore = x;
     }
 
     public double[] getQuery(MyRobot me, ComplexEnemyRobot enemy) {
@@ -80,16 +86,16 @@ public class MirrorPowerManager extends EnergyManager {
     }
 
     @Override
-    public double selectPower(MyRobot robot, ComplexEnemyRobot enemy, double myScore, double hisScore) {
+    public double selectPower(MyRobot robot, ComplexEnemyRobot enemy) {
         if(enemy.getDistance() < 150)
-            return Math.min(2.9999, Math.max(robot.getEnergy() - 0.4, 0));
+            return Math.min(enemy.getEnergy() * 0.25, Math.min(2.9999, Math.max(robot.getEnergy() - 0.4, 0)));
 
         double hisPower = predictEnemyPower(robot, enemy, myScore, hisScore);
 
         double distance = robot.getPoint().distance(enemy.getPoint());
         double myEnergy = robot.getEnergy();
         double hisEnergy = enemy.getEnergy();
-        double basePower = 1.75;
+        double basePower = myScore > 0.28 ? 2.9 : 1.85;
 
         if(hisEnergy+1 < myEnergy && myEnergy < 60
                 && (hisEnergy * 2.5 >= myEnergy || myEnergy < 15)) {
@@ -106,11 +112,11 @@ public class MirrorPowerManager extends EnergyManager {
         double power = R.constrain(0.1, basePower, 3.0);
 
         if(myEnergy < 5)
-            power /= 4;
-        else if(myEnergy < 10)
             power /= 3;
+        else if(myEnergy < 10)
+            power /= 2;
 
-        if(myEnergy < 0.5)
+        if(myEnergy < 0.4)
             return 0;
 
         return R.constrain(0.1, Math.min(power, hisEnergy * 0.25),

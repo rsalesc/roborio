@@ -24,8 +24,8 @@ public class WeightedHitRateScoring extends GunScoring {
     }
 
     @Override
-    public void fire(int index, double power) {
-        powerFired.put(index, powerFired.getOrDefault(index, 0.0) + power);
+    public void fire(int index, double alpha, double power) {
+        powerFired.put(index, powerFired.getOrDefault(index, 0.0) + alpha * power);
     }
 
     @Override

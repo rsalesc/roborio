@@ -8,7 +8,7 @@ import rsalesc.roborio.gunning.VirtualGunArray;
 public abstract class GunScoring {
     private String storageHint;
 
-    public abstract void fire(int index, double power);
+    public abstract void fire(int index, double alpha, double power);
     public abstract void log(int index, double alpha, double power);
     public abstract double[] evaluate(VirtualGunArray array);
 

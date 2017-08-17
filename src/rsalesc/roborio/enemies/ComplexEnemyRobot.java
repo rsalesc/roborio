@@ -7,7 +7,6 @@ import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.geo.AxisRectangle;
 import rsalesc.roborio.utils.geo.Point;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Created by Roberto Sales on 21/07/17.
@@ -35,8 +34,8 @@ public class ComplexEnemyRobot extends EnemyRobot {
         this.update(e, from);
     }
 
-    public void update(ScannedRobotEvent e) throws NotImplementedException {
-        throw new NotImplementedException();
+    public void update(ScannedRobotEvent e) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
     }
 
     public void update(ScannedRobotEvent e, BackAsFrontRobot robot) {

@@ -9,7 +9,6 @@ import rsalesc.roborio.enemies.ComplexEnemyRobot;
 import rsalesc.roborio.enemies.EnemyLog;
 import rsalesc.roborio.enemies.EnemyTracker;
 import rsalesc.roborio.gunning.utils.GuessFactorRange;
-import rsalesc.roborio.gunning.utils.LinearGuessFactorRange;
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.gunning.utils.VirtualBullet;
 import rsalesc.roborio.movement.forces.DangerPoint;
@@ -20,8 +19,8 @@ import rsalesc.roborio.movement.predictor.PredictedWaveImpact;
 import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.myself.MyRobot;
 import rsalesc.roborio.myself.MySnapshot;
-import rsalesc.roborio.structures.KdTree;
-import rsalesc.roborio.structures.WeightedManhattanKdTree;
+import rsalesc.roborio.utils.structures.KdTree;
+import rsalesc.roborio.utils.structures.WeightedManhattanKdTree;
 import rsalesc.roborio.utils.BackAsFrontRobot;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
@@ -43,6 +42,9 @@ import java.util.List;
 /**
  * Created by Roberto Sales on 07/08/17]
  * TODO: bot is somehow not going to the safest spot in the wave
+ * TODO: avoid moving at too steep angles
+ * TODO: try to fool the enemy targeting system using gun heat
+ * TODO: possibly do sharp turning, considering this in the predictor as well
  */
 public class DCSurfingMovement extends Movement {
     static private double[] BASE_WEIGHTS =
@@ -343,10 +345,10 @@ public class DCSurfingMovement extends Movement {
 
         if(wave instanceof EnemyFireWave) {
             for(int i = 0; i < weight; i++)
-                tree.add(location, new LinearGuessFactorRange(gf, gf));
+                tree.add(location, new GuessFactorRange(gf, gf));
         }
 
-        flatTree.add(location, new LinearGuessFactorRange(gf, gf));
+        flatTree.add(location, new GuessFactorRange(gf, gf));
     }
 
     private DangerWavePoint[] getSurfingCandidates(PredictedPoint initialPoint,
@@ -361,11 +363,11 @@ public class DCSurfingMovement extends Movement {
 
         List<PredictedPoint> genPoints = MovementPredictor.predictOnWaveImpact(
                 field, initialPoint,
-                wave, +1, perp);
+                wave, +1, perp, false);
 
         List<PredictedPoint> otherPoints = MovementPredictor.predictOnWaveImpact(
                 field, initialPoint,
-                wave, -1, perp);
+                wave, -1, perp, false);
 
         Collections.reverse(genPoints);
         genPoints.add(initialPoint);
@@ -435,7 +437,8 @@ public class DCSurfingMovement extends Movement {
                     List<PredictedPoint> points = MovementPredictor.predictOnWaveImpact(
                             initialPoint,
                             wave,
-                            predicted
+                            predicted,
+                            false // true maybe?
                     );
 
                     points.add(0, initialPoint);

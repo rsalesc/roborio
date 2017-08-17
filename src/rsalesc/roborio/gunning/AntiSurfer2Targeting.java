@@ -6,13 +6,9 @@ import rsalesc.roborio.utils.structures.KnnSet;
 import rsalesc.roborio.utils.structures.KnnTree;
 
 /**
- * Created by Roberto Sales on 14/08/17.
+ * Created by Roberto Sales on 16/08/17.
  */
-public class AntiSurferTargeting extends DCGuessFactorTargeting {
-    public AntiSurferTargeting() {
-        setIdentifier("surf_targeting");
-    }
-
+public class AntiSurfer2Targeting extends DCGuessFactorTargeting {
     @Override
     public KnnSet<GuessFactorRange> getKnnSet() {
         return new KnnSet<GuessFactorRange>()

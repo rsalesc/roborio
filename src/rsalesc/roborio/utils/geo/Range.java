@@ -44,6 +44,9 @@ public class Range {
     public double getCenter() {
         return (min + max) * 0.5;
     }
+    public double getRadius() {
+        return getLength() * 0.5;
+    }
 
     public Range intersect(Range rhs) {
         Range res = new Range(Math.max(min, rhs.min), Math.min(max, rhs.max));

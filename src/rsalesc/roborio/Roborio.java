@@ -24,8 +24,8 @@ import java.awt.*;
  * Created by Roberto Sales on 21/07/17.
  */
 public class Roborio extends BackAsFrontRobot {
-    private static final boolean TC = true;
-    private static final boolean MC = false;
+    private final boolean TC = true || this.toString().endsWith("tc");
+    private final boolean MC = false || this.toString().endsWith("mc");
 
     private boolean lostScan = true;
     private static double worstTime = 0;

@@ -1,11 +1,10 @@
-package rsalesc.roborio.structures;
+package rsalesc.roborio.utils.structures;
 
 /**
  * Created by rsalesc on 20/07/17.
  */
 
 import rsalesc.roborio.utils.R;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -114,7 +113,7 @@ abstract public class KdTree<T> {
          */
         @Override
         public int minkowskiBestHyperplane(KdTree<T> node) {
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
 
         /** Should return the distance between two points in some
@@ -126,7 +125,7 @@ abstract public class KdTree<T> {
          */
         @Override
         public double minkowskiDistance(double[] a, double[] b) {
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
 
         /** Distance from the point p to the hyperrectangle
@@ -142,7 +141,7 @@ abstract public class KdTree<T> {
          */
         @Override
         public double minkowskiToHyperrect(double[] p, double[] min, double[] max) {
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
     }
 

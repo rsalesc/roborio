@@ -8,7 +8,7 @@ import rsalesc.roborio.myself.MyRobot;
  */
 public class TCManager extends EnergyManager {
     @Override
-    public double selectPower(MyRobot me, ComplexEnemyRobot enemy, double myScore, double hisScore) {
+    public double selectPower(MyRobot me, ComplexEnemyRobot enemy) {
         return 3.0;
     }
 }

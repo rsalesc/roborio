@@ -8,7 +8,7 @@ import java.util.HashMap;
  * Created by Roberto Sales on 14/08/17.
  */
 public class HitRateScoring extends GunScoring {
-    HashMap<Integer, Integer> shotsFired;
+    HashMap<Integer, Double> shotsFired;
     HashMap<Integer, Double> stats;
 
     public HitRateScoring() {
@@ -24,8 +24,8 @@ public class HitRateScoring extends GunScoring {
     }
 
     @Override
-    public void fire(int index, double power) {
-        shotsFired.put(index, shotsFired.getOrDefault(index, 0) + 1);
+    public void fire(int index, double alpha, double power) {
+        shotsFired.put(index, shotsFired.getOrDefault(index, 0.0) + alpha);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class HitRateScoring extends GunScoring {
     public double[] evaluate(VirtualGunArray array) {
         double[] res = new double[array.length];
         for(int i = 0; i < array.length; i++) {
-            res[i] = get(i) / shotsFired.getOrDefault(i, 1);
+            res[i] = get(i) / shotsFired.getOrDefault(i, 1.0);
         }
 
         return res;

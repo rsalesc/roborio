@@ -2,15 +2,13 @@ package rsalesc.roborio.gunning;
 
 import robocode.util.Utils;
 import rsalesc.roborio.enemies.ComplexEnemyRobot;
+import rsalesc.roborio.gunning.utils.GuessFactorRange;
 import rsalesc.roborio.gunning.utils.TargetingLog;
-import rsalesc.roborio.structures.Knn;
-import rsalesc.roborio.structures.KnnSet;
-import rsalesc.roborio.utils.Physics;
+import rsalesc.roborio.utils.structures.Knn;
+import rsalesc.roborio.utils.structures.KnnSet;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.geo.Range;
 import rsalesc.roborio.utils.stats.GuessFactorStats;
-import rsalesc.roborio.utils.stats.smoothing.GaussianSmoothing;
-import rsalesc.roborio.utils.stats.smoothing.Smoothing;
 import rsalesc.roborio.utils.storage.NamedStorage;
 
 import java.util.List;
@@ -22,7 +20,7 @@ public abstract class DCGuessFactorTargeting extends Targeting {
     public Range _lastEscapeAngle;
     public Double            _lastGf;
 
-    public KnnSet<Double> knn;
+    public KnnSet<GuessFactorRange> knn;
 
     public Double               _lastFiringGf;
     public ComplexEnemyRobot _lastEnemy;
@@ -39,27 +37,28 @@ public abstract class DCGuessFactorTargeting extends Targeting {
         knn = (KnnSet) (store.get(storageHint));
     }
 
-    public abstract KnnSet<Double> getKnnSet();
+    public abstract KnnSet<GuessFactorRange> getKnnSet();
 
     public double generateFiringAngle(TargetingLog firingLog) {
         Range preciseMea = firingLog.getPreciseMea();
 
-        double bandwidth = Physics.hitAngle(firingLog.distance) * 0.4 / preciseMea.minAbsolute()
-                * GuessFactorStats.BUCKET_COUNT;
+//        double bandwidth = Physics.hitAngle(firingLog.distance) * 0.4 / preciseMea.minAbsolute()
+//                * GuessFactorStats.BUCKET_COUNT;
 
-        Smoothing smoother = new GaussianSmoothing(bandwidth);
+//        Smoothing smoother = new GaussianSmoothing(bandwidth);
 
-        GuessFactorStats gfRange = getStats(firingLog);
-        gfRange.setSmoother(smoother);
+//        GuessFactorStats gfRange = getStats(firingLog);
+//        gfRange.setSmoother(smoother);
 
-        double bestGF = gfRange.getBestGuessFactor();
+//        double bestGF = gfRange.getBestGuessFactor();
+        double bestGF = getBestGF(firingLog);
         double bearingOffset = firingLog.getOffset(bestGF);
 
         double res = Utils.normalAbsoluteAngle(firingLog.absBearing
                 + bearingOffset);
 
         _lastEscapeAngle = preciseMea;
-        _lastStats = gfRange;
+//        _lastStats = gfRange;
         _lastGf = bestGF;
 
         return res;
@@ -68,36 +67,79 @@ public abstract class DCGuessFactorTargeting extends Targeting {
     @Override
     public void log(TargetingLog missLog, boolean isVirtual) {
         double offset = Utils.normalRelativeAngle(missLog.hitAngle - missLog.absBearing);
-
-        double gf = missLog.getGf(offset);
+        double gfBreak = missLog.getGf(offset);
 
         if(!isVirtual) {
             _lastMissLog = missLog;
-            _lastFiringGf = gf;
+            _lastFiringGf = gfBreak;
         }
 
-        knn.add(missLog, gf);
+        // process range gf
+        double gfLow = missLog.getGfFromAngle(missLog.preciseIntersection.getStartingAngle());
+        double gfHigh = missLog.getGfFromAngle(missLog.preciseIntersection.getEndingAngle());
+        if(gfLow > gfHigh) {
+            double tmp = gfLow;
+            gfLow = gfHigh;
+            gfHigh = tmp;
+        }
+
+        knn.add(missLog, new GuessFactorRange(gfLow, gfHigh));
     }
 
 
-    public GuessFactorStats getStats(TargetingLog f) {
-        List<Knn.Entry<Double>> found = knn.query(f);
+//    public GuessFactorStats getStats(TargetingLog f) {
+//        List<Knn.Entry<GuessFactorRange>> found = knn.query(f);
+//        int length = found.size();
+//
+//        double gf = 0;
+//        double gfHeight = -1;
+//
+//        double[] candidates = new double[length * 2];
+//
+//        for(int i = 0; i < length; i++) {
+//            candidates[i<<1] = found.get(i).payload.min;
+//            candidates[i<<1|1] = found.get(i).payload.max;
+//        }
+//
+//        Arrays.sort(candidates);
+//
+//        for(int i = 0; i < 2*length; i++) {
+//
+//        }
+//
+//        return stats;
+//    }
 
-        GuessFactorStats stats = new GuessFactorStats(Double.POSITIVE_INFINITY);
-        double distanceSum = 1e-9;
-        for(Knn.Entry<Double> entry : found) {
-            distanceSum += entry.distance;
+    public double getBestGF(TargetingLog f) {
+        List<Knn.Entry<GuessFactorRange>> found = knn.query(f);
+        int length = found.size();
+
+        double gf = 0;
+        double gfHeight = -1;
+
+        double[] candidates = new double[length];
+
+        for(int i = 0; i < length; i++) {
+            GuessFactorRange payload = found.get(i).payload;
+            candidates[i] = (payload.min + payload.max) / 2;
         }
 
-        for(Knn.Entry<Double> entry : found) {
-            double gf = entry.payload;
+        for(int i = 0; i < length; i++) {
+            double acc = 0;
+            for(Knn.Entry<GuessFactorRange> entry : found) {
+                GuessFactorRange range = entry.payload;
+                double bandwidth = range.getRadius();
+                double center = range.getCenter();
 
-            double diff = entry.distance * found.size() / distanceSum;
-            double weight = R.exp(-0.25 * diff * diff) * entry.weight;
+                acc += R.cubicKernel((candidates[i] - center) / bandwidth);
+            }
 
-            stats.logGuessFactor(gf, weight);
+            if(acc > gfHeight) {
+                gfHeight = acc;
+                gf = candidates[i];
+            }
         }
 
-        return stats;
+        return gf;
     }
 }

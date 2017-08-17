@@ -1,7 +1,10 @@
 package rsalesc.roborio.gunning.utils;
 
 import robocode.Rules;
+import robocode.util.Utils;
+import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
+import rsalesc.roborio.utils.geo.AngularRange;
 import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.geo.Range;
 
@@ -45,6 +48,7 @@ public class TargetingLog {
     public Point hitPosition;
 
     public Range preciseMea;
+    public AngularRange preciseIntersection;
 
 //    public double wallDistance;
 
@@ -53,18 +57,26 @@ public class TargetingLog {
         return preciseMea;
     }
 
+    public double getMea() {
+        return Physics.maxEscapeAngle(Rules.getBulletSpeed(bulletPower));
+    }
+
     public double bft() {
-        return distance / Rules.getBulletSpeed(bulletPower);
+        return distance / (Rules.getBulletSpeed(bulletPower) + 1e-8);
+    }
+
+    public double getGfFromAngle(double angle) {
+        return getGf(Utils.normalRelativeAngle(angle - absBearing));
     }
 
     public double getGf(double offset) {
         return R.constrain(-1,
-                this.direction * offset /
-                        (this.direction * offset > 0 ? preciseMea.max : -preciseMea.min), +1);
+                R.zeroNan(this.direction * offset /
+                        (this.direction * offset > 0 ? preciseMea.max : -preciseMea.min)), +1);
     }
 
     public double getOffset(double gf) {
-        return direction * gf * (gf > 0 ? preciseMea.max : -preciseMea.min);
+        return R.zeroNan(direction * gf * (gf > 0 ? preciseMea.max : -preciseMea.min));
     }
 
 }

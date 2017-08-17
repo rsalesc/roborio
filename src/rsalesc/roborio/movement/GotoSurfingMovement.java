@@ -358,7 +358,7 @@ public class GotoSurfingMovement extends Movement {
 
         List<PredictedPoint> genPoints = MovementPredictor.predictOnWaveImpact(
                 field, initialPoint,
-                wave, direction, R.HALF_PI - (1 - (distance / 400)) * 0.7);
+                wave, direction, R.HALF_PI - (1 - (distance / 400)) * 0.7, false);
 
         if(genPoints.size() == 0)
             throw new IllegalStateException();

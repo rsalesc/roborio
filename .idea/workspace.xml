@@ -2,23 +2,51 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1bfe1332-a40a-442f-b09a-aa2c235ab82f" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiEverythingTargeting.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurfer2Targeting.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurfer2Strategy.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/AngularRange.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/KnnSet.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/GeneralPurposeTargeting.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/LinearGuessFactorRange.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnSet.java" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/GeneralPurposeStrategy.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiRandomStrategy.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/EuclideanKdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/EuclideanKdTree.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/FloatingHeap.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/FloatingHeap.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/FloatingHeapTest.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/FloatingHeapTest.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/KdTree.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTreeTest.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/KdTreeTest.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/Knn.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/Knn.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/KnnTree.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedEuclideanKdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/WeightedEuclideanKdTree.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedManhattanKdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/WeightedManhattanKdTree.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.sh" afterPath="$PROJECT_DIR$/build.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ags/tree/RedManhattanTree.java" afterPath="$PROJECT_DIR$/src/ags/tree/RedManhattanTree.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/Roborio.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/Roborio.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AutomaticGun.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AutomaticGun.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/RoborioPorradeiro.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/RoborioPorradeiro.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/enemies/ComplexEnemyRobot.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/enemies/ComplexEnemyRobot.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/energy/EnergyManager.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/energy/EnergyManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/energy/TCManager.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/energy/TCManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiShadowTargeting.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiShadowTargeting.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurferTargeting.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurferTargeting.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorGun.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorGun.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorTargeting.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorTargeting.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/GeneralPurposeTargeting.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/GeneralPurposeTargeting.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/RoborioGunArray.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/RoborioGunArray.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/VirtualGunArray.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/VirtualGunArray.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/GeneralPurposeStrategy.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/GeneralPurposeStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurferStrategy.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurferStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/GuessFactorRange.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/GuessFactorRange.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/TargetingLog.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/TargetingLog.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/movement/ShadowManager.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/ShadowManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTree.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnTree.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedEuclideanKdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedEuclideanKdTree.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedManhattanKdTree.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedManhattanKdTree.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/GunScoring.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/GunScoring.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/HitRateScoring.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/HitRateScoring.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/WeightedHitRateScoring.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/WeightedHitRateScoring.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/movement/DCSurfingMovement.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/DCSurfingMovement.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/movement/GotoSurfingMovement.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/GotoSurfingMovement.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/MovementPredictor.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/MovementPredictor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/utils/BackAsFrontRobot.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/BackAsFrontRobot.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/utils/R.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/R.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/AbstractGFStats.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/AbstractGFStats.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/Range.java" afterPath="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/Range.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -46,43 +74,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="GeneralPurposeTargeting.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/GeneralPurposeTargeting.java">
+      <file leaf-file-name="AntiSurferStrategy.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurferStrategy.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="15" column="28" lean-forward="false" selection-start-line="15" selection-start-column="28" selection-end-line="15" selection-end-column="28" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="384">
+              <caret line="27" column="38" lean-forward="false" selection-start-line="27" selection-start-column="38" selection-end-line="27" selection-end-column="38" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Roborio.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Roborio.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/Roborio.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="26" column="42" lean-forward="false" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+            <state relative-caret-position="-800">
+              <caret line="26" column="35" lean-forward="false" selection-start-line="26" selection-start-column="35" selection-end-line="26" selection-end-column="35" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="KnnTree.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnTree.java">
+      <file leaf-file-name="EnergyManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/EnergyManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="31" column="22" lean-forward="true" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GeneralPurposeStrategy.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/GeneralPurposeStrategy.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="27" column="58" lean-forward="false" selection-start-line="27" selection-start-column="58" selection-end-line="27" selection-end-column="58" />
+            <state relative-caret-position="112">
+              <caret line="8" column="37" lean-forward="false" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -91,42 +107,22 @@
       <file leaf-file-name="DCGuessFactorGun.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorGun.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="248" column="40" lean-forward="true" selection-start-line="248" selection-start-column="40" selection-end-line="248" selection-end-column="40" />
+            <state relative-caret-position="16">
+              <caret line="99" column="75" lean-forward="false" selection-start-line="99" selection-start-column="75" selection-end-line="99" selection-end-column="75" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AntiSurferTargeting.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurferTargeting.java">
+      <file leaf-file-name="AntiSurfer2Strategy.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurfer2Strategy.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="18" column="38" lean-forward="false" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
+            <state relative-caret-position="416">
+              <caret line="29" column="32" lean-forward="false" selection-start-line="29" selection-start-column="32" selection-end-line="29" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="R.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/R.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="488">
-              <caret line="207" column="27" lean-forward="false" selection-start-line="207" selection-start-column="27" selection-end-line="207" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MovementPredictor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/MovementPredictor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="250">
-              <caret line="91" column="12" lean-forward="true" selection-start-line="91" selection-start-column="12" selection-end-line="104" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#1022#1023#0" expanded="true" />
+                <element signature="e#1092#1093#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -135,9 +131,21 @@
       <file leaf-file-name="VirtualGunArray.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/VirtualGunArray.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="212">
-              <caret line="138" column="12" lean-forward="false" selection-start-line="138" selection-start-column="12" selection-end-line="138" selection-end-column="12" />
+            <state relative-caret-position="2032">
+              <caret line="137" column="23" lean-forward="false" selection-start-line="137" selection-start-column="23" selection-end-line="137" selection-end-column="23" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ComplexEnemyRobot.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/enemies/ComplexEnemyRobot.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="32">
+              <caret line="8" column="39" lean-forward="false" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -145,8 +153,18 @@
       <file leaf-file-name="RoborioGunArray.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/RoborioGunArray.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="16" selection-end-column="54" />
+            <state relative-caret-position="528">
+              <caret line="36" column="26" lean-forward="false" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TCManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/TCManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="10" column="65" lean-forward="false" selection-start-line="10" selection-start-column="65" selection-end-line="10" selection-end-column="65" />
               <folding />
             </state>
           </provider>
@@ -166,36 +184,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>select</find>
-      <find>getStats</find>
-      <find>getStatsFromTree</find>
-      <find>movement</find>
-      <find>isNear</find>
-      <find>onScan</find>
-      <find>getStatsFrom</find>
-      <find>powerGuess</find>
-      <find>trackme</find>
-      <find>checkSki</find>
-      <find>peer</find>
-      <find>getTime</find>
-      <find>currentCommands</find>
-      <find>exeCcommands</find>
-      <find>execute</find>
-      <find>getTime()</find>
-      <find>currentTime</find>
-      <find>waitSleeping</find>
-      <find>setRunning</find>
-      <find>executeImpl</find>
-      <find>finalizeturn</find>
-      <find>waitTillOver</find>
-      <find>isRunning</find>
-      <find>finalizeRound</find>
-      <find>runTurn</find>
-      <find>isRoundOver</find>
-      <find>getlastfire</find>
-      <find>lastfireevent</find>
-      <find>bucket_count</find>
-      <find>getSurfingC</find>
+      <find>NotImplementedEx</find>
+      <find>NotImplementedExcep</find>
+      <find>NotImplementedExceptio</find>
+      <find>NotImplementedException</find>
+      <find>import sun.reflect.generics.reflectiveObjects.NotImplementedException;</find>
+      <find>N</find>
+      <find>oper</find>
+      <find>operatio</find>
+      <find>operation</find>
+      <find>operationex</find>
+      <find>operatione</find>
+      <find>OPera</find>
+      <find>OPer</find>
+      <find>OPe</find>
+      <find>OP</find>
+      <find>Oper</find>
+      <find>Operation</find>
+      <find>OperationE</find>
+      <find>OperationEx</find>
+      <find>OperationExcep</find>
+      <find>OperationExcepti</find>
+      <find>OperationException</find>
+      <find>n</find>
+      <find>NotIMple</find>
+      <find>NotIMpl</find>
+      <find>NotIMp</find>
+      <find>NotIM</find>
+      <find>NotIm</find>
+      <find>NotImplemente</find>
+      <find>NotImplemented</find>
     </findStrings>
     <replaceStrings>
       <replace>GuessFactorStats</replace>
@@ -214,29 +232,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/roborio/gunning/RoborioArray.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/virtual/VirtualArrayGun.java" />
-        <option value="$PROJECT_DIR$/src/roborio/utils/R.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/HeadOnGun.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/virtual/WeightedHitRateScoring.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/virtual/HitRateScoring.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/virtual/GunScoring.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/virtual/VirtualGunArray.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/utils/TargetingLog.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/utils/PowerSelection.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorTargeting.java" />
-        <option value="$PROJECT_DIR$/src/roborio/utils/geo/Range.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/strategies/GeneralPurposeStrategy.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/strategies/AntiSurferStrategy.java" />
-        <option value="$PROJECT_DIR$/src/roborio/energy/ConservativeManager.java" />
-        <option value="$PROJECT_DIR$/src/roborio/energy/EnergyManager.java" />
-        <option value="$PROJECT_DIR$/src/roborio/movement/Movement.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/AutomaticGun.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/VirtualGunArray.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/DCGuessFactorGun.java" />
-        <option value="$PROJECT_DIR$/src/roborio/energy/TCManager.java" />
-        <option value="$PROJECT_DIR$/src/roborio/gunning/RoborioGunArray.java" />
-        <option value="$PROJECT_DIR$/src/roborio/structures/Knn.java" />
         <option value="$PROJECT_DIR$/src/roborio/movement/GotoSurfingMovement.java" />
         <option value="$PROJECT_DIR$/src/roborio/gunning/GeneralPurposeTargeting.java" />
         <option value="$PROJECT_DIR$/src/roborio/energy/MirrorPowerManager.java" />
@@ -247,24 +242,47 @@
         <option value="$PROJECT_DIR$/src/roborio/structures/KdTree.java" />
         <option value="$PROJECT_DIR$/Roborio.properties.erb" />
         <option value="$PROJECT_DIR$/build.sh" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/movement/DCSurfingMovement.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/movement/ShadowManager.java" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/utils/stats/AbstractGFStats.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/VirtualGunArray.java" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnTree.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTree.java" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedEuclideanKdTree.java" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedManhattanKdTree.java" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AutomaticGun.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/TargetingLog.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorTargeting.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/utils/R.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/WeightedHitRateScoring.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/GunScoring.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/HitRateScoring.java" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/GeneralPurposeStrategy.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/RoborioGunArray.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorGun.java" />
-        <option value="$PROJECT_DIR$/src/rsalesc/roborio/Roborio.java" />
         <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/GeneralPurposeTargeting.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/utils/BackAsFrontRobot.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/structures/Knn.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnSet.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/Range.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiShadowTargeting.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/GuessFactorRange.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/CircularRange.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/TargetingLog.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/AngularRange.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/utils/R.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorTargeting.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/MovementPredictor.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/movement/DCSurfingMovement.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/movement/GotoSurfingMovement.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurferStrategy.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiRandomStrategy.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurferTargeting.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/SecondAntiSurferTargeting.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurfer2Targeting.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiRandomTargeting.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiEverythingTargeting.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurfer2Strategy.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTree.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/energy/EnergyManager.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorGun.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/RoborioGunArray.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/energy/TCManager.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/gunning/VirtualGunArray.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java" />
+        <option value="$PROJECT_DIR$/src/rsalesc/roborio/Roborio.java" />
       </list>
     </option>
   </component>
@@ -305,9 +323,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -378,54 +393,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="utils" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="waves" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="structures" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="myself" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -448,33 +415,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="gunning" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="roborio" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gunning" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="strategies" />
+              <option name="myItemId" value="movement" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -538,12 +479,15 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/robocode/robots/abc/wiki/DCGun_1on1.java" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -1201,7 +1145,8 @@
       <workItem from="1502665692854" duration="1786000" />
       <workItem from="1502674966090" duration="53447000" />
       <workItem from="1502766759823" duration="573000" />
-      <workItem from="1502767696958" duration="34314000" />
+      <workItem from="1502767696958" duration="67951000" />
+      <workItem from="1502972832100" duration="888000" />
     </task>
     <servers />
   </component>
@@ -1238,7 +1183,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="784461000" />
+    <option name="totallyTimeSpent" value="818986000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1251,38 +1196,37 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-2" y="18" width="1370" height="710" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32840723" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5504274" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.111658454" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37931034" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36456808" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25256222" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31111112" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44692737" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.42692938" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24963397" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32976827" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5500821" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31034482" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1326,13 +1270,13 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>jar://$USER_HOME$/robocode/libs/robocode.battle-1.9.2.5.jar!/net/sf/robocode/battle/peer/RobotPeer.class</url>
-          <line>553</line>
+          <url>file://$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/KdTree.java</url>
+          <line>307</line>
           <properties />
-          <option name="timeStamp" value="23" />
+          <option name="timeStamp" value="24" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="24" />
+      <option name="time" value="27" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1341,136 +1285,10 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.jar!/robocode/robotinterfaces/peer/IBasicRobotPeer.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="56" column="9" lean-forward="false" selection-start-line="56" selection-start-column="9" selection-end-line="56" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.jar!/robocode/_RobotBase.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="12" column="22" lean-forward="false" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.jar!/robocode/_Robot.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="7" column="43" lean-forward="true" selection-start-line="7" selection-start-column="43" selection-end-line="7" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.jar!/robocode/Robot.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="20" column="30" lean-forward="false" selection-start-line="20" selection-start-column="30" selection-end-line="20" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.jar!/robocode/_AdvancedRobot.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="9" column="38" lean-forward="false" selection-start-line="9" selection-start-column="38" selection-end-line="9" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.jar!/robocode/_AdvancedRadiansRobot.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="9" column="49" lean-forward="true" selection-start-line="9" selection-start-column="49" selection-end-line="9" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.jar!/robocode/AdvancedRobot.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="142" column="16" lean-forward="false" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.core-1.9.2.5.jar!/net/sf/robocode/peer/ExecCommands.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4556">
-          <caret line="16" column="19" lean-forward="false" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/RoborioPorradeiro.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="112" column="16" lean-forward="true" selection-start-line="112" selection-start-column="16" selection-end-line="112" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.core-1.9.2.5.jar!/net/sf/robocode/battle/IBattleManager.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="38" column="12" lean-forward="false" selection-start-line="38" selection-start-column="12" selection-end-line="38" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.core-1.9.2.5.jar!/net/sf/robocode/settings/ISettingsManager.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2128">
-          <caret line="141" column="8" lean-forward="false" selection-start-line="141" selection-start-column="8" selection-end-line="141" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.battle-1.9.2.5.jar!/net/sf/robocode/battle/peer/RobotPeer.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1728">
-          <caret line="1345" column="23" lean-forward="false" selection-start-line="1345" selection-start-column="23" selection-end-line="1345" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.core-1.9.2.5.jar!/net/sf/robocode/peer/IRobotPeer.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="21" column="16" lean-forward="false" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.battle-1.9.2.5.jar!/net/sf/robocode/battle/Command.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="11" column="16" lean-forward="false" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.battle-1.9.2.5.jar!/net/sf/robocode/battle/BaseBattle.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="470">
-          <caret line="196" column="49" lean-forward="false" selection-start-line="196" selection-start-column="38" selection-end-line="196" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/robocode/libs/robocode.host-1.9.2.5.jar!/net/sf/robocode/host/proxies/BasicRobotProxy.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16">
-          <caret line="343" column="35" lean-forward="false" selection-start-line="343" selection-start-column="35" selection-end-line="343" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/BackAsFrontRobot.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16">
-          <caret line="48" column="28" lean-forward="false" selection-start-line="48" selection-start-column="28" selection-end-line="48" selection-end-column="28" />
-          <folding>
-            <element signature="e#1103#1104#0" expanded="true" />
-            <element signature="e#1152#1153#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MANIFEST.MF.erb">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1478,7 +1296,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1486,7 +1303,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="16">
           <caret line="1" column="26" lean-forward="false" selection-start-line="1" selection-start-column="26" selection-end-line="1" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1494,7 +1310,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
           <caret line="6" column="37" lean-forward="false" selection-start-line="6" selection-start-column="37" selection-end-line="6" selection-end-column="37" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1502,14 +1317,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
           <caret line="6" column="31" lean-forward="false" selection-start-line="6" selection-start-column="31" selection-end-line="6" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/movement/GotoSurfingMovement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="23" column="31" lean-forward="true" selection-start-line="23" selection-start-column="31" selection-end-line="23" selection-end-column="31" />
           <folding />
         </state>
       </provider>
@@ -1526,26 +1333,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="81" column="13" lean-forward="true" selection-start-line="81" selection-start-column="13" selection-end-line="81" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/TCManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="11" column="19" lean-forward="false" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
-          <folding>
-            <element signature="e#333#334#0" expanded="false" />
-            <element signature="e#359#360#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1561,15 +1348,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="32">
           <caret line="9" column="46" lean-forward="false" selection-start-line="9" selection-start-column="46" selection-end-line="9" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiShadowTargeting.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1581,23 +1359,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/structures/Knn.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-80">
-          <caret line="12" column="22" lean-forward="false" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/structures/KdTree.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="83" column="42" lean-forward="true" selection-start-line="83" selection-start-column="42" selection-end-line="83" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedManhattanKdTree.java">
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/WeightedManhattanKdTree.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="64">
           <caret line="7" column="41" lean-forward="true" selection-start-line="7" selection-start-column="41" selection-end-line="7" selection-end-column="41" />
@@ -1605,7 +1367,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/structures/WeightedEuclideanKdTree.java">
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/WeightedEuclideanKdTree.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
           <caret line="6" column="3" lean-forward="true" selection-start-line="6" selection-start-column="3" selection-end-line="6" selection-end-column="3" />
@@ -1618,24 +1380,6 @@
         <state relative-caret-position="168">
           <caret line="171" column="0" lean-forward="true" selection-start-line="171" selection-start-column="0" selection-end-line="171" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/TargetingLog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="30" column="33" lean-forward="false" selection-start-line="30" selection-start-column="33" selection-end-line="30" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/movement/DCSurfingMovement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-328">
-          <caret line="262" column="27" lean-forward="false" selection-start-line="262" selection-start-column="16" selection-end-line="262" selection-end-column="27" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1655,97 +1399,326 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/MovementPredictor.java">
+    <entry file="jar://$USER_HOME$/robocode/libs/robocode.battle-1.9.2.5.jar!/net/sf/robocode/battle/peer/RobotPeer.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="91" column="12" lean-forward="true" selection-start-line="91" selection-start-column="12" selection-end-line="104" selection-end-column="0" />
+        <state relative-caret-position="106">
+          <caret line="553" column="0" lean-forward="false" selection-start-line="553" selection-start-column="0" selection-end-line="553" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/GunScoring.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="10" column="55" lean-forward="false" selection-start-line="10" selection-start-column="55" selection-end-line="10" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/HitRateScoring.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="39" column="60" lean-forward="false" selection-start-line="39" selection-start-column="60" selection-end-line="39" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/RoborioPorradeiro.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1584">
+          <caret line="112" column="16" lean-forward="true" selection-start-line="112" selection-start-column="16" selection-end-line="112" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/Knn.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="95" column="14" lean-forward="false" selection-start-line="95" selection-start-column="14" selection-end-line="95" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/KnnSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="490">
+          <caret line="64" column="8" lean-forward="false" selection-start-line="64" selection-start-column="8" selection-end-line="64" selection-end-column="8" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#1975#1976#0" expanded="true" />
+            <element signature="e#2008#2009#0" expanded="true" />
+            <element signature="e#2062#2063#0" expanded="true" />
+            <element signature="e#2104#2105#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/KnnTree.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="31" column="22" lean-forward="false" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/Range.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="47" column="26" lean-forward="false" selection-start-line="47" selection-start-column="26" selection-end-line="47" selection-end-column="26" />
+          <folding>
+            <element signature="e#1020#1021#0" expanded="false" />
+            <element signature="e#1060#1061#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/GuessFactorRange.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="18" column="5" lean-forward="false" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/utils/TargetingLog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="68" column="68" lean-forward="false" selection-start-line="68" selection-start-column="68" selection-end-line="68" selection-end-column="68" />
+          <folding>
+            <element signature="e#1706#1707#0" expanded="false" />
+            <element signature="e#1781#1782#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/geo/AngularRange.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="464">
+          <caret line="32" column="32" lean-forward="false" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
+          <folding>
+            <element signature="e#502#503#0" expanded="true" />
+            <element signature="e#570#571#0" expanded="true" />
+            <element signature="e#615#616#0" expanded="true" />
+            <element signature="e#682#683#0" expanded="true" />
+            <element signature="e#722#723#0" expanded="true" />
+            <element signature="e#758#759#0" expanded="true" />
+            <element signature="e#796#797#0" expanded="true" />
+            <element signature="e#832#833#0" expanded="true" />
+            <element signature="e#875#876#0" expanded="true" />
+            <element signature="e#913#914#0" expanded="true" />
+            <element signature="e#972#973#0" expanded="true" />
+            <element signature="e#1030#1031#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/R.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="488">
-          <caret line="207" column="27" lean-forward="false" selection-start-line="207" selection-start-column="27" selection-end-line="207" selection-end-column="27" />
+        <state relative-caret-position="33">
+          <caret line="123" column="49" lean-forward="true" selection-start-line="123" selection-start-column="49" selection-end-line="123" selection-end-column="49" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/VirtualGunArray.java">
+    <entry file="file://$USER_HOME$/robocode/robots/abc/wiki/DCGun_1on1.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="212">
-          <caret line="138" column="12" lean-forward="false" selection-start-line="138" selection-start-column="12" selection-end-line="138" selection-end-column="12" />
-          <folding />
+        <state relative-caret-position="-546">
+          <caret line="224" column="25" lean-forward="false" selection-start-line="224" selection-start-column="16" selection-end-line="224" selection-end-column="25" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/RoborioGunArray.java">
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiShadowTargeting.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="16" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurferTargeting.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="18" column="38" lean-forward="false" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorGun.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="248" column="40" lean-forward="true" selection-start-line="248" selection-start-column="40" selection-end-line="248" selection-end-column="40" />
+        <state relative-caret-position="208">
+          <caret line="18" column="48" lean-forward="false" selection-start-line="18" selection-start-column="48" selection-end-line="18" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorTargeting.java">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="42" column="42" lean-forward="false" selection-start-line="42" selection-start-column="42" selection-end-line="42" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/movement/GotoSurfingMovement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="360" column="80" lean-forward="false" selection-start-line="360" selection-start-column="80" selection-end-line="360" selection-end-column="80" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/movement/DCSurfingMovement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="440" column="48" lean-forward="false" selection-start-line="440" selection-start-column="48" selection-end-line="440" selection-end-column="48" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/virtual/WeightedHitRateScoring.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="27" column="76" lean-forward="false" selection-start-line="27" selection-start-column="76" selection-end-line="27" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/movement/predictor/MovementPredictor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-182">
+          <caret line="58" column="113" lean-forward="false" selection-start-line="58" selection-start-column="113" selection-end-line="58" selection-end-column="113" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurfer2Targeting.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="522">
+          <caret line="39" column="5" lean-forward="false" selection-start-line="39" selection-start-column="5" selection-end-line="39" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiEverythingTargeting.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="10" column="36" lean-forward="false" selection-start-line="10" selection-start-column="36" selection-end-line="10" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiRandomStrategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="28" column="38" lean-forward="false" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
+          <folding>
+            <element signature="e#1037#1038#0" expanded="true" />
+            <element signature="e#1117#1118#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurferStrategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="27" column="38" lean-forward="false" selection-start-line="27" selection-start-column="38" selection-end-line="27" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/KdTree.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="115" column="54" lean-forward="false" selection-start-line="115" selection-start-column="54" selection-end-line="115" selection-end-column="54" />
+          <folding>
+            <element signature="e#3420#3421#0" expanded="true" />
+            <element signature="e#3485#3486#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/AntiSurferTargeting.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26">
+          <caret line="15" column="4" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="43" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/BackAsFrontRobot.java">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="174">
-          <caret line="69" column="60" lean-forward="false" selection-start-line="69" selection-start-column="58" selection-end-line="69" selection-end-column="60" />
+          <caret line="179" column="30" lean-forward="false" selection-start-line="179" selection-start-column="29" selection-end-line="179" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/EnergyManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="8" column="37" lean-forward="false" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/RoborioGunArray.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="36" column="26" lean-forward="false" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/enemies/ComplexEnemyRobot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="32">
+          <caret line="8" column="39" lean-forward="false" selection-start-line="8" selection-start-column="39" selection-end-line="8" selection-end-column="39" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/TCManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="10" column="65" lean-forward="false" selection-start-line="10" selection-start-column="65" selection-end-line="10" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/AntiSurfer2Strategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="416">
+          <caret line="29" column="32" lean-forward="false" selection-start-line="29" selection-start-column="32" selection-end-line="29" selection-end-column="32" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1022#1023#0" expanded="true" />
+            <element signature="e#1092#1093#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/VirtualGunArray.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2032">
+          <caret line="137" column="23" lean-forward="false" selection-start-line="137" selection-start-column="23" selection-end-line="137" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/energy/MirrorPowerManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="97" column="47" lean-forward="false" selection-start-line="97" selection-start-column="47" selection-end-line="97" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/DCGuessFactorGun.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="16">
+          <caret line="99" column="75" lean-forward="false" selection-start-line="99" selection-start-column="75" selection-end-line="99" selection-end-column="75" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/utils/structures/EuclideanKdTree.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="80">
+          <caret line="5" column="13" lean-forward="false" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/Roborio.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="26" column="42" lean-forward="false" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+        <state relative-caret-position="-800">
+          <caret line="26" column="35" lean-forward="false" selection-start-line="26" selection-start-column="35" selection-end-line="26" selection-end-column="35" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/structures/KnnTree.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="31" column="22" lean-forward="true" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/strategies/GeneralPurposeStrategy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="27" column="58" lean-forward="false" selection-start-line="27" selection-start-column="58" selection-end-line="27" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rsalesc/roborio/gunning/GeneralPurposeTargeting.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="15" column="28" lean-forward="false" selection-start-line="15" selection-start-column="28" selection-end-line="15" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>

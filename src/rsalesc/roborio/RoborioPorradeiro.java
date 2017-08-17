@@ -2,8 +2,8 @@ package rsalesc.roborio;
 
 import robocode.*;
 import robocode.util.Utils;
-import rsalesc.roborio.structures.KdTree;
-import rsalesc.roborio.structures.WeightedManhattanKdTree;
+import rsalesc.roborio.utils.structures.KdTree;
+import rsalesc.roborio.utils.structures.WeightedManhattanKdTree;
 import rsalesc.roborio.utils.BackAsFrontRobot;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;

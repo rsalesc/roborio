@@ -3,6 +3,7 @@ package rsalesc.roborio.utils;
 import robocode.util.Utils;
 import rsalesc.roborio.enemies.ComplexEnemyRobot;
 import rsalesc.roborio.enemies.EnemyLog;
+import rsalesc.roborio.utils.geo.AngularRange;
 import rsalesc.roborio.utils.geo.AxisRectangle;
 import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.geo.Range;
@@ -124,6 +125,12 @@ public class R {
         }
     }
 
+    public static double gaussKernel(double x) {
+        return R.pow(1.65, -0.5 * x);
+    }
+
+    public static double cubicKernel(double x) { return Math.max(0, 1.0 - Math.abs(x*x*x)); }
+
     public static double logisticFunction(double x, double x0, double k) {
         return 1.0 / (1.0 + R.exp(-k * (x-x0)));
     }
@@ -178,12 +185,12 @@ public class R {
         return PERCENTAGE_FORMATTER.format(v * 100).replace(",", ".") + " %";
     }
 
-    public static Range preciseIntersection(EnemyLog log, Wave wave, long passTime, double refAngle) {
+    public static AngularRange preciseIntersection(EnemyLog log, Wave wave, long passTime, double refAngle) {
         long curTime = passTime;
         while(wave.hasTouchedRobot(log.atLeastAt(curTime).getPoint(), curTime))
             curTime--;
 
-        Range range = new Range();
+        AngularRange range = new AngularRange(refAngle, new Range());
         ComplexEnemyRobot enemy = log.atLeastAt(curTime);
         do {
             ComplexEnemyRobot nextEnemy = log.atLeastAt(curTime + 1);
@@ -191,22 +198,31 @@ public class R {
 
             for(Point corner : botRect.getCorners()) {
                 if(wave.hasPassed(corner, nextEnemy.getTime()) && !wave.hasPassed(corner, enemy.getTime())) {
-                    range.push(Utils.normalRelativeAngle(wave.getAngle(corner) - refAngle));
+                    range.pushAngle(wave.getAngle(corner));
                 }
             }
 
             for(Point intersect : wave.getCircle(enemy.getTime()).intersect(botRect)) {
-                range.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - refAngle));
+                range.pushAngle(wave.getAngle(intersect));
             }
 
             for(Point intersect : wave.getCircle(nextEnemy.getTime()).intersect(botRect)) {
-                range.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - refAngle));
+                range.pushAngle(wave.getAngle(intersect));
             }
 
             enemy = nextEnemy;
             curTime++;
         } while (curTime != passTime);
 
+        if(range.isEmpty())
+            return null;
+
         return range;
+    }
+
+    public static double zeroNan(double v) {
+        if(Double.isNaN(v))
+            return 0.0;
+        return v;
     }
 }

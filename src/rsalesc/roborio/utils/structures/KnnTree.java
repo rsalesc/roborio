@@ -1,4 +1,4 @@
-package rsalesc.roborio.structures;
+package rsalesc.roborio.utils.structures;
 
 import java.util.ArrayList;
 import java.util.List;

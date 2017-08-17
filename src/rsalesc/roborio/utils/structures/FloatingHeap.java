@@ -1,4 +1,4 @@
-package rsalesc.roborio.structures;
+package rsalesc.roborio.utils.structures;
 
 /**
  * Created by rsalesc on 20/07/17.

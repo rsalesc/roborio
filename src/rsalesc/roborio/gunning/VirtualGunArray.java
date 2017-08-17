@@ -105,7 +105,7 @@ public abstract class VirtualGunArray extends AutomaticGun {
             gun.doGunning();
             if(gun.isActive() && gun.hasJustFired()) {
                 event = gun.getLastGunFireEvent();
-                scoring.fire(i, event.getPower());
+                scoring.fire(i, 1.0, event.getPower());
             }
         }
 
@@ -114,7 +114,7 @@ public abstract class VirtualGunArray extends AutomaticGun {
                 AutomaticGun gun = guns[i];
                 if(!gun.isActive() && gun.hasFirePending()) {
                     gun.fireVirtual(gun.getFireAngle(), gun.getFirePower());
-                    scoring.fire(i, gun.getFirePower());
+                    scoring.fire(i, 1.0, gun.getFirePower());
                 }
             }
         }
@@ -131,6 +131,12 @@ public abstract class VirtualGunArray extends AutomaticGun {
 
         if(event != null || maxIncrease > 0.05)
             score = scoring.evaluate(this);
+    }
+
+    public double getActiveScore() {
+        if(getActive() == null)
+            return 0.0;
+        return score[activeIndex];
     }
 
     @Override

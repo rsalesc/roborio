@@ -14,6 +14,7 @@ import rsalesc.roborio.utils.BackAsFrontRobot;
 import rsalesc.roborio.utils.Checkpoint;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
+import rsalesc.roborio.utils.geo.AngularRange;
 import rsalesc.roborio.utils.geo.G;
 import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.geo.Range;
@@ -42,12 +43,14 @@ public class DCGuessFactorGun extends AutomaticGun {
     private WaveMap<TargetingLog> waves;
     private double         _wouldHit;
     private double          _wouldHitPower;
+    private long            _wouldHitTime = -1;
     private double absFireAngle;
 
     private ComplexEnemyRobot _lastEnemy;
     private Long              _bulletsFired;
 
     private TargetingLog            lastFiringLog;
+    private TargetingLog            nextFiringLog;
     private TargetingLog            lastMissLog;
     private DCGuessFactorTargeting targeting;
 
@@ -91,10 +94,10 @@ public class DCGuessFactorGun extends AutomaticGun {
 
     @Override
     public void doGunning() {
-        if(getLastGunFireEvent() == null || getLastFireTime() == getTime()) return;
+        if(lastFiringLog == null || getLastGunFireEvent() == null || getLastFireTime() == getTime()) return;
 
         MyLog log = MyLog.getInstance();
-        double power = getManager().selectPower(log.getLatest(), _lastEnemy, 0, 0);
+        double power = getManager().selectPower(log.getLatest(), _lastEnemy);
         double speed = Rules.getBulletSpeed(power);
 
         Wave wave = new MyWave(log, speed);
@@ -109,14 +112,14 @@ public class DCGuessFactorGun extends AutomaticGun {
 
         Checkpoint.getInstance().enter("scan_dc");
 
+        lastFiringLog = nextFiringLog;
         EnemyLog enemyLog = EnemyTracker.getInstance().getLog(e);
         ComplexEnemyRobot enemy = enemyLog.getLatest();
         ComplexEnemyRobot pastEnemy = enemyLog.atLeastAt(getTime() - 1);
 
-        Point nextPosition = getRobot().impreciseNextPosition();
+        Point nextPosition = getRobot().getNextPosition();
 
-        double bulletPower = getManager().selectPower(MyLog.getInstance().getLatest(),
-                enemy, 0, 0);
+        double bulletPower = getManager().selectPower(MyLog.getInstance().getLatest(), enemy);
         double bulletSpeed = Rules.getBulletSpeed(bulletPower);
 
         checkHits(enemy);
@@ -161,17 +164,19 @@ public class DCGuessFactorGun extends AutomaticGun {
         // doideira
         //firingLog.direction = firingLog.accelDirection;
 
+        final int backInTime = 120;
+
         firingLog.gunHeat = getRobot().getGunHeat();
         firingLog.timeAccel = firingLog.accel > 0 ? 0 : 1;
         firingLog.timeDecel = firingLog.accel < 0 ? 0 : 1;
         firingLog.timeRevert = enemy.getDirection() * pastEnemy.getDirection() < 0 ? 0 : 1;
         firingLog.revertLast20 = firingLog.timeRevert ^ 1;
-        firingLog.run = enemy.getVelocity() != pastEnemy.getVelocity() ? 0 : 50;
-        firingLog.lastRun = 50;
+        firingLog.run = enemy.getVelocity() != pastEnemy.getVelocity() ? 0 : backInTime;
+        firingLog.lastRun = backInTime;
 
         Range coveredLast20 = new Range();
 
-        for(int i = 1; i < Math.min(50, enemyLog.size() - 1); i++) {
+        for(int i = 1; i < Math.min(backInTime, enemyLog.size() - 1); i++) {
             ComplexEnemyRobot curEnemy = enemyLog.atLeastAt(getTime() - i);
             ComplexEnemyRobot lastEnemy = enemyLog.atLeastAt(getTime() - i - 1);
             double prevAccel = (curEnemy.getVelocity() - lastEnemy.getVelocity())
@@ -182,9 +187,9 @@ public class DCGuessFactorGun extends AutomaticGun {
                 firingLog.timeDecel++;
             if(curEnemy.getDirection() * lastEnemy.getDirection() >= 0 && firingLog.timeRevert == i)
                 firingLog.timeRevert++;
-            if(firingLog.run == 50 && curEnemy.getVelocity() != lastEnemy.getVelocity())
+            if(firingLog.run == backInTime && curEnemy.getVelocity() != lastEnemy.getVelocity())
                 firingLog.run = i;
-            if(firingLog.run != 50 && curEnemy.getVelocity() != lastEnemy.getVelocity())
+            if(firingLog.run != backInTime && curEnemy.getVelocity() != lastEnemy.getVelocity())
                 firingLog.lastRun = i - firingLog.run;
 
             if(i <= 20) {
@@ -207,10 +212,10 @@ public class DCGuessFactorGun extends AutomaticGun {
         }
 
         _lastEnemy = enemy;
-        lastFiringLog = firingLog;
+        nextFiringLog = firingLog;
 
         // generate firing angle
-        if(getRobot().getGunHeat() > getRobot().getGunCoolingRate() + R.EPSILON || bulletPower == 0) {
+        if(getRobot().getGunHeat() > getRobot().getGunCoolingRate() * 2 + R.EPSILON || bulletPower == 0) {
             setTurnGunToRadians(enemy.getAbsoluteBearing());
             Checkpoint.getInstance().leave("scan_dc");
             return;
@@ -232,21 +237,37 @@ public class DCGuessFactorGun extends AutomaticGun {
             Wave wave = iterator.next();
             if(wave.hasPassedRobot(enemy.getPoint(), getTime())) {
                 double absBearing = enemy.getAbsoluteBearing();
-
-                Range intersection = R.preciseIntersection(enemyLog,
-                        wave, getTime(), absBearing);
+                double distance = enemy.getPoint().distance(wave.getSource());
 
                 TargetingLog missLog = waves.getData(wave);
                 missLog.source = wave.getSource(); // or use next position?
                 missLog.hitPosition = enemy.getPoint();
-                missLog.hitAngle = Utils.normalAbsoluteAngle(intersection.getCenter() + absBearing);
-                missLog.hitDistance = wave.getSource().distance(enemy.getPoint());
+
+                AngularRange intersection = R.preciseIntersection(enemyLog,
+                        wave, getTime(), absBearing);
+
+                if(intersection == null) {
+                    double bearingFromWave = Physics.absoluteBearing(wave.getSource(), enemy.getPoint());
+                    intersection = new AngularRange(
+                            bearingFromWave,
+                            -Physics.hitAngle(distance),
+                            +Physics.hitAngle(distance)
+                    );
+                }
+
+                missLog.preciseIntersection = intersection;
+
+                missLog.hitAngle = intersection.getAngle(intersection.getCenter());
+                missLog.hitDistance = distance;
 
                 if(wave instanceof MyFireWave) {
                     MyFireWave fireWave = (MyFireWave) wave;
-                    if(intersection
-                            .isNearlyContained(Utils.normalRelativeAngle(fireWave.getAngle() - absBearing))) {
-                        _wouldHit = 1.0;
+                    if(intersection.isAngleNearlyContained(fireWave.getAngle())) {
+                        double diff = Utils.normalRelativeAngle(intersection.getOffset(fireWave.getAngle())
+                                - intersection.getCenter());
+                        double band = intersection.getLength() * 0.75;
+                        _wouldHitTime = getTime();
+                        _wouldHit = R.gaussKernel(diff / band);
                         _wouldHitPower = fireWave.getPower();
                     }
 
@@ -267,12 +288,12 @@ public class DCGuessFactorGun extends AutomaticGun {
 
     @Override
     public double wouldHit() {
-        return _wouldHit;
+        return getTime() == _wouldHitTime ? _wouldHit : 0;
     }
 
     @Override
     public double wouldHitPower() {
-        return _wouldHitPower;
+        return getTime() == _wouldHitTime ? _wouldHitPower : 0;
     }
 
     @Override
@@ -322,7 +343,6 @@ public class DCGuessFactorGun extends AutomaticGun {
 
         if(targeting._lastGf != null)
             g.drawString(new Point(20, 40),"Current GF: " + targeting._lastGf);
-
 
         for(int i = 0; i < _lastStats.size(); i += 3) {
             double gf = _lastStats.getGuessFactor(i);

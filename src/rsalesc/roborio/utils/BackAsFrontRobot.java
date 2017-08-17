@@ -1,10 +1,9 @@
 package rsalesc.roborio.utils;
 
-import robocode.AdvancedRobot;
-import robocode.RobocodeFileOutputStream;
-import robocode.RobotStatus;
-import robocode.StatusEvent;
+import robocode.*;
 import robocode.util.Utils;
+import rsalesc.roborio.movement.predictor.MovementPredictor;
+import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.utils.geo.AxisRectangle;
 import rsalesc.roborio.utils.geo.Point;
 
@@ -19,9 +18,11 @@ import static rsalesc.roborio.utils.R.HALF_PI;
 public abstract class BackAsFrontRobot extends AdvancedRobot {
     private RobotStatus status;
     private AxisRectangle field;
+    private double _maxVelocity;
 
     @Override
     public void onStatus(StatusEvent e) {
+        _maxVelocity = Rules.MAX_VELOCITY;
         status = e.getStatus();
         field = _getBattleField();
     }
@@ -32,6 +33,11 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
 
     public double getY() {
         return status.getY();
+    }
+
+    @Override
+    public double getDistanceRemaining() {
+        return status.getDistanceRemaining();
     }
 
     @Override
@@ -93,6 +99,16 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         return status.getGunHeading();
     }
 
+    @Override
+    public void setMaxVelocity(double x) {
+        _maxVelocity = x;
+        super.setMaxVelocity(x);
+    }
+
+    public double getMaxVelocity() {
+        return _maxVelocity;
+    }
+
     public Point getPoint() {
         return new Point(getX(), getY());
     }
@@ -145,13 +161,24 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         return new AxisRectangle(getX() - 18, getX() + 18, getY() - 18, getY() + 18);
     }
 
-    public Point impreciseNextPosition() {
+    public Point getNextPosition() {
+        // safely assume that if the bot is not moving, it will keep this way
+        // its ok to do this because even if it moves it displacement will be really small
+        // and prediction will correct any mistake in the next ticks
+        if(getVelocity() == 0)
+            return getPoint();
+
         double maxTurn = Physics.maxTurningRate(getVelocity());
         double turn = R.constrain(-maxTurn, getTurnRemainingRadians(), +maxTurn);
         double absHeading = Utils.normalAbsoluteAngle(getHeadingRadians() + turn);
+        double remaining = getDistanceRemaining();
+        int ahead = MyLog.getInstance().getLatest().getAhead();
 
-        return new Point(getX() + Math.sin(absHeading) * getVelocity(),
-                getY() + Math.cos(absHeading) * getVelocity());
+        if(ahead == 0)
+            return getPoint();
+
+        double newVelocity = MovementPredictor.getNewVelocity(getVelocity(), getMaxVelocity(), ahead, remaining);
+        return getPoint().project(absHeading, newVelocity);
     }
 
     public void handle(Exception e) {

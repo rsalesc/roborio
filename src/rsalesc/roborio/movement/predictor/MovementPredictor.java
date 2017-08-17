@@ -21,13 +21,13 @@ import java.util.List;
 public abstract class MovementPredictor {
 
     public static List<PredictedPoint> predictOnWaveImpact(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
-                                                           int direction, double perpendiculator) {
+                                                           int direction, double perpendiculator, boolean hasToPass) {
         AxisRectangle shrinkedField = field.shrink(18, 18);
 
         List<PredictedPoint> res = new ArrayList<PredictedPoint>();
 
         PredictedPoint cur = initialPoint;
-        while(!wave.hasPassed(cur, cur.time)) {
+        while(hasToPass && !wave.hasPassedRobot(cur, cur.time) || !wave.hasPassed(cur, cur.time)) {
             double angle = Utils.normalAbsoluteAngle(WallSmoothing.naive(shrinkedField, cur,
                     Physics.absoluteBearing(wave.getSource(), cur)
                     + perpendiculator * direction, direction));
@@ -39,7 +39,7 @@ public abstract class MovementPredictor {
     }
 
     public static List<PredictedPoint> predictOnWaveImpact(PredictedPoint initialPoint, Wave wave,
-                                                           Point dest) {
+                                                           Point dest, boolean hasToPass) {
         List<PredictedPoint> res = new ArrayList<PredictedPoint>();
 
         PredictedPoint cur = initialPoint;
@@ -55,8 +55,8 @@ public abstract class MovementPredictor {
 
     public static Range getBetterMaximumEscapeAngle(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
                                                     int direction) {
-        List<PredictedPoint> posList = predictOnWaveImpact(field, initialPoint, wave, direction, R.HALF_PI);
-        List<PredictedPoint> negList = predictOnWaveImpact(field, initialPoint, wave, -direction, R.HALF_PI);
+        List<PredictedPoint> posList = predictOnWaveImpact(field, initialPoint, wave, direction, R.HALF_PI, true);
+        List<PredictedPoint> negList = predictOnWaveImpact(field, initialPoint, wave, -direction, R.HALF_PI, true);
 
         posList.add(0, initialPoint);
         negList.add(0, initialPoint);
@@ -65,7 +65,7 @@ public abstract class MovementPredictor {
         Point neg = negList.get(negList.size() - 1);
 
         double absBearing = Physics.absoluteBearing(wave.getSource(), initialPoint);
-        Range res = new Range();
+        Range res = new Range(-1e-8, +1e-8);
         res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), pos) - absBearing) * direction);
         res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), neg) - absBearing) * direction);
 
@@ -154,10 +154,10 @@ public abstract class MovementPredictor {
         double newX = last.x + R.sin(newHeading) * newVelocity;
         double newY = last.y + R.cos(newHeading) * newVelocity;
 
-        return new PredictedPoint(newX, newY,  newHeading, newVelocity, last.time + 1);
+        return new PredictedPoint(newX, newY, newHeading, newVelocity, last.time + 1);
     }
 
-    private static double getNewVelocity(double velocity, double maxVelocity, int ahead, double remaining) {
+    public static double getNewVelocity(double velocity, double maxVelocity, int ahead, double remaining) {
         if(ahead < 0) {
             return -getNewVelocity(-velocity, maxVelocity, -ahead, remaining);
         }
