@@ -48,20 +48,25 @@ import java.util.List;
  */
 public class DCSurfingMovement extends Movement {
     static private double[] BASE_WEIGHTS =
-            new double[]{2, 3.5, 2.5, 1, 0.5, 1.25, 0.5};
+            new double[]{4, 3, 2, 0, 4, 1};
+
+    static private double[] FLATTEN_WEIGHTS =
+            new double[]{3, 4, 1, 0, 4, 3};
+
+    static private double[] MERGE_WEIGHTS =
+            new double[]{0.9, 0.1};
 
     static private double[] WAVE_WEIGHTS =
-            new double[]{0.85, 0.15};
+            new double[]{1.0, 0.0}; // surfing a single wave until getting a good result
 
-    private double[] getLocation(TargetingLog log) {
+    private double[] getLocation(TargetingLog f) {
         return new double[]{
-                log.distance / Rules.getBulletSpeed(log.bulletPower) / 80,
-                log.lateralVelocity / 8,
-                log.accel,
-                log.bulletPower,
-                Math.pow(0.5*log.bulletsFired, 1.15),
-                log.positiveEscape,
-                log.negativeEscape
+                Math.max(f.bft() / 80, 1),
+                Math.max(f.lateralVelocity / 8, 1),
+                (f.accel + 1) * 0.5,
+                f.bulletPower / 3.1,
+                Math.max(f.positiveEscape / 400, 1),
+                Math.max(f.negativeEscape / 400, 1)
         };
     }
 
@@ -103,7 +108,7 @@ public class DCSurfingMovement extends Movement {
         }
 
         if(!store.contains(storageHint + "-flat")) {
-            store.add(storageHint + "-flat", new WeightedManhattanKdTree<GuessFactorRange>(BASE_WEIGHTS, 1500));
+            store.add(storageHint + "-flat", new WeightedManhattanKdTree<GuessFactorRange>(FLATTEN_WEIGHTS, 1500));
         }
 
         if(!store.contains(storageHint + "-fired")) {
@@ -156,13 +161,13 @@ public class DCSurfingMovement extends Movement {
     @Override
     public void doShadowing(VirtualBullet[] bullets) {
         shadowing.push(bullets);
-        ArrayList<Wave> fireWaves = new ArrayList<>();
+        ArrayList<EnemyFireWave> fireWaves = new ArrayList<>();
         for(Wave wave : waves) {
             if(wave instanceof EnemyFireWave)
-                fireWaves.add(wave);
+                fireWaves.add((EnemyFireWave) wave);
         }
 
-        shadowing.push(fireWaves.toArray(new Wave[0]));
+        shadowing.push(fireWaves.toArray(new EnemyFireWave[0]));
     }
 
     @Override
@@ -202,7 +207,7 @@ public class DCSurfingMovement extends Movement {
         checkHits();
 
         final MyRobot me = myLog.getLatest();
-        Wave[] _nextWaves = waves.earliestWaves(2, me.getPoint() , getTime(), new WaveCollection.EnemyFireWaveCondition() {
+        Wave[] _nextWaves = waves.earliestWaves(WAVE_WEIGHTS.length, me.getPoint() , getTime(), new WaveCollection.EnemyFireWaveCondition() {
             @Override
             public boolean test(Wave wave) {
                 return super.test(wave) && !wave.hasPassed(me.getPoint(), me.getTime());
@@ -520,7 +525,7 @@ public class DCSurfingMovement extends Movement {
         GuessFactorStats flatStats = getStatsFromTree(tree, location, 24);
 
         return GuessFactorStats.merge(new GuessFactorStats[]{treeStats, flatStats},
-                new double[]{0.75, 0.25});
+                MERGE_WEIGHTS);
     }
 
     private double getSteepness(Point dest, Point enemy) {

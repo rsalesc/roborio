@@ -41,4 +41,16 @@ public class AngularRange extends Range {
     public boolean isAngleNearlyContained(double angle) {
         return isNearlyContained(getOffset(angle));
     }
+
+    public AngularRange translate(double newReference) {
+        double delta = newReference - reference;
+        return new AngularRange(newReference, min - delta, max - delta);
+    }
+
+    // TODO: handle cases where translation is absurd
+    public AngularRange intersectAngles(AngularRange rhs) {
+        AngularRange translated = rhs.translate(reference);
+        Range res = intersect(translated);
+        return new AngularRange(reference, res.min, res.max);
+    }
 }

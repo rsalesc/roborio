@@ -1,6 +1,7 @@
 package rsalesc.roborio.utils.structures;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
+import rsalesc.roborio.utils.waves.BreakType;
 import rsalesc.roborio.utils.R;
 
 import java.util.ArrayList;
@@ -30,27 +31,20 @@ public class KnnSet<T> {
         return this;
     }
 
-    public void add(double[] point, T payload) {
-        for(Knn<T> knn : knns)
-            knn.add(point, payload);
-    }
-
     public void add(TargetingLog f, T payload) {
         for(Knn<T> knn : knns)
             knn.add(f, payload);
     }
 
-    public List<Knn.Entry<T>> query(double[] point) {
-        List<Knn.Entry<T>> res = new ArrayList<>();
+    public void add(TargetingLog f, T payload, BreakType type) {
         for(Knn<T> knn : knns) {
-            res.addAll(knn.query(point));
+            if(type == BreakType.BULLET_HIT && knn.logsOnHit())
+                knn.add(f, payload);
+            else if(type == BreakType.BULLET_BREAK && knn.logsOnBreak())
+                knn.add(f, payload);
+            else if(type == BreakType.VIRTUAL_BREAK && knn.logsOnVirtual())
+                knn.add(f, payload);
         }
-
-        Collections.sort(res);
-        if(weighter != null)
-            res = weighter.getWeightedEntries(res);
-
-        return res;
     }
 
     public List<Knn.Entry<T>> query(TargetingLog f) {
@@ -63,6 +57,20 @@ public class KnnSet<T> {
         if(weighter != null)
             res = weighter.getWeightedEntries(res);
         
+        return res;
+    }
+
+    public List<Knn.Entry<T>> query(TargetingLog f, Object o) {
+        List<Knn.Entry<T>> res = new ArrayList<>();
+        for(Knn<T> knn : knns) {
+            if(knn.isEnabled(o))
+                res.addAll(knn.query(f));
+        }
+
+        Collections.sort(res);
+        if(weighter != null)
+            res = weighter.getWeightedEntries(res);
+
         return res;
     }
 

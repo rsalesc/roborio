@@ -16,7 +16,7 @@ public abstract class KernelSmoothing extends Smoothing {
         profileLength = 1;
     }
 
-    public abstract double evaluateKernel(int diff);
+    public abstract double evaluateKernel(double diff);
 
     @Override
     public double[] smooth(double[] input) {

@@ -49,6 +49,11 @@ public class AxisRectangle {
                 && R.nearOrBetween(miny, point.getY(), maxy);
     }
 
+    public boolean strictlyContains(Point point) {
+        return R.strictlyBetween(minx, point.getX(), maxx)
+                && R.strictlyBetween(miny, point.getY(), maxy);
+    }
+
     public AxisRectangle shrinkX(double amount) {
         if(amount*2 > getWidth()) {
             double x = (minx + maxx) / 2;

@@ -43,6 +43,8 @@ public class GuessFactorStats extends AbstractGFStats implements Cloneable {
         int size = BUCKET_COUNT;
         double[] buffer = new double[size];
         for(int i = 0; i < sts.length; i++) {
+            if(sts[i] == null)
+                continue;
             GuessFactorStats normalized = (GuessFactorStats) (sts[i].clone());
             normalized.normalize();
             for(int j = 0; j < size; j++) {

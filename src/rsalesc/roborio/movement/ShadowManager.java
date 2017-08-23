@@ -1,12 +1,16 @@
 package rsalesc.roborio.movement;
 
+import robocode.Bullet;
+import robocode.BulletHitBulletEvent;
 import robocode.util.Utils;
 import rsalesc.roborio.gunning.utils.VirtualBullet;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
+import rsalesc.roborio.utils.geo.AngularRange;
 import rsalesc.roborio.utils.geo.LineSegment;
 import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.geo.Range;
+import rsalesc.roborio.utils.waves.EnemyFireWave;
 import rsalesc.roborio.utils.waves.Wave;
 
 import java.util.*;
@@ -32,7 +36,26 @@ public class ShadowManager {
         return shadows.get(wave);
     }
 
-    public void push(Wave[] waves) {
+    /* remove shadows that were not cast yet */
+    public void onBulletHitBullet(BulletHitBulletEvent e) {
+        Bullet bullet = e.getBullet();
+        Point hitPoint = new Point(bullet.getX(), bullet.getY());
+
+        for(Map.Entry<Wave, ArrayList<Shadow>> entry : shadows.entrySet()) {
+            EnemyFireWave wave = (EnemyFireWave) entry.getKey();
+            Iterator<Shadow> sit = entry.getValue().iterator();
+            while(sit.hasNext()) {
+                Shadow shadow = sit.next();
+                if(!wave.getCircle(e.getTime()).isInside(hitPoint)
+                        && shadow.bullet.getBullet().equals(bullet)
+                        && !wave.wasFiredBy(bullet, e.getTime())) {
+                    sit.remove();
+                }
+            }
+        }
+    }
+
+    public void push(EnemyFireWave[] waves) {
         cleanup(new HashSet<>(Arrays.asList(waves)), null);
         for(Wave wave : waves) {
             if(!shadows.containsKey(wave)) {
@@ -63,15 +86,13 @@ public class ShadowManager {
         if(wave.getSource().distance(bullet.project(time)) < wave.getDistanceTraveled(time) - R.EPSILON)
             return;
 
-        double lastDiff = Double.POSITIVE_INFINITY;
-        while(wave.getSource().distance(bullet.project(time)) > wave.getDistanceTraveled(time)) {
-            double diff = wave.getSource().distance(bullet.project(time)) - wave.getDistanceTraveled(time);
-            if(diff > lastDiff)
-                return;
-
-            lastDiff = diff;
+        int iterations = 0;
+        while(wave.getSource().distance(bullet.project(time)) > wave.getDistanceTraveled(time) && iterations++ < 120) {
             time++;
         }
+
+        if(iterations > 120)
+            return;
 
         LineSegment segment = new LineSegment(bullet.project(time - 1), bullet.project(time));
         Point[] interOuter = segment.intersect(wave.getCircle(time));
@@ -101,20 +122,10 @@ public class ShadowManager {
         }
 
         ArrayList<Shadow> shades = shadows.get(wave);
-        shades.add(new Shadow(absBearing, range));
+        shades.add(new Shadow(absBearing, new AngularRange(absBearing, range), bullet));
     }
 
     private void cleanup(HashSet<Wave> newWaves, HashSet<VirtualBullet> newBullets) {
-        if(newWaves != null) {
-            Iterator<Map.Entry<Wave, ArrayList<Shadow>>> iterator = shadows.entrySet().iterator();
-            while(iterator.hasNext()) {
-                Map.Entry<Wave, ArrayList<Shadow>> entry = iterator.next();
-                Wave wave = entry.getKey();
-                if(!newWaves.contains(wave))
-                    iterator.remove();
-            }
-        }
-
         if(newBullets != null) {
             Iterator<VirtualBullet> iterator = bullets.iterator();
             while(iterator.hasNext()) {
@@ -123,5 +134,52 @@ public class ShadowManager {
                     iterator.remove();
             }
         }
+
+        if(newWaves != null) {
+            Iterator<Map.Entry<Wave, ArrayList<Shadow>>> iterator = shadows.entrySet().iterator();
+            while(iterator.hasNext()) {
+                Map.Entry<Wave, ArrayList<Shadow>> entry = iterator.next();
+                Wave wave = entry.getKey();
+                if(!newWaves.contains(wave)) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    public double getIntersectionFactor(Wave wave, AngularRange intersection) {
+        if(!shadows.containsKey(wave))
+            return 0.0;
+
+        AngularRange whole = new AngularRange(intersection.getAngle(0), intersection.min, intersection.max);
+        ArrayList<AngularRange> pieces = new ArrayList<>();
+        pieces.add(whole);
+
+        for(Shadow shadow : shadows.get(wave)) {
+            ArrayList<AngularRange> nextPieces = new ArrayList<>();
+            AngularRange shadowRange = shadow.range;
+
+            for(AngularRange piece : pieces) {
+                AngularRange shadowIntersection = piece.intersectAngles(shadowRange);
+                if(R.isNear(shadowIntersection.getLength(), 0))
+                    nextPieces.add(piece);
+                else {
+                    nextPieces.add(new AngularRange(piece.getOffset(0), piece.min, shadowIntersection.min));
+                    nextPieces.add(new AngularRange(piece.getOffset(0), shadowIntersection.max, piece.max));
+                }
+            }
+
+            pieces = nextPieces;
+        }
+
+        double totalLength = 0;
+        for(AngularRange range : pieces)
+            totalLength += range.getLength();
+
+        double res = totalLength / intersection.getLength();
+        if(Double.isNaN(res))
+            return 1.0;
+
+        return res;
     }
 }

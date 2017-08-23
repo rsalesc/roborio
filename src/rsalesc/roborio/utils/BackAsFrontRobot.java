@@ -6,6 +6,7 @@ import rsalesc.roborio.movement.predictor.MovementPredictor;
 import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.utils.geo.AxisRectangle;
 import rsalesc.roborio.utils.geo.Point;
+import rsalesc.roborio.utils.geo.Range;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -16,13 +17,22 @@ import static rsalesc.roborio.utils.R.HALF_PI;
  * Created by Roberto Sales on 22/07/17.
  */
 public abstract class BackAsFrontRobot extends AdvancedRobot {
+    public static final boolean SHARP_TURNING = true;
+
     private RobotStatus status;
     private AxisRectangle field;
-    private double _maxVelocity;
+    private double _maxVelocity = Rules.MAX_VELOCITY;
+    private boolean sharpened = false;
+    private double _velocityBeforeSharp;
 
     @Override
     public void onStatus(StatusEvent e) {
-        _maxVelocity = Rules.MAX_VELOCITY;
+        if(sharpened) {
+            super.setMaxVelocity(_velocityBeforeSharp);
+            _maxVelocity = _velocityBeforeSharp;
+            sharpened = false;
+        }
+
         status = e.getStatus();
         field = _getBattleField();
     }
@@ -65,6 +75,15 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     }
 
     @Override
+    public int getRoundNum() {
+        return status.getRoundNum();
+    }
+
+    public BattleTime getBattleTime() {
+        return new BattleTime(getTime(), getRoundNum());
+    }
+
+    @Override
     public long getTime() {
         return status.getTime();
     }
@@ -95,14 +114,23 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     }
 
     @Override
+    public double getTurnRemainingRadians() {
+        return status.getTurnRemainingRadians();
+    }
+
+    @Override
     public double getGunHeading() {
         return status.getGunHeading();
     }
 
     @Override
     public void setMaxVelocity(double x) {
-        _maxVelocity = x;
-        super.setMaxVelocity(x);
+        if(!sharpened) {
+            _maxVelocity = x;
+            super.setMaxVelocity(x);
+        } else {
+            _velocityBeforeSharp = x;
+        }
     }
 
     public double getMaxVelocity() {
@@ -136,6 +164,7 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         double narrowAngle = getQuickestTurn(angle);
         setTurnRightRadians(R.isNear(distance, 0.0) ? 0 : narrowAngle);
         setAhead(distance * (angle == narrowAngle ? 1 : -1));
+        if(SHARP_TURNING) doSharpTurning();
     }
 
     public void moveWithBackAsFront(Point dest, double distance) {
@@ -150,11 +179,19 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         moveWithBackAsFront(dest, getPoint().distance(dest));
     }
 
-    public void doSharpTurning() {
-        if(Math.abs(getTurnRemaining()) > 30)
-            setMaxVelocity(0);
-        else
-            setMaxVelocity(8);
+    public double getMaxTurning() {
+        return Physics.maxTurningRate(getVelocity());
+    }
+
+    private void doSharpTurning() {
+        double maxTurn = getMaxTurning();
+        Range turnRange = new Range(-maxTurn, +maxTurn);
+        if(!turnRange.isNearlyContained(getTurnRemainingRadians())) {
+            if(!sharpened)
+                _velocityBeforeSharp = _maxVelocity;
+            sharpened = true;
+            super.setMaxVelocity(0);
+        }
     }
 
     public AxisRectangle getHitBox() {

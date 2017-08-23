@@ -3,6 +3,9 @@ package rsalesc.roborio.utils;
 import robocode.util.Utils;
 import rsalesc.roborio.enemies.ComplexEnemyRobot;
 import rsalesc.roborio.enemies.EnemyLog;
+import rsalesc.roborio.movement.predictor.PredictedPoint;
+import rsalesc.roborio.myself.MyLog;
+import rsalesc.roborio.myself.MyRobot;
 import rsalesc.roborio.utils.geo.AngularRange;
 import rsalesc.roborio.utils.geo.AxisRectangle;
 import rsalesc.roborio.utils.geo.Point;
@@ -10,6 +13,7 @@ import rsalesc.roborio.utils.geo.Range;
 import rsalesc.roborio.utils.waves.Wave;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  * Created by Roberto Sales on 22/07/17.
@@ -173,9 +177,9 @@ public class R {
     }
 
     public static double getVerticalEscapeAngle(AxisRectangle field, Point point, double heading) {
-        if(heading == 90 || heading == 270)
+        if(R.isNear(heading, R.HALF_PI) || R.isNear(heading, R.HALF_PI * 3))
             return Double.POSITIVE_INFINITY;
-        else if(heading < 90 || heading > 270)
+        else if(heading < R.HALF_PI || heading > 3 * R.HALF_PI)
             return (field.getHeight() - point.y) / R.cos(heading);
         else
             return -point.y / R.cos(heading);
@@ -220,9 +224,98 @@ public class R {
         return range;
     }
 
+    public static AngularRange preciseIntersection(MyLog log, Wave wave, long passTime, double refAngle) {
+        long curTime = passTime;
+        while(wave.hasTouchedRobot(log.atLeastAt(curTime).getPoint(), curTime))
+            curTime--;
+
+        AngularRange range = new AngularRange(refAngle, new Range());
+        MyRobot me = log.atLeastAt(curTime);
+        do {
+            MyRobot nextEnemy = log.atLeastAt(curTime + 1);
+            AxisRectangle botRect = nextEnemy.getHitBox();
+
+            for(Point corner : botRect.getCorners()) {
+                if(wave.hasPassed(corner, nextEnemy.getTime()) && !wave.hasPassed(corner, me.getTime())) {
+                    range.pushAngle(wave.getAngle(corner));
+                }
+            }
+
+            for(Point intersect : wave.getCircle(me.getTime()).intersect(botRect)) {
+                range.pushAngle(wave.getAngle(intersect));
+            }
+
+            for(Point intersect : wave.getCircle(nextEnemy.getTime()).intersect(botRect)) {
+                range.pushAngle(wave.getAngle(intersect));
+            }
+
+            me = nextEnemy;
+            curTime++;
+        } while (curTime != passTime);
+
+        if(range.isEmpty())
+            return null;
+
+        return range;
+    }
+
+    public static AngularRange preciseIntersection(Wave wave, List<PredictedPoint> predicted) {
+        double refAngle = R.getLast(predicted).getHeading();
+
+        int ptr = predicted.size() - 1;
+        while(ptr > 0 && wave.hasTouchedRobot(predicted.get(ptr), predicted.get(ptr).getTime()))
+            ptr--;
+
+        AngularRange range = new AngularRange(refAngle, new Range());
+        PredictedPoint me = predicted.get(ptr);
+
+        while(ptr + 1 < predicted.size()) {
+            PredictedPoint nextEnemy = predicted.get(ptr+1);
+            AxisRectangle botRect = new AxisRectangle(nextEnemy, Physics.BOT_WIDTH * 2);
+
+            for(Point corner : botRect.getCorners()) {
+                if(wave.hasPassed(corner, nextEnemy.getTime()) && !wave.hasPassed(corner, me.getTime())) {
+                    range.pushAngle(wave.getAngle(corner));
+                }
+            }
+
+            for(Point intersect : wave.getCircle(me.getTime()).intersect(botRect)) {
+                range.pushAngle(wave.getAngle(intersect));
+            }
+
+            for(Point intersect : wave.getCircle(nextEnemy.getTime()).intersect(botRect)) {
+                range.pushAngle(wave.getAngle(intersect));
+            }
+
+            me = nextEnemy;
+            ptr++;
+        }
+
+        if(range.isEmpty())
+            return null;
+
+        return range;
+    }
+
     public static double zeroNan(double v) {
         if(Double.isNaN(v))
             return 0.0;
         return v;
+    }
+
+    public static <T> T getLast(List<T> col) {
+        if(col.size() == 0)
+            return null;
+        return col.get(col.size() - 1);
+    }
+
+    public static <T> T getFirst(List<T> col) {
+        if(col.size() == 0)
+            return null;
+        return col.get(0);
+    }
+
+    public static boolean strictlyBetween(double min, double x, double max) {
+        return R.nearOrBetween(min, x, max) && !R.isNear(x, min) && !R.isNear(x, max);
     }
 }

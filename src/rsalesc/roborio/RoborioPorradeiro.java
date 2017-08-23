@@ -172,7 +172,6 @@ public class RoborioPorradeiro extends BackAsFrontRobot {
         }
 
         moveWithBackAsFront(gotoPoint);
-        doSharpTurning();
     }
 
     private boolean tooClose() {

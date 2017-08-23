@@ -1,5 +1,6 @@
 package rsalesc.roborio.utils.geo;
 
+import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.colors.Gradient;
 
 import java.awt.*;
@@ -12,8 +13,9 @@ import java.util.LinkedList;
  * Created by Roberto Sales on 24/07/17.
  */
 public class G {
-    private static final Gradient DANGER_GRADIENT;
+    private static final Gradient   DANGER_GRADIENT;
     private static final Gradient   SAFE_GRADIENT;
+    private static final Gradient   SAFE_DISCRETE_GRADIENT;
 
     static {
         DANGER_GRADIENT = new Gradient(new Gradient.GradientColor[]{
@@ -25,6 +27,15 @@ public class G {
         SAFE_GRADIENT = new Gradient(new Gradient.GradientColor[]{
                 new Gradient.GradientColor(Color.GREEN, 0),
                 new Gradient.GradientColor(Color.YELLOW, 0.5),
+                new Gradient.GradientColor(Color.RED, 1)
+        });
+
+        SAFE_DISCRETE_GRADIENT = new Gradient(new Gradient.GradientColor[]{
+                new Gradient.GradientColor(Color.GREEN, 0),
+                new Gradient.GradientColor(Color.GREEN, 0.65 - R.EPSILON),
+                new Gradient.GradientColor(Color.YELLOW, 0.65),
+                new Gradient.GradientColor(Color.YELLOW, 0.875 - R.EPSILON),
+                new Gradient.GradientColor(Color.RED, 0.875),
                 new Gradient.GradientColor(Color.RED, 1)
         });
     }
@@ -113,6 +124,10 @@ public class G {
     }
 
     public static Color getSafeColor(double alpha) { return SAFE_GRADIENT.evaluate(alpha); }
+
+    public static Color getDiscreteSafeColor(double alpha) {
+        return SAFE_DISCRETE_GRADIENT.evaluate(alpha);
+    }
 
     public void drawString(Point p, String s) {
         g.drawString(s, (float) p.x, (float) p.y);

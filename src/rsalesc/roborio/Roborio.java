@@ -7,10 +7,11 @@ import rsalesc.roborio.energy.EnergyManager;
 import rsalesc.roborio.energy.MirrorPowerManager;
 import rsalesc.roborio.energy.TCManager;
 import rsalesc.roborio.gunning.AutomaticGun;
+import rsalesc.roborio.gunning.RaikoGun;
 import rsalesc.roborio.gunning.RoborioGunArray;
-import rsalesc.roborio.movement.DCSurfingMovement;
 import rsalesc.roborio.movement.Movement;
 import rsalesc.roborio.movement.TCMovement;
+import rsalesc.roborio.movement.VCSMovement;
 import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.myself.MyRobot;
 import rsalesc.roborio.utils.BackAsFrontRobot;
@@ -24,7 +25,7 @@ import java.awt.*;
  * Created by Roberto Sales on 21/07/17.
  */
 public class Roborio extends BackAsFrontRobot {
-    private final boolean TC = true || this.toString().endsWith("tc");
+    private final boolean TC = false || this.toString().endsWith("tc");
     private final boolean MC = false || this.toString().endsWith("mc");
 
     private boolean lostScan = true;
@@ -41,9 +42,10 @@ public class Roborio extends BackAsFrontRobot {
     private boolean hasEnded = false;
     private MirrorPowerManager powerPredictor;
     private EnergyManager manager;
+    private static RaikoGun raikoGun;
 
     public void run() {
-        System.out.println(timedTicks + " " + lastTime + " " + skipped + " " + lastSpent + " " + worstTime);
+//        System.out.println(timedTicks + " " + lastTime + " " + skipped + " " + lastSpent + " " + worstTime);
         timedTicks = 0;
         lastTime = 0;
         lastSpent = 0;
@@ -56,12 +58,18 @@ public class Roborio extends BackAsFrontRobot {
         clearLastRoundData();
         recoverLastRoundData();
 
-        setAdjustRadarForRobotTurn(true);
-        setAdjustGunForRobotTurn(true);
-        setAdjustRadarForGunTurn(true);
+        if(!MC) {
+            setAdjustRadarForRobotTurn(true);
+            setAdjustGunForRobotTurn(true);
+            setAdjustRadarForGunTurn(true);
+            setupRadar();
+        } else {
+            if(raikoGun == null)
+                raikoGun = new RaikoGun();
+            raikoGun.setup(this);
+        }
 
         setupColors();
-        setupRadar();
 
         if(!TC) {
             powerPredictor = new MirrorPowerManager("power_manager");
@@ -71,19 +79,38 @@ public class Roborio extends BackAsFrontRobot {
         }
 
         if(!TC) {
-            movement = new DCSurfingMovement(this, "dcsurfing");
+            movement = new VCSMovement(this).setPowerPredictor(powerPredictor).build();
+//            movement = new DCSurfingMovement(this, "dcsurfing");
 //            movement = new GotoSurfingMovement(this);
-        } else
+        } else {
             movement = new TCMovement(this);
+        }
 
-//        gun = new GuessFactorGun(this, 0.7, false);
-//        gun = new DCGuessFactorGun(this, false, "dcgf_gun");
-//        gun = new HeadOnGun(this, false);
-        gun = new RoborioGunArray(this).setManager(manager).build();
+        if(!MC) {
+            gun = new RoborioGunArray(this).setManager(manager).build();
+        }
 
         do {
-            innerExecute();
+            if(!MC)
+                innerExecute();
+            else if(raikoGun != null)
+                innerMC2K7();
+            else
+                throw new IllegalStateException();
         } while(true);
+    }
+
+    private void innerMC2K7() {
+        movement.doMovement();
+        if(powerPredictor != null && movement.getLastFireEnemy() != null)
+            powerPredictor.log(MyLog.getInstance().atLeastAt(movement.getLastFireEnemy().getTime()),
+                    movement.getLastFireEnemy(),
+                    0,
+                    0,
+                    movement.getLastFirePower());
+
+        raikoGun.doGunning();
+        execute();
     }
 
     public void innerExecute() {
@@ -173,11 +200,26 @@ public class Roborio extends BackAsFrontRobot {
 
         Checkpoint.getInstance().enter("hit_by");
         try {
-            movement.onHitByBullet(e);
+            if(movement != null)
+                movement.onHitByBullet(e);
         } catch(Exception ex) {
             handle(ex);
         }
         Checkpoint.getInstance().leave("hit_by");
+    }
+
+    @Override
+    public void onBulletHitBullet(BulletHitBulletEvent e) {
+        if(hasEnded)
+            return;
+
+        try {
+            if(movement != null)
+                movement.onBulletHitBullet(e);
+            // TODO: gun here
+        } catch(Exception ex) {
+            handle(ex);
+        }
     }
 
     @Override
@@ -187,8 +229,10 @@ public class Roborio extends BackAsFrontRobot {
 
         Checkpoint.getInstance().enter("bullet_hit");
         try {
-            movement.onBulletHit(e);
-            gun.onBulletHit(e);
+            if(movement != null)
+                movement.onBulletHit(e);
+            if(gun != null)
+                gun.onBulletHit(e);
         } catch(Exception ex) {
             handle(ex);
         }
@@ -200,22 +244,29 @@ public class Roborio extends BackAsFrontRobot {
         if(hasEnded)
             return;
 
-        Checkpoint.getInstance().enter("track_enemy");
-        try {
-            if(getEnergy() > R.EPSILON)
-                trackEnemy(e);
-        } catch(Exception ex) {
-            handle(ex);
-        }
+        if(!MC) {
+            Checkpoint.getInstance().enter("track_enemy");
+            try {
+                if (getEnergy() > R.EPSILON)
+                    trackEnemy(e);
+            } catch (Exception ex) {
+                handle(ex);
+            }
 
-        try {
-            gun.onScan(e);
-            movement.onScan(e);
-            doOnScan(e);
-        } catch(Exception ex) {
-            handle(ex);
+            try {
+                gun.onScan(e);
+                movement.onScan(e);
+                doOnScan(e);
+            } catch (Exception ex) {
+                handle(ex);
+            }
+            Checkpoint.getInstance().leave("track_enemy");
+        } else {
+            trackEnemy(e);
+            raikoGun.onScannedRobot(e);
+            if(movement != null)
+                movement.onScan(e);
         }
-        Checkpoint.getInstance().leave("track_enemy");
     }
 
     public void trackEnemy(ScannedRobotEvent e) {
@@ -253,16 +304,20 @@ public class Roborio extends BackAsFrontRobot {
 
         Checkpoint.getInstance().enter("paint");
         g.setColor(Color.BLUE); // default painting color
-        movement.onPaint(g);
-        gun.onPaint(g);
+        if(movement != null)
+            movement.onPaint(g);
+        if(gun != null)
+            gun.onPaint(g);
         Checkpoint.getInstance().leave("paint");
     }
 
     @Override
     public void onRoundEnded(RoundEndedEvent e) {
         Checkpoint.getInstance().enter("round_ended");
-        movement.printLog();
-        gun.printLog();
+        if(movement != null)
+            movement.printLog();
+        if(gun != null)
+            gun.printLog();
         Checkpoint.getInstance().leave("round_ended");
 
         System.out.println("Timing Info");

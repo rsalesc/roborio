@@ -28,10 +28,16 @@ public class TargetingLog {
     public double negativeEscape;
     public double bafHeading;
 
+    public long time;
     public long timeAccel;
     public long timeDecel;
     public long timeRevert;
     public double displaceLast10;
+    public double displaceLast20;
+    public double displaceLast40;
+    public double displaceLast80;
+    public double displaceLast160;
+
     public long revertLast20;
     public double coveredLast20;
     public double gunHeat;
@@ -65,14 +71,21 @@ public class TargetingLog {
         return distance / (Rules.getBulletSpeed(bulletPower) + 1e-8);
     }
 
+    public double getUnconstrainedGfFromAngle(double angle) {
+        return getUnconstrainedGf(Utils.normalRelativeAngle(angle - absBearing));
+    }
+
     public double getGfFromAngle(double angle) {
-        return getGf(Utils.normalRelativeAngle(angle - absBearing));
+        return R.constrain(-1, getUnconstrainedGfFromAngle(angle), +1);
     }
 
     public double getGf(double offset) {
-        return R.constrain(-1,
-                R.zeroNan(this.direction * offset /
-                        (this.direction * offset > 0 ? preciseMea.max : -preciseMea.min)), +1);
+        return R.constrain(-1, getUnconstrainedGf(offset), +1);
+    }
+
+    public double getUnconstrainedGf(double offset) {
+        return R.zeroNan(this.direction * offset /
+                        (this.direction * offset > 0 ? preciseMea.max : -preciseMea.min));
     }
 
     public double getOffset(double gf) {

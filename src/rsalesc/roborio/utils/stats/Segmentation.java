@@ -4,6 +4,7 @@ package rsalesc.roborio.utils.stats;
  * Created by Roberto Sales on 27/07/17.
  */
 public class Segmentation<T extends Stats> {
+    private int                 pieces;
     private int                 depth;
     private double[][]          slices;
     private SegmentTrie<T>      stats;
@@ -12,8 +13,10 @@ public class Segmentation<T extends Stats> {
         this.slices = slices;
         depth = slices.length;
         int[] sizes = new int[depth];
-        for(int i = 0; i < depth; i++)
+        for(int i = 0; i < depth; i++) {
             sizes[i] = slices[i].length + 1;
+            pieces += sizes[i];
+        }
         stats = new SegmentTrie<>(sizes);
     }
 
@@ -60,5 +63,9 @@ public class Segmentation<T extends Stats> {
         }
 
         return query;
+    }
+
+    public int getSliceCount() {
+        return pieces;
     }
 }

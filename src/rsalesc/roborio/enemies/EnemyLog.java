@@ -6,6 +6,7 @@ package rsalesc.roborio.enemies;
 
 import robocode.ScannedRobotEvent;
 import rsalesc.roborio.utils.BackAsFrontRobot;
+import rsalesc.roborio.utils.BattleTime;
 
 /**
  * This class assumes that the enemy logs
@@ -49,18 +50,27 @@ public class EnemyLog {
         return log[realAt(length - k)];
     }
 
-    /* TODO: put a binary search over here */
     public ComplexEnemyRobot atLeastAt(long time) {
-        ComplexEnemyRobot res = null;
-        for(int i = 1; i <= length; i++) {
-            ComplexEnemyRobot cur = log[realAt(length - i)];
-            if(cur.getTime() >= time)
-                res = cur;
+        if(length == 0)
+            return null;
+
+        int latestRound = log[realAt(length - 1)].getBattleTime().getRound();
+
+        int l = 0, r = length;
+        while(l < r) {
+            int mid = (l+r) / 2;
+            ComplexEnemyRobot cur = log[realAt(mid)];
+            BattleTime curBattleTime = cur.getBattleTime();
+            if(curBattleTime.getRound() >= latestRound && curBattleTime.getTime() >= time)
+                r = mid;
             else
-                return res;
+                l = mid+1;
         }
 
-        return res;
+        if(l == length)
+            return null;
+
+        return log[realAt(l)];
     }
 
     public ComplexEnemyRobot at(int i) throws ArrayIndexOutOfBoundsException {

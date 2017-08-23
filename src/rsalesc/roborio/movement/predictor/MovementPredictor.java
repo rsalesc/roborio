@@ -2,7 +2,6 @@ package rsalesc.roborio.movement.predictor;
 
 import robocode.Rules;
 import robocode.util.Utils;
-import rsalesc.roborio.movement.WallSmoothing;
 import rsalesc.roborio.utils.BackAsFrontRobot;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
@@ -19,19 +18,21 @@ import java.util.List;
  *  Note that all methods assume that you are using a BackAsFrontRobot-like robot.
  */
 public abstract class MovementPredictor {
+    private static final boolean SHARP_TURNING = BackAsFrontRobot.SHARP_TURNING;
 
     public static List<PredictedPoint> predictOnWaveImpact(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
                                                            int direction, double perpendiculator, boolean hasToPass) {
-        AxisRectangle shrinkedField = field.shrink(18, 18);
 
+        AxisRectangle shrinkedField = field.shrink(18, 18);
         List<PredictedPoint> res = new ArrayList<PredictedPoint>();
+        res.add(initialPoint);
 
         PredictedPoint cur = initialPoint;
         while(hasToPass && !wave.hasPassedRobot(cur, cur.time) || !wave.hasPassed(cur, cur.time)) {
             double angle = Utils.normalAbsoluteAngle(WallSmoothing.naive(shrinkedField, cur,
                     Physics.absoluteBearing(wave.getSource(), cur)
                     + perpendiculator * direction, direction));
-            cur = _fastTick(cur, angle, Rules.MAX_VELOCITY);
+            cur = _tick(cur, angle, direction == 0 ? 0 : Rules.MAX_VELOCITY, Double.POSITIVE_INFINITY);
             res.add(cur);
         }
 
@@ -53,13 +54,31 @@ public abstract class MovementPredictor {
         return res;
     }
 
+    public static List<PredictedPoint> generateOnWaveImpact(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
+                                                           int direction, double perpendiculator, boolean hasToPass) {
+        List<PredictedPoint> points =
+                predictOnWaveImpact(field, initialPoint, wave, direction, perpendiculator, hasToPass);
+
+        points.add(0, initialPoint);
+        PredictedPoint back = points.get(points.size() - 1);
+
+        for(int i = 0; i < 3; i++) {
+            double angle = Utils.normalAbsoluteAngle(WallSmoothing.naive(field, back,
+                    Physics.absoluteBearing(wave.getSource(), back)
+                            + perpendiculator * direction, direction));
+
+            PredictedPoint next = back.fakeTick(angle, back.getVelocity(), angle, Rules.MAX_VELOCITY);
+            points.add(next);
+            back = next;
+        }
+
+        return points;
+    }
+
     public static Range getBetterMaximumEscapeAngle(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
                                                     int direction) {
         List<PredictedPoint> posList = predictOnWaveImpact(field, initialPoint, wave, direction, R.HALF_PI, true);
         List<PredictedPoint> negList = predictOnWaveImpact(field, initialPoint, wave, -direction, R.HALF_PI, true);
-
-        posList.add(0, initialPoint);
-        negList.add(0, initialPoint);
 
         Point pos = posList.get(posList.size() - 1);
         Point neg = negList.get(negList.size() - 1);
@@ -135,10 +154,7 @@ public abstract class MovementPredictor {
 
         double newVelocity = getNewVelocity(last.velocity, maxVelocity, ahead, Double.POSITIVE_INFINITY);
 
-        double newX = last.x + R.sin(newHeading) * newVelocity;
-        double newY = last.y + R.cos(newHeading) * newVelocity;
-
-        return new PredictedPoint(newX, newY, newHeading, newVelocity, last.time + 1);
+        return last.tick(newHeading, newVelocity);
     }
 
     private static PredictedPoint _tick(PredictedPoint last, double angle, double maxVelocity, double remaining) {
@@ -149,12 +165,11 @@ public abstract class MovementPredictor {
         double maxTurning = Physics.maxTurningRate(last.velocity);
         double newHeading = Utils.normalAbsoluteAngle(R.constrain(-maxTurning, turn, maxTurning) + last.heading);
 
-        double newVelocity = getNewVelocity(last.velocity, maxVelocity, ahead, remaining);
+        double newVelocity = new Range(-maxTurning, maxTurning).isNearlyContained(turn) || !SHARP_TURNING
+                ? getNewVelocity(last.velocity, maxVelocity, ahead, remaining)
+                : getNewVelocity(last.velocity, 0, ahead, remaining);
 
-        double newX = last.x + R.sin(newHeading) * newVelocity;
-        double newY = last.y + R.cos(newHeading) * newVelocity;
-
-        return new PredictedPoint(newX, newY, newHeading, newVelocity, last.time + 1);
+        return last.tick(newHeading, newVelocity);
     }
 
     public static double getNewVelocity(double velocity, double maxVelocity, int ahead, double remaining) {

@@ -2,6 +2,7 @@ package rsalesc.roborio.gunning;
 
 import robocode.ScannedRobotEvent;
 import rsalesc.roborio.gunning.utils.GunFireEvent;
+import rsalesc.roborio.gunning.utils.VirtualBullet;
 import rsalesc.roborio.gunning.virtual.GunChoosingStrategy;
 import rsalesc.roborio.gunning.virtual.GunScoring;
 import rsalesc.roborio.utils.BackAsFrontRobot;
@@ -10,6 +11,7 @@ import rsalesc.roborio.utils.storage.NamedStorage;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -172,5 +174,15 @@ public abstract class VirtualGunArray extends AutomaticGun {
         for(int i = 0; i < length; i++) {
             System.out.println(guns[i].getName() + " score: " + R.formattedPercentage(score[i]));
         }
+    }
+
+    public VirtualBullet[] getVirtualBullets() {
+        ArrayList<VirtualBullet> res = new ArrayList<>();
+        for(int i = 0; i < length; i++) {
+            guns[i].checkActive();
+            res.addAll(Arrays.asList(guns[i].getVirtualBullets()));
+        }
+
+        return res.toArray(new VirtualBullet[0]);
     }
 }

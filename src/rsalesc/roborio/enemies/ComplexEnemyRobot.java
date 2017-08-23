@@ -3,6 +3,7 @@ package rsalesc.roborio.enemies;
 import robocode.ScannedRobotEvent;
 import rsalesc.roborio.movement.predictor.PredictedPoint;
 import rsalesc.roborio.utils.BackAsFrontRobot;
+import rsalesc.roborio.utils.BattleTime;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.geo.AxisRectangle;
@@ -12,8 +13,6 @@ import rsalesc.roborio.utils.geo.Point;
  * Created by Roberto Sales on 21/07/17.
  */
 public class ComplexEnemyRobot extends EnemyRobot {
-    private long time;
-
     private double absBearing;
     private double x;
     private double y;
@@ -25,6 +24,8 @@ public class ComplexEnemyRobot extends EnemyRobot {
 
     public Integer direction;
     private Integer ahead;
+
+    private BattleTime battleTime;
 
     ComplexEnemyRobot() {
         super();
@@ -40,7 +41,7 @@ public class ComplexEnemyRobot extends EnemyRobot {
 
     public void update(ScannedRobotEvent e, BackAsFrontRobot robot) {
         super.update(e);
-        time = e.getTime();
+        battleTime = robot.getBattleTime();
         AxisRectangle field = robot.getBattleField();
 
         absBearing = e.getBearingRadians() + Math.toRadians(robot.getHeading());
@@ -59,7 +60,7 @@ public class ComplexEnemyRobot extends EnemyRobot {
         return x*x;
     }
 
-    public long getTime() { return time; }
+    public long getTime() { return getBattleTime().getTime(); }
 
     public double getX() {
         return x;
@@ -86,7 +87,7 @@ public class ComplexEnemyRobot extends EnemyRobot {
     }
 
     public PredictedPoint getPredictionPoint() {
-        return new PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
+        return new PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime(), getAhead());
     }
 
     public double getDistanceToWall() {
@@ -116,5 +117,9 @@ public class ComplexEnemyRobot extends EnemyRobot {
 
     public void setAhead(Integer ahead) {
         this.ahead = ahead;
+    }
+
+    public BattleTime getBattleTime() {
+        return battleTime;
     }
 }

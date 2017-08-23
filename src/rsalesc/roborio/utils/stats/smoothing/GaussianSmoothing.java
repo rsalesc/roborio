@@ -12,7 +12,7 @@ public class GaussianSmoothing extends KernelSmoothing {
     }
 
     @Override
-    public double evaluateKernel(int diff) {
+    public double evaluateKernel(double diff) {
         return R.exp(-0.5 * sqr((diff) / bandwidth)) * GAUSS_RATIO;
     }
 

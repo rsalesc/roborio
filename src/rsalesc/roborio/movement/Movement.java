@@ -1,9 +1,11 @@
 package rsalesc.roborio.movement;
 
+import robocode.BulletHitBulletEvent;
 import robocode.BulletHitEvent;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
 import rsalesc.roborio.enemies.ComplexEnemyRobot;
+import rsalesc.roborio.energy.MirrorPowerManager;
 import rsalesc.roborio.gunning.utils.VirtualBullet;
 import rsalesc.roborio.utils.BackAsFrontRobot;
 
@@ -16,6 +18,7 @@ public abstract class Movement {
     private BackAsFrontRobot robot;
     private ComplexEnemyRobot lastFireEnemy;
     private double lastFirePower;
+    private MirrorPowerManager powerPredictor;
 
     public Movement(BackAsFrontRobot robot) {
         setRobot(robot);
@@ -34,8 +37,9 @@ public abstract class Movement {
     public void onScan(ScannedRobotEvent e) {}
 
     public void onBulletHit(BulletHitEvent e) {}
-
     public void onHitByBullet(HitByBulletEvent e) {}
+    public void onBulletHitBullet(BulletHitBulletEvent e) {}
+
     public void onPaint(Graphics2D g) {}
 
     public long getTime()  { return robot.getTime(); }
@@ -94,5 +98,19 @@ public abstract class Movement {
     public void clearLastFire() {
         lastFireEnemy = null;
         lastFirePower = 0;
+    }
+
+    public Movement setPowerPredictor(MirrorPowerManager m) {
+        this.powerPredictor = m;
+        return this;
+    }
+
+    // TODO: pensar melhor no build
+    public Movement build() {
+        return this;
+    }
+
+    public MirrorPowerManager getPowerPredictor() {
+        return powerPredictor;
     }
 }

@@ -10,7 +10,7 @@ public class UniformSmoothing extends KernelSmoothing {
     }
 
     @Override
-    public double evaluateKernel(int diff) {
+    public double evaluateKernel(double diff) {
         double parameter = (diff) / bandwidth;
         if(Math.abs(parameter) > 1)
             return 0.0;

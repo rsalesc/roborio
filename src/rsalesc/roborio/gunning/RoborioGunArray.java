@@ -13,16 +13,19 @@ public class RoborioGunArray extends VirtualGunArray {
     public RoborioGunArray(BackAsFrontRobot robot) {
         super(robot);
 
-//        add(new DCGuessFactorGun(robot)
+//        add(new GuessFactorGun(robot)
 //            .setName("antisurfer")
 //            .setTargeting(new AntiSurferTargeting()));
-        add(new DCGuessFactorGun(robot)
+        add(new GuessFactorGun(robot)
                 .setName("antisurfer2")
                 .setTargeting(new AntiSurfer2Targeting()));
-        add(new DCGuessFactorGun(robot)
+//        add(new GuessFactorGun(robot)
+//                    .setName("antisurferNN")
+//                    .setTargeting(new AntiSurferNNTargeting()));
+        add(new GuessFactorGun(robot)
             .setName("generalpurpose")
             .setTargeting(new AntiEverythingTargeting()));
-//        add(new DCGuessFactorGun(robot)
+//        add(new GuessFactorGun(robot)
 //            .setName("antishadow")
 //            .setTargeting(new AntiShadowTargeting()));
 

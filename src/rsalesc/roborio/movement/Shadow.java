@@ -1,21 +1,23 @@
 package rsalesc.roborio.movement;
 
-import robocode.util.Utils;
-import rsalesc.roborio.utils.geo.Range;
+import rsalesc.roborio.gunning.utils.VirtualBullet;
+import rsalesc.roborio.utils.geo.AngularRange;
 
 /**
  * Created by Roberto Sales on 09/08/17.
  */
 public class Shadow {
-    public Range range;
-    public double bearing;
+    public final AngularRange range;
+    public final VirtualBullet bullet;
+    public final double bearing;
 
-    public Shadow(double bearing, Range range) {
+    public Shadow(double bearing, AngularRange range, VirtualBullet bullet) {
         this.range = range;
         this.bearing = bearing;
+        this.bullet = bullet;
     }
 
     public boolean isInside(double angle) {
-        return range.isNearlyContained(Utils.normalRelativeAngle(angle - bearing));
+        return range.isAngleNearlyContained(angle);
     }
 }

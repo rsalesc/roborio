@@ -1,7 +1,6 @@
 package rsalesc.roborio.utils.structures;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
-import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.Strategy;
 import rsalesc.roborio.utils.geo.Range;
 
@@ -11,12 +10,17 @@ import java.util.List;
  * Created by Roberto Sales on 13/08/17.
  */
 public abstract class Knn<T> {
+    private boolean hasSpecificLog = false;
+    private boolean loggingHit = true;
+    private boolean loggingBreak = true;
+    private boolean loggingVirtual = false;
+
     private double scanWeight = 1.0;
     private int defaultK;
-    private double defaultRatio;
+    private double defaultRatio = 1.0;
     private Strategy strategy;
     private boolean built = false;
-    private Condition condition = null;
+    private ParametrizedCondition parametrizedCondition = null;
 
     public Strategy getStrategy() {
         return strategy;
@@ -37,8 +41,8 @@ public abstract class Knn<T> {
         return this;
     }
 
-    public Knn<T> setCondition(Condition condition) {
-        this.condition = condition;
+    public Knn<T> setCondition(ParametrizedCondition parametrizedCondition) {
+        this.parametrizedCondition = parametrizedCondition;
         return this;
     }
 
@@ -51,15 +55,54 @@ public abstract class Knn<T> {
         return this.scanWeight;
     }
 
+    private void setupLogging() {
+        if(!hasSpecificLog) {
+            loggingHit = false;
+            loggingBreak = false;
+            loggingVirtual = false;
+        }
+        hasSpecificLog = true;
+    }
+
+    public Knn<T> logsHit() {
+        setupLogging();
+        loggingHit = true;
+        return this;
+    }
+
+    public Knn<T> logsBreak() {
+        setupLogging();
+        loggingBreak = true;
+        return this;
+    }
+
+    public Knn<T> logsVirtual() {
+        setupLogging();
+        loggingVirtual = true;
+        return this;
+    }
+
+    public boolean logsOnHit() {
+        return loggingHit;
+    }
+
+    public boolean logsOnBreak() {
+        return loggingBreak;
+    }
+
+    public boolean logsOnVirtual() {
+        return loggingVirtual;
+    }
+
     protected abstract void buildStructure();
     public abstract int size();
     public abstract void add(double[] point, T payload);
     public abstract List<Entry<T>> query(double[] point, int K, double alpha);
 
     public boolean isEnabled(Object o) {
-        if(condition == null)
+        if(parametrizedCondition == null)
             return true;
-        return condition.test(o);
+        return parametrizedCondition.test(o);
     }
 
     public boolean isBuilt() {
@@ -105,24 +148,35 @@ public abstract class Knn<T> {
         }
     }
 
-    private abstract class Condition {
+    public static abstract class ParametrizedCondition {
         public abstract boolean test(Object o);
     }
 
-    private class HitCondition {
+    public static class HitCondition extends ParametrizedCondition {
         Range limits;
+        int rounds;
 
-        public HitCondition(double min, double max) {
+        public HitCondition(double min, double max, int rounds) {
             limits = new Range(min, max);
+            this.rounds = rounds;
         }
 
-        public HitCondition(Range limits) {
-            this(limits.min, limits.max);
+        public HitCondition(Range limits, int rounds) {
+            this(limits.min, limits.max, rounds);
         }
 
         public boolean test(Object o) {
-            Range range = (Range) o;
-            return range.intersect(limits).getLength() > R.EPSILON;
+            HitLeastCondition range = (HitLeastCondition) o;
+            if(limits.isNearlyContained(range.limits.min) && range.rounds >= rounds)
+                return true;
+            else
+                return false;
+        }
+    }
+
+    public static class HitLeastCondition extends HitCondition {
+        public HitLeastCondition(double min, int rounds) {
+            super(min, Double.MAX_VALUE, rounds);
         }
     }
 }

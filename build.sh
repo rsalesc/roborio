@@ -8,4 +8,4 @@ javac -cp /home/rsalesc/robocode/libs/robocode.jar:./src -d out src/rsalesc/robo
     && cp rsalesc.roborio.Roborio_$*.jar /home/rsalesc/robocode/robots && true && mkdir -p obfuscated \
     && proguard -injars rsalesc.roborio.Roborio_$*.jar -outjars obfuscated/rsalesc.roborio.Roborio_$*.jar \
         -libraryjars /home/rsalesc/robocode/libs/robocode.jar -libraryjars $JAVA_HOME/jre/lib/rt.jar \
-        -keep "public class rsalesc.roborio.Roborio" -dontoptimize && rm -rf obfuscated/*.*tc.jar
+        -keep "public class rsalesc.roborio.Roborio" -dontoptimize && rm -rf obfuscated/*.*tc.jar obfuscated/*.*mc.jar

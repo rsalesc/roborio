@@ -18,6 +18,10 @@ public class VirtualBullet {
         this.source = source;
     }
 
+    public Bullet getBullet() {
+        return bullet;
+    }
+
     public double getHeading() {
         return bullet.getHeadingRadians();
     }
@@ -54,4 +58,17 @@ public class VirtualBullet {
     }
 
     public boolean isActive() { return bullet.isActive(); }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof VirtualBullet))
+            return false;
+        VirtualBullet rhs = (VirtualBullet) o;
+        return getBullet().equals(rhs.getBullet());
+    }
+
+    @Override
+    public int hashCode() {
+        return getBullet().hashCode();
+    }
 }

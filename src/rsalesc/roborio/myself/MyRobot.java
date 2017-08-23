@@ -3,6 +3,7 @@ package rsalesc.roborio.myself;
 import robocode.util.Utils;
 import rsalesc.roborio.movement.predictor.PredictedPoint;
 import rsalesc.roborio.utils.BackAsFrontRobot;
+import rsalesc.roborio.utils.BattleTime;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.geo.AxisRectangle;
@@ -20,7 +21,7 @@ public class MyRobot {
     private double energy;
     private double gunHeat;
     private double distanceToWall;
-    private long time;
+    private BattleTime battleTime;
 
     private int ahead;
 
@@ -36,7 +37,7 @@ public class MyRobot {
         setVelocity(robot.getVelocity());
         setEnergy(robot.getEnergy());
         setGunHeat(robot.getGunHeat());
-        setTime(robot.getTime());
+        setBattleTime(robot.getBattleTime());
 
         AxisRectangle field = robot.getBattleField();
         distanceToWall = field.distance(getPosition());
@@ -99,11 +100,7 @@ public class MyRobot {
     }
 
     public long getTime() {
-        return time;
-    }
-
-    public void setTime(long time) {
-        this.time = time;
+        return getBattleTime().getTime();
     }
 
     public Point getPoint() {
@@ -132,7 +129,7 @@ public class MyRobot {
     }
 
     public PredictedPoint getPredictionPoint() {
-        return new PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime());
+        return new PredictedPoint(getPoint(), getHeading(), getVelocity(), getTime(), getAhead());
     }
 
     public double getDistanceToWall() {
@@ -145,5 +142,20 @@ public class MyRobot {
 
     public void setAhead(int ahead) {
         this.ahead = ahead;
+    }
+
+
+    public AxisRectangle getHitBox() {
+        double x = getPoint().getX();
+        double y = getPoint().getY();
+        return new AxisRectangle(x - 18, x + 18, y - 18,  y + 18);
+    }
+
+    public BattleTime getBattleTime() {
+        return battleTime;
+    }
+
+    public void setBattleTime(BattleTime battleTime) {
+        this.battleTime = battleTime;
     }
 }

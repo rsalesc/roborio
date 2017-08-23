@@ -1,5 +1,7 @@
 package rsalesc.roborio.myself;
 
+import rsalesc.roborio.utils.BattleTime;
+
 /**
  * Created by Roberto Sales on 23/07/17.
  */
@@ -41,16 +43,26 @@ public class MyLog {
     }
 
     public MyRobot atLeastAt(long time) {
-        MyRobot res = null;
-        for(int i = 1; i <= length; i++) {
-            MyRobot cur = log[realAt(length - i)];
-            if(cur.getTime() >= time)
-                res = cur;
+        if(length == 0)
+            return null;
+
+        int latestRound = log[realAt(length - 1)].getBattleTime().getRound();
+
+        int l = 0, r = length;
+        while(l < r) {
+            int mid = (l+r) / 2;
+            MyRobot cur = log[realAt(mid)];
+            BattleTime curBattleTime = cur.getBattleTime();
+            if(curBattleTime.getRound() >= latestRound && curBattleTime.getTime() >= time)
+                r = mid;
             else
-                return res;
+                l = mid+1;
         }
 
-        return res;
+        if(l == length)
+            return null;
+
+        return log[realAt(l)];
     }
 
     public MyRobot at(int i) {
