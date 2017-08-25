@@ -82,6 +82,28 @@ public class KnnSet<T> {
         public abstract List<Knn.Entry<T>> getWeightedEntries(List<Knn.Entry<T>> entries);
     }
 
+    public static class InverseDistanceWeighter<T> extends DistanceWeighter<T> {
+        private double ratio;
+        public InverseDistanceWeighter() {
+            this(1.0);
+        }
+
+        public InverseDistanceWeighter(double ratio) {
+            this.ratio = ratio;
+        }
+
+        @Override
+        public List<Knn.Entry<T>> getWeightedEntries(List<Knn.Entry<T>> entries) {
+            List<Knn.Entry<T>> res = new ArrayList<>();
+            for(Knn.Entry<T> entry : entries) {
+                res.add(new Knn.Entry<>(entry.weight / Math.pow(entry.distance + 1e-10, ratio),
+                        entry.distance, entry.payload));
+            }
+
+            return res;
+        }
+    }
+
     public static class GaussDistanceWeighter<T> extends DistanceWeighter<T> {
         private double ratio;
 

@@ -17,10 +17,7 @@ import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.geo.Range;
 import rsalesc.roborio.utils.stats.GuessFactorStats;
 import rsalesc.roborio.utils.storage.NamedStorage;
-import rsalesc.roborio.utils.waves.MyFireWave;
-import rsalesc.roborio.utils.waves.MyWave;
-import rsalesc.roborio.utils.waves.Wave;
-import rsalesc.roborio.utils.waves.WaveMap;
+import rsalesc.roborio.utils.waves.*;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -28,9 +25,7 @@ import java.util.Iterator;
 /**
  * Created by Roberto Sales on 28/07/17.
  *
- * TODO: check bullet intersection
  * TODO: support melee 1v1
- * TODO: add enemy precise intersection on wave
  */
 public class GuessFactorGun extends AutomaticGun {
     private String storageHint;
@@ -265,12 +260,15 @@ public class GuessFactorGun extends AutomaticGun {
                         _wouldHitTime = getTime();
                         _wouldHit = R.gaussKernel(diff / band);
                         _wouldHitPower = fireWave.getPower();
+                        targeting.log(missLog, BreakType.BULLET_HIT);
+                    } else {
+                        targeting.log(missLog, BreakType.BULLET_BREAK);
                     }
 
                     lastMissLog = missLog;
+                } else {
+                    targeting.log(missLog, BreakType.VIRTUAL_BREAK);
                 }
-
-                targeting.log(missLog, !(wave instanceof MyFireWave));
 
                 iterator.remove();
             }

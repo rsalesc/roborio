@@ -11,30 +11,32 @@ public class AntiSurferNNStrategy extends SlicingStrategy {
     @Override
     public double[] getQuery(TargetingLog f) {
         return new double[]{
-                f.bft(),
-                f.lateralVelocity,
-                f.advancingVelocity,
-                R.constrain(0, f.getPreciseMea().max / f.getMea(), 1.25),
-                R.constrain(0, -f.getPreciseMea().min / f.getMea(), 1.25),
+                Math.max(f.distance, 800),
+                R.sin(f.relativeHeading),
+                R.cos(f.relativeHeading),
+                f.velocity,
+                Math.max(f.positiveEscape, 400),
+                Math.max(f.negativeEscape, 400),
                 f.accel,
-                Math.max(f.timeDecel / f.bft(), 1.25),
-                Math.max(f.timeRevert / f.bft(), 1.25),
-                f.displaceLast10
+                1.0 / (1.0 + 0.1 * f.timeRevert),
+                1.0 / (1.0 + 0.1 * f.timeDecel),
+                f.lastMissGF
         };
     }
 
     @Override
     public double[][] getSlices() {
         return new double[][]{
-                SlicingStrategy.uniformSlicing(0, 85, 8),
+                SlicingStrategy.uniformSlicing(0, 800, 11),
+                SlicingStrategy.uniformSlicing(0, 1, 10),
+                SlicingStrategy.uniformSlicing(-1, +1, 7),
                 SlicingStrategy.uniformSlicing(0, 8, 9),
-                SlicingStrategy.uniformSlicing(-8, 8, 6),
-                SlicingStrategy.uniformSlicing(0, 1.25, 6),
-                SlicingStrategy.uniformSlicing(0, 1.25, 3),
-                SlicingStrategy.uniformSlicing(-1, +1, 8),
-                SlicingStrategy.uniformSlicing(0, 1.25, 7),
-                SlicingStrategy.uniformSlicing(0, 1.25, 7),
-                SlicingStrategy.uniformSlicing(0, 80, 5)
+                SlicingStrategy.uniformSlicing(0, 600, 7),
+                SlicingStrategy.uniformSlicing(0, 600, 4),
+                SlicingStrategy.uniformSlicing(-1, +1, 5),
+                SlicingStrategy.uniformSlicing(0, 1, 6),
+                SlicingStrategy.uniformSlicing(0, 1, 8),
+                SlicingStrategy.uniformSlicing(-1, +1, 5)
         };
     }
 }

@@ -12,10 +12,19 @@ public class AntiEverythingTargeting extends DCGuessFactorTargeting {
     @Override
     public KnnSet<GuessFactorRange> getKnnSet() {
         return new KnnSet<GuessFactorRange>()
+//                .setDistanceWeighter(new KnnSet.GaussDistanceWeighter<>(0.9))
                 .add(new KnnTree<GuessFactorRange>()
                     .setMode(KnnTree.Mode.MANHATTAN)
                     .setK(100)
-                    .setRatio(0.1)
-                    .setStrategy(new AntiRandomStrategy()));
+                    .setRatio(0.25)
+                    .setStrategy(new AntiRandomStrategy())
+                    .logsHit()
+                    .logsBreak())
+                .add(new KnnTree<GuessFactorRange>()
+                    .setMode(KnnTree.Mode.MANHATTAN)
+                    .setK(50)
+                    .setRatio(0.15)
+                    .setStrategy(new AntiRandomStrategy())
+                    .logsVirtual());
     }
 }

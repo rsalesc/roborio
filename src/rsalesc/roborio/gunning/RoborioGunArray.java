@@ -13,18 +13,21 @@ public class RoborioGunArray extends VirtualGunArray {
     public RoborioGunArray(BackAsFrontRobot robot) {
         super(robot);
 
-//        add(new GuessFactorGun(robot)
-//            .setName("antisurfer")
-//            .setTargeting(new AntiSurferTargeting()));
         add(new GuessFactorGun(robot)
-                .setName("antisurfer2")
-                .setTargeting(new AntiSurfer2Targeting()));
+                .setName("antisurfer+")
+                .setTargeting(new AntiSurferPlusTargeting()));
+//        add(new GuessFactorGun(robot)
+//                .setName("mygun")
+//                .setTargeting(new MyAdaptiveTargeting()));
 //        add(new GuessFactorGun(robot)
 //                    .setName("antisurferNN")
 //                    .setTargeting(new AntiSurferNNTargeting()));
+//        add(new GuessFactorGun(robot)
+//            .setName("generalpurpose")
+//            .setTargeting(new AntiEverythingTargeting()));
         add(new GuessFactorGun(robot)
-            .setName("generalpurpose")
-            .setTargeting(new AntiEverythingTargeting()));
+                .setName("generalpurpose2")
+                .setTargeting(new AntiEverything2Targeting()));
 //        add(new GuessFactorGun(robot)
 //            .setName("antishadow")
 //            .setTargeting(new AntiShadowTargeting()));

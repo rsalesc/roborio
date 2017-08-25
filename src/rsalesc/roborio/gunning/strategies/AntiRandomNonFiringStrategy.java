@@ -7,14 +7,13 @@ import rsalesc.roborio.utils.Strategy;
 /**
  * Created by Roberto Sales on 14/08/17.
  */
-public class AntiRandomStrategy extends Strategy {
+public class AntiRandomNonFiringStrategy extends Strategy {
     @Override
     public double[] getQuery(TargetingLog f) {
         return new double[]{
                 Math.min(Math.abs(f.lateralVelocity) / 8, 1),
                 R.constrain(0, (f.advancingVelocity / 8 + 1) / 2, 1),
-                Math.min(f.distance / 800, 1),
-//                Math.min(f.bft() / 80, 1),
+                Math.min(f.bft() / 80.0, 1),
                 R.constrain(0, (f.accel + 1) / 2, 1),
                 R.constrain(0, f.displaceLast10 / 80, 1),
                 R.constrain(0, f.getPreciseMea().max / f.getMea(), 1),
@@ -27,6 +26,6 @@ public class AntiRandomStrategy extends Strategy {
 
     @Override
     public double[] getWeights() {
-        return new double[]{6, 3, 4.78, /*4.75*/ 1.75, 2.5, 5, 2.5, 2, 2.5};
+        return new double[]{6, 3, 5.25, 1.75, 2.5, 5, 2.5, 2, 2.5, /*50*/};
     }
 }

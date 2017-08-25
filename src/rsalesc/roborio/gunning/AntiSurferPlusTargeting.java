@@ -6,13 +6,9 @@ import rsalesc.roborio.utils.structures.KnnSet;
 import rsalesc.roborio.utils.structures.KnnTree;
 
 /**
- * Created by Roberto Sales on 14/08/17.
+ * Created by Roberto Sales on 16/08/17.
  */
-public class AntiSurferTargeting extends DCGuessFactorTargeting {
-    public AntiSurferTargeting() {
-        setIdentifier("surf_targeting");
-    }
-
+public class AntiSurferPlusTargeting extends DCGuessFactorTargeting {
     @Override
     public KnnSet<GuessFactorRange> getKnnSet() {
         return new KnnSet<GuessFactorRange>()
@@ -20,55 +16,49 @@ public class AntiSurferTargeting extends DCGuessFactorTargeting {
                 .add(new KnnTree<GuessFactorRange>()
                         .setLimit(7500)
                         .setMode(KnnTree.Mode.MANHATTAN)
-                        .setK(5)
+                        .setK(4)
                         .setRatio(0.15)
                         .setStrategy(new AntiSurferStrategy())
                         .logsBreak())
                 .add(new KnnTree<GuessFactorRange>()
-                        .setLimit(3000)
+                        .setLimit(2000)
                         .setMode(KnnTree.Mode.MANHATTAN)
-                        .setK(5)
+                        .setK(4)
                         .setRatio(0.15)
                         .setStrategy(new AntiSurferStrategy())
                         .logsBreak())
                 .add(new KnnTree<GuessFactorRange>()
                         .setLimit(350)
                         .setMode(KnnTree.Mode.MANHATTAN)
-                        .setK(5)
+                        .setK(4)
                         .setRatio(0.15)
                         .setStrategy(new AntiSurferStrategy())
                         .logsBreak())
                 .add(new KnnTree<GuessFactorRange>()
                         .setLimit(125)
                         .setMode(KnnTree.Mode.MANHATTAN)
-                        .setK(5)
+                        .setK(4)
                         .setRatio(0.15)
                         .setStrategy(new AntiSurferStrategy())
                         .logsBreak())
                 .add(new KnnTree<GuessFactorRange>()
-                        .setLimit(25)
+                        .setLimit(32)
                         .setMode(KnnTree.Mode.MANHATTAN)
-                        .setK(3)
+                        .setK(2)
                         .setRatio(0.15)
                         .setStrategy(new AntiSurferStrategy())
                         .logsBreak())
 
-                // hits
+                // hit negative
                 .add(new KnnTree<GuessFactorRange>()
-                        .setLimit(4)
                         .setMode(KnnTree.Mode.MANHATTAN)
+                        .setLimit(4)
                         .setK(1)
-                        .setScanWeight(1.5)
-                        .setRatio(0.15)
+                        .setRatio(1)
+                        .setScanWeight(-0.5) // -1 was pretty good actually
                         .setStrategy(new AntiSurferStrategy())
                         .logsHit())
-                .add(new KnnTree<GuessFactorRange>()
-                        .setLimit(8)
-                        .setMode(KnnTree.Mode.MANHATTAN)
-                        .setK(2)
-                        .setScanWeight(1.5)
-                        .setRatio(0.15)
-                        .setStrategy(new AntiSurferStrategy())
-                        .logsHit());
+
+                ;
     }
 }

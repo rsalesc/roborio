@@ -1,6 +1,7 @@
 package rsalesc.roborio.gunning;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
+import rsalesc.roborio.utils.waves.BreakType;
 
 import java.awt.*;
 
@@ -22,7 +23,7 @@ public abstract class Targeting {
 
     protected abstract void buildStructure();
     public abstract double generateFiringAngle(TargetingLog firingLog);
-    public abstract void log(TargetingLog missLog, boolean isVirtual);
+    public abstract void log(TargetingLog missLog, BreakType type);
 
     public Targeting build() {
         buildStructure();

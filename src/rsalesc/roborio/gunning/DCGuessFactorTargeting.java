@@ -11,6 +11,7 @@ import rsalesc.roborio.utils.stats.smoothing.GaussianSmoothing;
 import rsalesc.roborio.utils.storage.NamedStorage;
 import rsalesc.roborio.utils.structures.Knn;
 import rsalesc.roborio.utils.structures.KnnSet;
+import rsalesc.roborio.utils.waves.BreakType;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ public abstract class DCGuessFactorTargeting extends GuessFactorTargeting {
 //        GuessFactorStats gfRange = getStats(firingLog);
 //        gfRange.setSmoother(smoother);
 
-//        double bestGF = gfRange.getBestGuessFactor();
+//        double bestGF = getStats(firingLog).getBestGuessFactor();
         double bestGF = getBestGF(firingLog);
         double bearingOffset = firingLog.getOffset(bestGF);
 
@@ -66,8 +67,8 @@ public abstract class DCGuessFactorTargeting extends GuessFactorTargeting {
     }
 
     @Override
-    public void log(TargetingLog missLog, boolean isVirtual) {
-        if(!isVirtual) {
+    public void log(TargetingLog missLog, BreakType type) {
+        if(type != BreakType.VIRTUAL_BREAK) {
             _lastMissLog = missLog;
         }
 
@@ -80,10 +81,9 @@ public abstract class DCGuessFactorTargeting extends GuessFactorTargeting {
             gfHigh = tmp;
         }
 
-        knn.add(missLog, new GuessFactorRange(gfLow, gfHigh));
+        knn.add(missLog, new GuessFactorRange(gfLow, gfHigh), type);
     }
 
-    // TODO: avoid knning again
     public GuessFactorStats getStats(TargetingLog f) {
         if(_lastStatsTime == f.time)
             return _lastStats;
@@ -100,7 +100,7 @@ public abstract class DCGuessFactorTargeting extends GuessFactorTargeting {
 
         Range preciseMea = f.getPreciseMea();
 
-        double bandwidth = Physics.hitAngle(f.distance) * 0.4 / preciseMea.minAbsolute()
+        double bandwidth = Physics.hitAngle(f.distance) * 0.7 / preciseMea.minAbsolute()
                 * GuessFactorStats.BUCKET_COUNT;
 
         stats.setSmoother(new GaussianSmoothing(bandwidth));

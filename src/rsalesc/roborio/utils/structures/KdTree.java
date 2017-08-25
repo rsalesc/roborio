@@ -254,7 +254,7 @@ abstract public class KdTree<T> {
 
     private void updateClippingWindow(double[] point) {
         if(this.length == 0) return;
-        if(this.min == null) {
+        if(this.min == null || this.max == null) {
             this.min = new double[this.dim];
             System.arraycopy(point, 0, this.min, 0, this.dim);
             this.max = new double[this.dim];

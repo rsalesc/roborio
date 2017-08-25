@@ -12,13 +12,12 @@ import rsalesc.roborio.utils.structures.Knn;
  * Created by Roberto Sales on 21/08/17.
  */
 public class VCSMovement extends TrueSurfing {
-    private static final Knn.HitCondition ADAPTIVE_LEAST = new Knn.HitLeastCondition(0.04, 0);
-    private static final Knn.HitCondition FLATTENER_LEAST = new Knn.HitLeastCondition(0.09, 1);
-    private static final Knn.HitCondition SMOOTH_LEAST = new Knn.HitLeastCondition(0.06, 1);
+    private static final Knn.HitCondition ADAPTIVE_LEAST = new Knn.HitLeastCondition(0.03, 0);
+    private static final Knn.HitCondition FLATTENER_LEAST = new Knn.HitLeastCondition(0.07, 1);
 
     public VCSMovement(BackAsFrontRobot robot) {
         super(robot, "the-only-one");
-        this.setDodging(new VCSDodging());
+        this.setDodging(new VCSDodging().setIdentifier("the-only-one-dodger"));
         this.build();
     }
 
@@ -41,7 +40,7 @@ public class VCSMovement extends TrueSurfing {
                     .add(new MultipleSegmentedBuffer()
                         .setMultipleStrategy(new SlicingFlattenerStrategy())
                         .weightsSegments()
-                        .setWeight(35)
+                        .setWeight(40)
                         .setCondition(FLATTENER_LEAST)
                         .logsBreak())
                     ;

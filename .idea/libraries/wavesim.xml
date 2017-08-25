@@ -1,14 +1,12 @@
 <component name="libraryTable">
-  <library name="robocode 1.9.2.6">
+  <library name="wavesim">
     <CLASSES>
       <root url="file://$USER_HOME$/robocode/wavesim" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/Downloads/wavesim_2.1.0.jar!/doc" />
       <root url="file://$USER_HOME$/robocode/wavesim/doc" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$USER_HOME$/Downloads/wavesim_2.1.0.jar!/" />
       <root url="file://$USER_HOME$/robocode/wavesim" />
     </SOURCES>
   </library>

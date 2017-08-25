@@ -17,15 +17,15 @@ public class Slicer {
             new double[]{0.5, 0.8, 0.3, 0.15, 0.1, 0.5};
 
     private static final double[] adaptiveChances =
-            new double[]{0.65, 0.8, 0.25, 0.4, 0.3, 0.5, 0.3, 0.3};
+            new double[]{0.5, 0.8, 0.35, 0.8, 0.4, 0.7, 0.5, 0.5};
 
     private static final double[] flattenerChances =
-            new double[]{0.65, 0.75, 0.25, 0.4, 0.3, 0.65, 0.45, 0.45};
+            new double[]{0.3, 0.5, 0.3, 0.6, 0.3, 0.65, 0.75, 0.75};
 
 
-    private static final int sliceCount = 25;
-    private static final String[] names = simpleNames;
-    private static final double[] chances = simpleChances;
+    private static final int sliceCount = 60;
+    private static final String[] names = adaptiveNames;
+    private static final double[] chances = adaptiveChances;
 
     public static void main(String[] args) {
         String[][] slices = new String[sliceCount][names.length];

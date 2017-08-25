@@ -92,4 +92,9 @@ public class TargetingLog {
         return R.zeroNan(direction * gf * (gf > 0 ? preciseMea.max : -preciseMea.min));
     }
 
+    public double heat() {
+        double heatGenerated = 1.0 + bulletPower / 5;
+        return Math.min(gunHeat / 0.1, Math.max(heatGenerated - gunHeat, 0) / 0.1) / 16;
+    }
+
 }

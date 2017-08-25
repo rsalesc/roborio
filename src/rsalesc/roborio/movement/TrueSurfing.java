@@ -7,6 +7,8 @@ import rsalesc.roborio.enemies.EnemyLog;
 import rsalesc.roborio.enemies.EnemyTracker;
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.gunning.utils.VirtualBullet;
+import rsalesc.roborio.movement.distancing.DefaultDistanceController;
+import rsalesc.roborio.movement.distancing.DistanceController;
 import rsalesc.roborio.movement.forces.DangerPoint;
 import rsalesc.roborio.movement.predictor.MovementPredictor;
 import rsalesc.roborio.movement.predictor.PredictedPoint;
@@ -58,6 +60,7 @@ public class TrueSurfing extends Movement {
     private int _lastAwayDirection = 1;
 
     private ShadowManager shadowing;
+    private DistanceController controller;
 
     public TrueSurfing(BackAsFrontRobot robot, String storageHint) {
         super(robot);
@@ -80,6 +83,7 @@ public class TrueSurfing extends Movement {
 
         _bulletsFired = (BoxedInteger) store.get(storageHint + "-fired");
         _bulletsHit = (BoxedInteger) store.get(storageHint + "-hit");
+        controller = new DefaultDistanceController();
     }
 
     public TrueSurfing setDodging(GuessFactorDodging dodging) {
@@ -211,7 +215,7 @@ public class TrueSurfing extends Movement {
 
             double distance = my.getPoint().distance(enemy.getPoint());
             double absBearing = Physics.absoluteBearing(enemy.getPoint(), my.getPoint());
-            double offset = R.HALF_PI - (1 - (distance / IDEAL_DISTANCE));
+            double offset = controller.getPerpendiculator(distance);
 
             AxisRectangle field = getRobot().getBattleField().shrink(18, 18);
             while(!field.strictlyContains(getRobot().getPoint().project(absBearing + offset * _lastAwayDirection, 215))) {
@@ -244,7 +248,7 @@ public class TrueSurfing extends Movement {
         final MyRobot me = myLog.getLatest();
         Wave nextWave = waves.earliestFireWave(me);
 
-        if(nextWave == null) {
+        if(nextWave == null || !controller.shouldSurf(nextWave.getSource().distance(me.getPoint()))) {
             fallback();
             return;
         }
@@ -275,7 +279,7 @@ public class TrueSurfing extends Movement {
         }
 
         double distance = nextWave.getSource().distance(me.getPoint());
-        double perp = R.HALF_PI - (1 - (distance / IDEAL_DISTANCE));
+        double perp = controller.getPerpendiculator(distance);
         if (stopDanger < counterDanger && stopDanger < clockwiseDanger) {
             int stopDirection = me.getDirection(nextWave.getSource());
             if(stopDirection == 0) stopDirection = 1;
@@ -309,7 +313,7 @@ public class TrueSurfing extends Movement {
 
         WaveSnap snap = waves.getData(nextWave);
         double distance = nextWave.getSource().distance(initialPoint);
-        double perp = R.HALF_PI - (1 - (distance / IDEAL_DISTANCE));
+        double perp = controller.getPerpendiculator(distance);
 
         int stopDirection = initialPoint.getDirection(nextWave.getSource());
         if(stopDirection == 0) stopDirection = 1;
@@ -352,7 +356,7 @@ public class TrueSurfing extends Movement {
             res[i].danger *= Physics.bulletPower(nextWave.getVelocity());
             res[i].danger /= impactTime;
             res[i].danger *=
-                    Math.pow(1.4, distanceToSource / res[i].passPoint.distance(nextWave.getSource()) - 1);
+                    Math.pow(2.45, distanceToSource / res[i].passPoint.distance(nextWave.getSource()) - 1);
         }
 
         return res;

@@ -1,8 +1,8 @@
 package rsalesc.roborio.utils.storage;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Roberto Sales on 28/07/17.
@@ -10,11 +10,11 @@ import java.util.Queue;
 public class NamedStorage {
     private static final NamedStorage SINGLETON = new NamedStorage();
 
-    HashMap<String, Object> store;
+    ConcurrentHashMap<String, Object> store;
     Queue<String> keys;
 
     private NamedStorage() {
-        store = new HashMap<>();
+        store = new ConcurrentHashMap<>();
         keys = new LinkedList<>();
     }
 
@@ -41,7 +41,7 @@ public class NamedStorage {
     public void add(String key, Object payload) {
 //        ensureSize();
         store.put(key, payload);
-        keys.add(key);
+//        keys.add(key);
     }
 
     public void remove(String key) {
