@@ -18,7 +18,7 @@ public abstract class VCSGuessFactorDodging extends GuessFactorDodging {
     private GuessFactorStats lastStats;
     private SegmentedBufferSet buffer;
 
-    public abstract SegmentedBufferSet getBufferSet();
+    public abstract SegmentedBufferSet getNewBufferSet();
 
     @Override
     public GuessFactorStats getLastStats() {
@@ -41,8 +41,8 @@ public abstract class VCSGuessFactorDodging extends GuessFactorDodging {
     }
 
     @Override
-    public GuessFactorStats getStats(TargetingLog log, double confidence, int roundNum) {
-        GuessFactorStats stats = buffer.getStats(log, new Knn.HitLeastCondition(confidence, roundNum));
+    public GuessFactorStats getStats(TargetingLog log, Knn.ParametrizedCondition condition) {
+        GuessFactorStats stats = buffer.getStats(log, condition);
         Range preciseMea = log.getPreciseMea();
 
         double bandwidth = Physics.hitAngle(log.distance) / preciseMea.minAbsolute() * 0.42
@@ -53,10 +53,15 @@ public abstract class VCSGuessFactorDodging extends GuessFactorDodging {
     }
 
     @Override
+    public void tick(long time, int roundNum) {
+        buffer.mutate(new Knn.ConditionMutation(time, roundNum));
+    }
+
+    @Override
     protected void buildStructure() {
         NamedStorage store = NamedStorage.getInstance();
         if(!store.contains(storageHint)) {
-            store.add(storageHint, getBufferSet());
+            store.add(storageHint, getNewBufferSet());
         }
 
         buffer = (SegmentedBufferSet) (store.get(storageHint));

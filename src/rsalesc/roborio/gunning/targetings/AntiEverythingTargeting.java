@@ -1,5 +1,6 @@
-package rsalesc.roborio.gunning;
+package rsalesc.roborio.gunning.targetings;
 
+import rsalesc.roborio.gunning.DCGuessFactorTargeting;
 import rsalesc.roborio.gunning.strategies.AntiRandomStrategy;
 import rsalesc.roborio.gunning.utils.GuessFactorRange;
 import rsalesc.roborio.utils.structures.KnnSet;

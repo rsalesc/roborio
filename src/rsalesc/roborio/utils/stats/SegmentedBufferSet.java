@@ -1,6 +1,7 @@
 package rsalesc.roborio.utils.stats;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
+import rsalesc.roborio.utils.structures.Knn;
 import rsalesc.roborio.utils.waves.BreakType;
 
 import java.util.ArrayList;
@@ -21,6 +22,11 @@ public class SegmentedBufferSet {
             buffer.build();
         buffers.add(buffer);
         return this;
+    }
+
+    public void mutate(Knn.ConditionMutation mutation) {
+        for(SegmentedBuffer buffer : buffers)
+            buffer.mutate(mutation);
     }
 
     public GuessFactorStats getStats(TargetingLog f) {

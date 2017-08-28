@@ -65,15 +65,15 @@ public class MultipleSegmentedBuffer extends SegmentedBuffer {
         int sliceCount = segmentation.getSliceCount();
         double depth;
         if(sliceCount < 2)
-            depth = 3;
+            depth = 10;
         else if(sliceCount < 5)
-            depth = 1;
+            depth = 4;
         else if(sliceCount < 10)
-            depth = 0.6;
+            depth = 1.5;
         else if(sliceCount < 30)
-            depth = 0.3;
+            depth = 0.6;
         else
-            depth = 0.1;
+            depth = 0.2;
 
         return new GuessFactorStats(depth);
     }

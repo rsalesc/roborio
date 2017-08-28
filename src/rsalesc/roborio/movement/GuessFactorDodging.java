@@ -2,6 +2,7 @@ package rsalesc.roborio.movement;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.utils.stats.GuessFactorStats;
+import rsalesc.roborio.utils.structures.Knn;
 import rsalesc.roborio.utils.waves.BreakType;
 
 /**
@@ -22,7 +23,8 @@ public abstract class GuessFactorDodging {
 
     public abstract GuessFactorStats getLastStats();
     public abstract void log(TargetingLog log, BreakType type);
-    public abstract GuessFactorStats getStats(TargetingLog log, double confidence, int roundNum);
+    public abstract GuessFactorStats getStats(TargetingLog log, Knn.ParametrizedCondition condition);
+    public abstract void tick(long time, int roundNum);
     protected abstract void buildStructure();
 
     public boolean isBuilt() {

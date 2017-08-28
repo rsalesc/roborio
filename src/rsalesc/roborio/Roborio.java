@@ -10,8 +10,8 @@ import rsalesc.roborio.gunning.AutomaticGun;
 import rsalesc.roborio.gunning.RaikoGun;
 import rsalesc.roborio.gunning.RoborioGunArray;
 import rsalesc.roborio.movement.Movement;
+import rsalesc.roborio.movement.RoborioMovement;
 import rsalesc.roborio.movement.TCMovement;
-import rsalesc.roborio.movement.VCSMovement;
 import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.myself.MyRobot;
 import rsalesc.roborio.utils.BackAsFrontRobot;
@@ -25,8 +25,8 @@ import java.awt.*;
  * Created by Roberto Sales on 21/07/17.
  */
 public class Roborio extends BackAsFrontRobot {
-    private final boolean TC = false || this.toString().endsWith("tc");
-    private final boolean MC = false || this.toString().endsWith("mc");
+    private final boolean TC = false;
+    private final boolean MC = false;
 
     private boolean lostScan = true;
     private static double worstTime = 0;
@@ -59,9 +59,7 @@ public class Roborio extends BackAsFrontRobot {
         recoverLastRoundData();
 
         if(!MC) {
-            setAdjustRadarForRobotTurn(true);
-            setAdjustGunForRobotTurn(true);
-            setAdjustRadarForGunTurn(true);
+            dissociate();
             setupRadar();
         } else {
             if(raikoGun == null)
@@ -79,7 +77,7 @@ public class Roborio extends BackAsFrontRobot {
         }
 
         if(!TC) {
-            movement = new VCSMovement(this).setPowerPredictor(powerPredictor).build();
+            movement = new RoborioMovement(this).setPowerPredictor(powerPredictor).build();
 //            movement = new DCSurfingMovement(this, "dcsurfing");
 //            movement = new GotoSurfingMovement(this);
         } else {
@@ -175,6 +173,9 @@ public class Roborio extends BackAsFrontRobot {
         try {
             super.onStatus(e);
             trackMe();
+
+            if(movement != null)
+                movement.onStatus(e);
         } catch(Exception ex) {
             handle(ex);
         }

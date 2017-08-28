@@ -7,25 +7,28 @@ import java.util.Comparator;
  * Created by Roberto Sales on 23/08/17.
  */
 public class Slicer {
-    private static final String[] simpleNames =
-            new String[]{"BFT", "LAT_VEL", "ADV_VEL", "ESCAPE", "ESCAPE", "ACCEL"};
-
     private static final String[] adaptiveNames =
             new String[]{"BFT", "LAT_VEL", "ADV_VEL", "ESCAPE", "ESCAPE", "ACCEL", "RUN", "D10"};
 
     private static final double[] simpleChances =
-            new double[]{0.5, 0.8, 0.3, 0.15, 0.1, 0.5};
+            new double[]{0.7, 0.9, 0.4, 0, 0, 0, 0, 0};
 
     private static final double[] adaptiveChances =
-            new double[]{0.5, 0.8, 0.35, 0.8, 0.4, 0.7, 0.5, 0.5};
+            new double[]{0.5, 0.8, 0.45, 0.6, 0.4, 0.6, 0.45, 0.45};
 
     private static final double[] flattenerChances =
-            new double[]{0.3, 0.5, 0.3, 0.6, 0.3, 0.65, 0.75, 0.75};
+            new double[]{0.4, 0.5, 0.35, 0.45, 0.35, 0.55, 0.4, 0.45};
+
+    private static final double[] tickChances =
+            new double[]{0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
+
+    private static final double[] pmChances =
+            new double[]{0, 1.0, 0.8, 0, 0, 0.3, 0.7, 0.7};
 
 
-    private static final int sliceCount = 60;
+    private static final int sliceCount = 14;
     private static final String[] names = adaptiveNames;
-    private static final double[] chances = adaptiveChances;
+    private static final double[] chances = flattenerChances;
 
     public static void main(String[] args) {
         String[][] slices = new String[sliceCount][names.length];

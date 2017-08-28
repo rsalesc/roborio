@@ -1,6 +1,8 @@
 package rsalesc.roborio.gunning;
 
 import rsalesc.roborio.energy.MirrorPowerManager;
+import rsalesc.roborio.gunning.targetings.AntiEverything2Targeting;
+import rsalesc.roborio.gunning.targetings.AntiSurferPlusTargeting;
 import rsalesc.roborio.gunning.virtual.BestScoreStrategy;
 import rsalesc.roborio.gunning.virtual.WeightedHitRateScoring;
 import rsalesc.roborio.utils.BackAsFrontRobot;

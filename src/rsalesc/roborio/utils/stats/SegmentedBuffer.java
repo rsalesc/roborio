@@ -98,6 +98,11 @@ public class SegmentedBuffer {
         return this;
     }
 
+    public void mutate(Knn.ConditionMutation mutation) {
+        if(condition != null)
+            condition.mutate(mutation);
+    }
+
     private void setupLogging() {
         if(!hasSpecificLog) {
             loggingHit = false;

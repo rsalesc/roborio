@@ -1,9 +1,10 @@
 package rsalesc.roborio.movement;
 
 import rsalesc.roborio.gunning.utils.GuessFactorRange;
-import rsalesc.roborio.movement.strategies.AdaptiveStrategy;
-import rsalesc.roborio.movement.strategies.FlatteningStrategy;
-import rsalesc.roborio.movement.strategies.UnsegmentedStrategy;
+import rsalesc.roborio.movement.strategies.dc.AdaptiveStrategy;
+import rsalesc.roborio.movement.strategies.dc.FlatteningStrategy;
+import rsalesc.roborio.movement.strategies.dc.OldReleaseStrategy;
+import rsalesc.roborio.movement.strategies.dc.UnsegmentedStrategy;
 import rsalesc.roborio.utils.BackAsFrontRobot;
 import rsalesc.roborio.utils.DecayableStrategy;
 import rsalesc.roborio.utils.structures.Knn;
@@ -14,9 +15,8 @@ import rsalesc.roborio.utils.structures.KnnTree;
  * Created by Roberto Sales on 21/08/17.
  */
 public class DCMovement extends TrueSurfing {
-    private static final Knn.HitCondition ADAPTIVE_LEAST = new Knn.HitLeastCondition(0.02, 0);
-    private static final Knn.HitCondition FLATTENER_LEAST = new Knn.HitLeastCondition(0.09, 1);
-    private static final Knn.HitCondition SMOOTH_LEAST = new Knn.HitLeastCondition(0.06, 1);
+    private static final Knn.HitCondition ADAPTIVE_LEAST = new Knn.HitLeastCondition(0.04, 0);
+    private static final Knn.HitCondition FLATTENER_LEAST = new LateFlatteningCondition(0.09, 1, 10);
 
     private static final DecayableStrategy ADAPTIVE_DECAY = new DecayableStrategy(0.8, 1.15)
             .setStrategy(new AdaptiveStrategy());
@@ -24,27 +24,146 @@ public class DCMovement extends TrueSurfing {
     private static final DecayableStrategy FLATTENING_DECAY = new DecayableStrategy(0.5, 1.15)
             .setStrategy(new FlatteningStrategy());
 
+    private static final double ADAPTIVE_DECAY_DEPTH = 0.85;
+    private static final double FLATTENER_DECAY_DEPTH = 0.85;
+
     public DCMovement(BackAsFrontRobot robot) {
-        super(robot, "the-only-one");
-        this.setDodging(new DCDodging());
+        super(robot, "washington-dc");
+        this.setDodging(new DCDodging().setIdentifier("washington-dc-dodger"));
         this.build();
     }
 
     static class DCDodging extends DCGuessFactorDodging {
         @Override
-        public KnnSet<GuessFactorRange> getKnnSet() {
+        public KnnSet<GuessFactorRange> getNewKnnSet() {
+            return getMonotonicKnnSet();
+        }
+
+        public KnnSet<GuessFactorRange> getOldReleaseKnnSet() {
             return new KnnSet<GuessFactorRange>()
-                    .setDistanceWeighter(new KnnSet.GaussDistanceWeighter<>(0.9))
+                    .setDistanceWeighter(new Knn.GaussDistanceWeighter<>(1.0))
+                    .add(new KnnTree<GuessFactorRange>()
+                        .setMode(KnnTree.Mode.MANHATTAN)
+                        .setK(48)
+                        .setRatio(0.25)
+                        .setScanWeight(75)
+                        .setStrategy(new DecayableStrategy(0.275, 1.15).setStrategy(new OldReleaseStrategy()))
+                        .logsBreak())
+                    .add(new KnnTree<GuessFactorRange>()
+                        .setMode(KnnTree.Mode.MANHATTAN)
+                        .setK(24)
+                        .setRatio(0.25)
+                        .setScanWeight(75)
+                        .setStrategy(new DecayableStrategy(0.275, 1.15).setStrategy(new OldReleaseStrategy()))
+                        .logsVirtual());
+        }
+
+        public KnnSet<GuessFactorRange> getDecayKnnSet() {
+            return new KnnSet<GuessFactorRange>()
+                    .setDistanceWeighter(new Knn.GaussDistanceWeighter<>(0.9))
+                    .add(new KnnTree<GuessFactorRange>()
+                        .setMode(KnnTree.Mode.MANHATTAN)
+                        .setK(30)
+                        .setRatio(0.25)
+                        .setScanWeight(1)
+                        .setStrategy(new UnsegmentedStrategy())
+                        .logsHit())
+
+                    /* ADAPTIVE SMALL TREES */
+                    .add(new KnnTree<GuessFactorRange>()
+                        .setMode(KnnTree.Mode.MANHATTAN)
+                        .setK(20)
+                        .setRatio(0.2)
+                        .setScanWeight(30)
+                        .setStrategy(new AdaptiveStrategy())
+                        .setCondition(ADAPTIVE_LEAST)
+                        .logsHit())
+                    .add(new KnnTree<GuessFactorRange>()
+                        .setMode(KnnTree.Mode.MANHATTAN)
+                        .setLimit(1)
+                        .setK(1)
+                        .setScanWeight(100)
+                        .setCondition(ADAPTIVE_LEAST)
+                        .setStrategy(new AdaptiveStrategy())
+                        .logsHit())
+                    .add(new KnnTree<GuessFactorRange>()
+                        .setMode(KnnTree.Mode.MANHATTAN)
+                        .setLimit(1)
+                        .setK(1)
+                        .setScanWeight(100)
+                        .setCondition(ADAPTIVE_LEAST)
+                        .setStrategy(new AdaptiveStrategy())
+                        .logsHit())
+
+                    /* ADAPTIVE DECAY TREES */
                     .add(new KnnTree<GuessFactorRange>()
                             .setMode(KnnTree.Mode.MANHATTAN)
-                            .setK(24)
+                            .setK(8)
+                            .setRatio(0.25)
+                            .setScanWeight(100)
+                            .setCondition(ADAPTIVE_LEAST)
+                            .setDecayDepth(ADAPTIVE_DECAY_DEPTH)
+                            .setStrategy(new AdaptiveStrategy())
+                            .logsHit())
+                    .add(new KnnTree<GuessFactorRange>()
+                            .setMode(KnnTree.Mode.MANHATTAN)
+                            .setK(36)
+                            .setRatio(0.33)
+                            .setScanWeight(100)
+                            .setCondition(ADAPTIVE_LEAST)
+                            .setDecayDepth(ADAPTIVE_DECAY_DEPTH)
+                            .setStrategy(new AdaptiveStrategy())
+                            .logsHit())
+                    .add(new KnnTree<GuessFactorRange>()
+                            .setMode(KnnTree.Mode.MANHATTAN)
+                            .setK(100)
+                            .setRatio(0.5)
+                            .setScanWeight(100)
+                            .setCondition(ADAPTIVE_LEAST)
+                            .setDecayDepth(ADAPTIVE_DECAY_DEPTH)
+                            .setStrategy(new AdaptiveStrategy())
+                            .logsHit())
+
+                    /* FLATTENING TREES */
+                    .add(new KnnTree<GuessFactorRange>()
+                            .setMode(KnnTree.Mode.MANHATTAN)
+                            .setLimit(300)
+                            .setK(25)
+                            .setScanWeight(50)
+                            .setRatio(0.08)
+                            .setCondition(FLATTENER_LEAST)
+                            .setDecayDepth(FLATTENER_DECAY_DEPTH)
+                            .setStrategy(new FlatteningStrategy())
+                            .logsBreak())
+                    .add(new KnnTree<GuessFactorRange>()
+                            .setMode(KnnTree.Mode.MANHATTAN)
+                            .setLimit(2000)
+                            .setK(50)
+                            .setScanWeight(200)
+                            .setRatio(0.07)
+                            .setCondition(FLATTENER_LEAST)
+                            .setDecayDepth(FLATTENER_DECAY_DEPTH)
+                            .setStrategy(new FlatteningStrategy())
+                            .logsBreak())
+
+            ;
+        }
+
+        public KnnSet<GuessFactorRange> getMonotonicKnnSet() {
+            return new KnnSet<GuessFactorRange>()
+                    .add(new KnnTree<GuessFactorRange>()
+                            .setMode(KnnTree.Mode.MANHATTAN)
+                            .setK(40)
                             .setRatio(0.2)
-                            .setScanWeight(1)
-                            .setStrategy(new UnsegmentedStrategy())
+                            .setScanWeight(0.5)
+                            .setStrategy(new AdaptiveStrategy())
+                            .setDistanceWeighter(new Knn.GaussDistanceWeighter<>(1.0))
                             .logsHit())
 
 
-                    // adaptive breaking (needs a condition?)
+                    /*
+                    * ADAPTIVE MONOTONIC TREES
+                     */
                     .add(new KnnTree<GuessFactorRange>()
                             .setMode(KnnTree.Mode.MANHATTAN)
                             .setLimit(1)
@@ -66,7 +185,7 @@ public class DCMovement extends TrueSurfing {
                     .add(new KnnTree<GuessFactorRange>()
                             .setMode(KnnTree.Mode.MANHATTAN)
                             .setLimit(32)
-                            .setK(4)
+                            .setK(2)
                             .setRatio(0.25)
                             .setScanWeight(100)
                             .setCondition(ADAPTIVE_LEAST)
@@ -75,41 +194,63 @@ public class DCMovement extends TrueSurfing {
                     .add(new KnnTree<GuessFactorRange>()
                             .setMode(KnnTree.Mode.MANHATTAN)
                             .setLimit(100)
-                            .setK(8)
+                            .setK(3)
                             .setRatio(0.25)
-                            .setScanWeight(50)
+                            .setScanWeight(100)
                             .setCondition(ADAPTIVE_LEAST)
                             .setStrategy(new AdaptiveStrategy())
                             .logsHit())
                     .add(new KnnTree<GuessFactorRange>()
                             .setMode(KnnTree.Mode.MANHATTAN)
                             .setLimit(1000)
-                            .setK(32)
+                            .setK(3)
                             .setRatio(0.25)
-                            .setScanWeight(10)
+                            .setScanWeight(100)
                             .setCondition(ADAPTIVE_LEAST)
                             .setStrategy(new AdaptiveStrategy())
                             .logsHit())
 
-                    // really need it over here
+                    /*
+                    *   FLATTENING MONOTONIC TREES
+                     */
                     .add(new KnnTree<GuessFactorRange>()
                             .setMode(KnnTree.Mode.MANHATTAN)
-                            .setLimit(32)
-                            .setK(4)
+                            .setLimit(12)
+                            .setK(2)
                             .setRatio(0.15)
-                            .setScanWeight(10)
+                            .setScanWeight(35)
                             .setCondition(FLATTENER_LEAST)
                             .setStrategy(new FlatteningStrategy())
                             .logsBreak())
                     .add(new KnnTree<GuessFactorRange>()
                             .setMode(KnnTree.Mode.MANHATTAN)
-                            .setLimit(100)
-                            .setK(12)
+                            .setLimit(32)
+                            .setK(4)
                             .setRatio(0.15)
-                            .setScanWeight(20)
+                            .setScanWeight(35)
                             .setCondition(FLATTENER_LEAST)
                             .setStrategy(new FlatteningStrategy())
-                            .logsBreak());
+                            .logsBreak())
+                    .add(new KnnTree<GuessFactorRange>()
+                            .setMode(KnnTree.Mode.MANHATTAN)
+                            .setLimit(250)
+                            .setK(6)
+                            .setRatio(0.15)
+                            .setScanWeight(35)
+                            .setCondition(FLATTENER_LEAST)
+                            .setStrategy(new FlatteningStrategy())
+                            .logsBreak())
+                    .add(new KnnTree<GuessFactorRange>()
+                            .setMode(KnnTree.Mode.MANHATTAN)
+                            .setLimit(1000)
+                            .setK(6)
+                            .setRatio(0.15)
+                            .setScanWeight(35)
+                            .setCondition(FLATTENER_LEAST)
+                            .setStrategy(new FlatteningStrategy())
+                            .logsBreak())
+
+            ;
         }
     }
 }

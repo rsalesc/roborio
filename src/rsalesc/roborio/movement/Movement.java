@@ -1,9 +1,6 @@
 package rsalesc.roborio.movement;
 
-import robocode.BulletHitBulletEvent;
-import robocode.BulletHitEvent;
-import robocode.HitByBulletEvent;
-import robocode.ScannedRobotEvent;
+import robocode.*;
 import rsalesc.roborio.enemies.ComplexEnemyRobot;
 import rsalesc.roborio.energy.MirrorPowerManager;
 import rsalesc.roborio.gunning.utils.VirtualBullet;
@@ -35,6 +32,8 @@ public abstract class Movement {
     public abstract void doMovement();
     public void doShadowing(VirtualBullet[] bullets) {}
     public void onScan(ScannedRobotEvent e) {}
+
+    public void onStatus(StatusEvent e) {};
 
     public void onBulletHit(BulletHitEvent e) {}
     public void onHitByBullet(HitByBulletEvent e) {}

@@ -20,13 +20,13 @@ public abstract class DCGuessFactorDodging extends GuessFactorDodging {
     private GuessFactorStats lastStats;
     private KnnSet<GuessFactorRange> knn;
 
-    public abstract KnnSet<GuessFactorRange> getKnnSet();
+    public abstract KnnSet<GuessFactorRange> getNewKnnSet();
 
     @Override
     protected void buildStructure() {
         NamedStorage store = NamedStorage.getInstance();
         if(!store.contains(storageHint)) {
-            store.add(storageHint, getKnnSet());
+            store.add(storageHint, getNewKnnSet());
         }
 
         knn = (KnnSet) (store.get(storageHint));
@@ -52,10 +52,13 @@ public abstract class DCGuessFactorDodging extends GuessFactorDodging {
     }
 
     @Override
-    public GuessFactorStats getStats(TargetingLog f, double confidence, int roundNum) {
-//        return new GuessFactorStats(Double.POSITIVE_INFINITY);
+    public void tick(long time, int roundNum) {
+        knn.mutate(new Knn.ConditionMutation(time, roundNum));
+    }
 
-        List<Knn.Entry<GuessFactorRange>> found = knn.query(f, new Knn.HitLeastCondition(confidence, roundNum));
+    @Override
+    public GuessFactorStats getStats(TargetingLog f, Knn.ParametrizedCondition condition) {
+        List<Knn.Entry<GuessFactorRange>> found = knn.query(f, condition);
 
         GuessFactorStats stats = new GuessFactorStats(Double.POSITIVE_INFINITY);
 

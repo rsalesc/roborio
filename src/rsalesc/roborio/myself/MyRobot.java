@@ -119,8 +119,10 @@ public class MyRobot {
 
     public int getDirection(Point from) {
         double head = getHeading();
-        if(ahead < 0)
+        if(ahead < 0) {
             head += R.PI;
+            head = Utils.normalAbsoluteAngle(head);
+        }
         double absBearing = Physics.absoluteBearing(getPoint(), from);
         double off = Utils.normalRelativeAngle(head - absBearing);
         if(off > 0) return -1;

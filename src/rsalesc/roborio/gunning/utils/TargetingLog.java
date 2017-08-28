@@ -97,4 +97,8 @@ public class TargetingLog {
         return Math.min(gunHeat / 0.1, Math.max(heatGenerated - gunHeat, 0) / 0.1) / 16;
     }
 
+    public double getZeroGf() {
+        return absBearing;
+    }
+
 }

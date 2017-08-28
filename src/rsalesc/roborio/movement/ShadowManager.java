@@ -164,8 +164,8 @@ public class ShadowManager {
                 if(R.isNear(shadowIntersection.getLength(), 0))
                     nextPieces.add(piece);
                 else {
-                    nextPieces.add(new AngularRange(piece.getOffset(0), piece.min, shadowIntersection.min));
-                    nextPieces.add(new AngularRange(piece.getOffset(0), shadowIntersection.max, piece.max));
+                    nextPieces.add(new AngularRange(piece.getAngle(0), piece.min, shadowIntersection.min));
+                    nextPieces.add(new AngularRange(piece.getAngle(0), shadowIntersection.max, piece.max));
                 }
             }
 

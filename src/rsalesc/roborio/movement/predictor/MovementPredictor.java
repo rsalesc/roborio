@@ -21,7 +21,16 @@ public abstract class MovementPredictor {
     private static final boolean SHARP_TURNING = BackAsFrontRobot.SHARP_TURNING;
 
     public static List<PredictedPoint> predictOnWaveImpact(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
-                                                           int direction, double perpendiculator, boolean hasToPass) {
+                                                           int direction, double perpendiculator, boolean hasToPass, boolean brake) {
+
+        if(direction == 0 && !brake)
+            throw new IllegalStateException();
+
+        if(direction == 0)
+            direction = initialPoint.getDirection(wave.getSource());
+
+        if(direction == 0)
+            direction = +1;
 
         AxisRectangle shrinkedField = field.shrink(18, 18);
         List<PredictedPoint> res = new ArrayList<PredictedPoint>();
@@ -29,10 +38,10 @@ public abstract class MovementPredictor {
 
         PredictedPoint cur = initialPoint;
         while(hasToPass && !wave.hasPassedRobot(cur, cur.time) || !wave.hasPassed(cur, cur.time)) {
+            double pointingAngle = Physics.absoluteBearing(wave.getSource(), cur) + perpendiculator * direction;
             double angle = Utils.normalAbsoluteAngle(WallSmoothing.naive(shrinkedField, cur,
-                    Physics.absoluteBearing(wave.getSource(), cur)
-                    + perpendiculator * direction, direction));
-            cur = _tick(cur, angle, direction == 0 ? 0 : Rules.MAX_VELOCITY, Double.POSITIVE_INFINITY);
+                    pointingAngle, direction));
+            cur = _tick(cur, angle, brake ? 0 : Rules.MAX_VELOCITY, Double.POSITIVE_INFINITY);
             res.add(cur);
         }
 
@@ -44,6 +53,8 @@ public abstract class MovementPredictor {
         List<PredictedPoint> res = new ArrayList<PredictedPoint>();
 
         PredictedPoint cur = initialPoint;
+        res.add(initialPoint);
+
         while(!wave.hasTouchedRobot(cur, cur.time)) {
             double distance = cur.distance(dest);
             double angle = R.isNear(distance, 0) ? cur.heading : Physics.absoluteBearing(cur, dest);
@@ -57,7 +68,7 @@ public abstract class MovementPredictor {
     public static List<PredictedPoint> generateOnWaveImpact(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
                                                            int direction, double perpendiculator, boolean hasToPass) {
         List<PredictedPoint> points =
-                predictOnWaveImpact(field, initialPoint, wave, direction, perpendiculator, hasToPass);
+                predictOnWaveImpact(field, initialPoint, wave, direction, perpendiculator, hasToPass, false);
 
         points.add(0, initialPoint);
         PredictedPoint back = points.get(points.size() - 1);
@@ -77,8 +88,8 @@ public abstract class MovementPredictor {
 
     public static Range getBetterMaximumEscapeAngle(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
                                                     int direction) {
-        List<PredictedPoint> posList = predictOnWaveImpact(field, initialPoint, wave, direction, R.HALF_PI, true);
-        List<PredictedPoint> negList = predictOnWaveImpact(field, initialPoint, wave, -direction, R.HALF_PI, true);
+        List<PredictedPoint> posList = predictOnWaveImpact(field, initialPoint, wave, direction, R.HALF_PI, true, false);
+        List<PredictedPoint> negList = predictOnWaveImpact(field, initialPoint, wave, -direction, R.HALF_PI, true, false);
 
         Point pos = posList.get(posList.size() - 1);
         Point neg = negList.get(negList.size() - 1);
@@ -91,43 +102,43 @@ public abstract class MovementPredictor {
         return res;
     }
 
-    public static PredictedWaveImpact preciselyPredictOnWaveImpact(PredictedPoint initialPoint, Wave wave, Point dest) {
-        double absBearing = wave.getAngle(initialPoint);
-
-        ArrayList<PredictedPoint> points = new ArrayList<>();
-        Range res = new Range();
-        PredictedPoint cur = initialPoint;
-        while(!wave.hasPassedRobot(cur, cur.time)) {
-            double distance = cur.distance(dest);
-            double angle = R.isNear(distance, 0 ) ? cur.heading : Physics.absoluteBearing(cur, dest);
-            PredictedPoint next = _tick(cur, angle, Rules.MAX_VELOCITY, distance);
-            AxisRectangle botRect = new AxisRectangle(next, 36);
-
-            if(!wave.hasTouchedRobot(next, next.time)) {
-                cur = next;
-                continue;
-            }
-
-            for(Point corner : botRect.getCorners()) {
-                if(wave.hasPassed(corner, next.time) && !wave.hasPassed(corner, cur.time)) {
-                    res.push(Utils.normalRelativeAngle(wave.getAngle(corner) - absBearing));
-                }
-            }
-
-            for(Point intersect : wave.getCircle(cur.time).intersect(botRect)) {
-                res.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - absBearing));
-            }
-
-            for(Point intersect : wave.getCircle(next.time).intersect(botRect)) {
-                res.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - absBearing));
-            }
-
-            cur = next;
-            points.add(cur);
-        }
-
-        return new PredictedWaveImpact(wave, initialPoint, points, res);
-    }
+//    public static PredictedWaveImpact preciselyPredictOnWaveImpact(PredictedPoint initialPoint, Wave wave, Point dest) {
+//        double absBearing = wave.getAngle(initialPoint);
+//
+//        ArrayList<PredictedPoint> points = new ArrayList<>();
+//        Range res = new Range();
+//        PredictedPoint cur = initialPoint;
+//        while(!wave.hasPassedRobot(cur, cur.time)) {
+//            double distance = cur.distance(dest);
+//            double angle = R.isNear(distance, 0 ) ? cur.heading : Physics.absoluteBearing(cur, dest);
+//            PredictedPoint next = _tick(cur, angle, Rules.MAX_VELOCITY, distance);
+//            AxisRectangle botRect = new AxisRectangle(next, 36);
+//
+//            if(!wave.hasTouchedRobot(next, next.time)) {
+//                cur = next;
+//                continue;
+//            }
+//
+//            for(Point corner : botRect.getCorners()) {
+//                if(wave.hasPassed(corner, next.time) && !wave.hasPassed(corner, cur.time)) {
+//                    res.push(Utils.normalRelativeAngle(wave.getAngle(corner) - absBearing));
+//                }
+//            }
+//
+//            for(Point intersect : wave.getCircle(cur.time).intersect(botRect)) {
+//                res.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - absBearing));
+//            }
+//
+//            for(Point intersect : wave.getCircle(next.time).intersect(botRect)) {
+//                res.push(Utils.normalRelativeAngle(wave.getAngle(intersect) - absBearing));
+//            }
+//
+//            cur = next;
+//            points.add(cur);
+//        }
+//
+//        return new PredictedWaveImpact(wave, initialPoint, points, res);
+//    }
 
 
     /** This method, different from _tick, predicts assuming that the robot will attempt

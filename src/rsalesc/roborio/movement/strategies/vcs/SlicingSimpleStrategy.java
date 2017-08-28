@@ -1,4 +1,4 @@
-package rsalesc.roborio.movement.strategies;
+package rsalesc.roborio.movement.strategies.vcs;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.utils.MultipleSlicingStrategy;

@@ -7,39 +7,38 @@ import rsalesc.roborio.enemies.EnemyLog;
 import rsalesc.roborio.enemies.EnemyTracker;
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.gunning.utils.VirtualBullet;
+import rsalesc.roborio.movement.distancing.DefaultDistanceController;
+import rsalesc.roborio.movement.distancing.DistanceController;
 import rsalesc.roborio.movement.forces.DangerPoint;
-import rsalesc.roborio.movement.forces.DangerWavePoint;
+import rsalesc.roborio.movement.forces.GotoSurfingCandidate;
 import rsalesc.roborio.movement.predictor.MovementPredictor;
 import rsalesc.roborio.movement.predictor.PredictedPoint;
-import rsalesc.roborio.movement.predictor.PredictedWaveImpact;
 import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.myself.MyRobot;
 import rsalesc.roborio.myself.MySnapshot;
 import rsalesc.roborio.utils.BackAsFrontRobot;
-import rsalesc.roborio.utils.BoxedInteger;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.geo.*;
 import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.stats.GuessFactorStats;
 import rsalesc.roborio.utils.storage.NamedStorage;
+import rsalesc.roborio.utils.structures.Knn;
 import rsalesc.roborio.utils.waves.*;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by Roberto Sales on 20/08/17.
  */
-public class GotoSurfing extends Movement {
-    private static final double[] WAVE_WEIGHTS = new double[]{1.0};
-
-    private ShadowManager shadowing;
+public class GotoSurfing extends BaseSurfing {
+    private DistanceController controller;
 
     private GuessFactorDodging dodging;
-    private WaveMap<WaveSnap> waves;
-    private HashSet<Wave> hasHit;
 
     private AxisRectangle field;
     private MyLog myLog;
@@ -48,13 +47,7 @@ public class GotoSurfing extends Movement {
 
     private ArrayList<Wave> _surfedWaves;
 
-    private BoxedInteger _bulletsFired;
-    private BoxedInteger _bulletsHit;
-
     private ArrayList<Point> _predicted;
-
-    private long _wavesPassed = 0;
-    private long _shotsTaken = 0;
 
     private Point _gotoPoint;
 
@@ -62,27 +55,12 @@ public class GotoSurfing extends Movement {
     private String hint;
 
     public GotoSurfing(BackAsFrontRobot robot, String storageHint) {
-        super(robot);
-        hasHit = new HashSet<>();
-        waves = new WaveMap<>();
+        super(robot, storageHint);
         field = robot.getBattleField();
         myLog = MyLog.getInstance();
-        shadowing = new ShadowManager();
 
         _surfedWaves = new ArrayList<Wave>();
-        this.hint = storageHint;
-
-        NamedStorage store = NamedStorage.getInstance();
-        if(!store.contains(storageHint + "-fired")) {
-            store.add(storageHint + "-fired", new BoxedInteger());
-        }
-
-        if(!store.contains(storageHint + "-hit")) {
-            store.add(storageHint + "-hit", new BoxedInteger());
-        }
-
-        _bulletsFired = (BoxedInteger) store.get(storageHint + "-fired");
-        _bulletsHit = (BoxedInteger) store.get(storageHint + "-hit");
+        controller = new DefaultDistanceController();
     }
 
     public GotoSurfing setDodging(GuessFactorDodging dodging) {
@@ -103,7 +81,14 @@ public class GotoSurfing extends Movement {
     }
 
     @Override
+    public void onStatus(StatusEvent e) {
+        dodging.tick(getTime(), getRobot().getRoundNum());
+    }
+
+    @Override
     public void onBulletHitBullet(BulletHitBulletEvent e) {
+        shadowing.onBulletHitBullet(e);
+
         double heading = e.getHitBullet().getHeadingRadians();
         Iterator<Wave> iterator = waves.iterator();
         while(iterator.hasNext()) {
@@ -150,7 +135,7 @@ public class GotoSurfing extends Movement {
                 if(enemyWave.wasFiredBy(e.getBullet(), getTime())) {
                     TargetingLog f = waves.getData(enemyWave).getLog();
                     f.hitPosition = hitPoint;
-                    f.hitDistance = getRobot().getPoint().distance(enemyWave.getSource());
+                    f.hitDistance = hitPoint.distance(enemyWave.getSource());
                     f.hitAngle = Physics.absoluteBearing(wave.getSource(), hitPoint);
                     hasHit.add(enemyWave);
 
@@ -193,7 +178,7 @@ public class GotoSurfing extends Movement {
             EnemyFireWave wave = new EnemyFireWave(snap, targetLog.atLeastAt(getTime() - 1), speed);
 
             TargetingLog log = getTargetingLog(wave);
-            waves.add(wave, new WaveSnap(log, dodging.getStats(log, getEnemyConfidence(), getRobot().getRoundNum())));
+            waves.add(wave, new WaveSnap(log, dodging.getStats(log, getViewCondition())));
 
             onFire(targetLog.getLatest(), power);
         }
@@ -220,11 +205,12 @@ public class GotoSurfing extends Movement {
     public void doMovement() {
         checkHits();
 
+        // stop surfing current wave on touch
         final MyRobot me = myLog.getLatest();
-        Wave[] _nextWaves = waves.earliestWaves(WAVE_WEIGHTS.length, me.getPoint() , getTime(), new WaveCollection.EnemyFireWaveCondition() {
+        Wave[] _nextWaves = waves.earliestWaves(2, me.getPoint() , getTime(), new WaveCollection.EnemyFireWaveCondition() {
             @Override
             public boolean test(Wave wave) {
-                return super.test(wave) && !wave.hasPassed(me.getPoint(), me.getTime());
+                return super.test(wave) && !wave.hasTouchedRobot(me.getPoint(), me.getTime());
             }
         });
 
@@ -266,22 +252,30 @@ public class GotoSurfing extends Movement {
         GuessFactorStats stats = sts[0];
         TargetingLog log = logs[0];
 
+        MyRobot currentMe = MyLog.getInstance().getLatest();
+
         double[] mx = new double[sts.length];
         for(int i = 0; i < sts.length; i++) {
+            mx[i] = 1.0;
             mx[i] = 1e-8;
             for(int j = 0; j < GuessFactorStats.BUCKET_COUNT; j++)
                 mx[i] = Math.max(mx[i], sts[i].get(j));
-            mx[i] = i >= WAVE_WEIGHTS.length ? 0 : WAVE_WEIGHTS[i] / mx[i];
+
+            double distanceToSource = currentMe.getPoint().distance(nextWaves[i].getSource());
+            double impactTime = Math.max(1, nextWaves[i].getVelocity()
+                / (distanceToSource - nextWaves[i].getDistanceTraveled(getTime())));
+            mx[i] = Physics.bulletPower(nextWaves[i].getVelocity()) / mx[i];
+            mx[i] /= impactTime;
         }
 
         Range preciseMea = log.getPreciseMea();
 
-        DangerWavePoint[] candidates =
+        GotoSurfingCandidate[] candidates =
                 getSurfingCandidates(myLog.getLatest().getPredictionPoint(), nextWave, stats, preciseMea, false);
         DangerPoint best = null;
         Point[] predicted = new Point[0];
 
-        for(DangerWavePoint c1 : candidates) {
+        for(GotoSurfingCandidate c1 : candidates) {
             double value = c1.getDanger() * mx[0];
             if(best != null && best.getDanger() < value)
                 break;
@@ -289,10 +283,10 @@ public class GotoSurfing extends Movement {
             if(nextWaves.length > 1) {
                 Range preciseMea2 = logs[1].getPreciseMea();
 
-                DangerWavePoint[] futureCandidates =
-                        getSurfingCandidates(c1.getImpact(), nextWaves[1], sts[1], preciseMea2, true);
+                GotoSurfingCandidate[] futureCandidates =
+                        getSurfingCandidates(c1.getPassPoint(), nextWaves[1], sts[1], preciseMea2, true);
 
-                for (DangerWavePoint c2 : futureCandidates) {
+                for (GotoSurfingCandidate c2 : futureCandidates) {
                     double nextValue = Math.max(c1.getDanger() * mx[0] + c2.getDanger() * mx[1], value);
                     if(best != null && best.getDanger() < nextValue)
                         break;
@@ -301,13 +295,13 @@ public class GotoSurfing extends Movement {
 
                     if (best == null || best.getDanger() > value) {
                         best = new DangerPoint(c1, value);
-                        predicted = new Point[]{c1, c1.getImpact()};
+                        predicted = new Point[]{c1, c1.getPassPoint()};
                     }
                 }
             } else {
                 if (best == null || best.getDanger() > value) {
                     best = new DangerPoint(c1, value);
-                    predicted = new Point[]{c1, c1.getImpact()};
+                    predicted = new Point[]{c1, c1.getPassPoint()};
                 }
             }
         }
@@ -326,71 +320,25 @@ public class GotoSurfing extends Movement {
 
             double distance = my.getPoint().distance(enemy.getPoint());
             double absBearing = Physics.absoluteBearing(enemy.getPoint(), my.getPoint());
-            double offset = R.HALF_PI - 1 + distance / 400;
+            double offset = controller.getPerpendiculator(distance);
 
             AxisRectangle field = getRobot().getBattleField().shrink(18, 18);
-            while(!field.contains(getRobot().getPoint().project(absBearing + offset * _lastAwayDirection, 160))) {
-                offset += _lastAwayDirection*0.05;
+            while(!field.strictlyContains(getRobot().getPoint().project(absBearing + offset * _lastAwayDirection, 160))) {
+                offset += _lastAwayDirection * 0.05;
             }
 
-            setBackAsFront(absBearing + offset * _lastAwayDirection, 30);
+            setBackAsFront(absBearing + offset * _lastAwayDirection);
 
             if(Math.abs(offset) > 4 * R.PI / 5)
                 _lastAwayDirection *= -1;
         }
     }
 
-    private void checkHits() {
-        Iterator<Wave> iterator = waves.iterator();
-
-        while (iterator.hasNext()) {
-            EnemyWave wave = (EnemyWave) iterator.next();
-            if (wave.hasPassedRobot(getRobot().getPoint(), getTime())) {
-                TargetingLog f = waves.getData(wave).getLog();
-
-                if(f.hitPosition == null) {
-                    f.hitPosition = getRobot().getPoint();
-                    f.hitAngle = Physics.absoluteBearing(wave.getSource(), f.hitPosition);
-                    f.hitDistance = wave.getSource().distance(f.hitPosition);
-                }
-
-                double absBearing = f.hitAngle;
-                double distance = f.hitPosition.distance(wave.getSource());
-
-                AngularRange intersection = R.preciseIntersection(myLog,
-                        wave, getTime(), absBearing);
-
-                if(intersection == null) {
-                    double bearingFromWave = Physics.absoluteBearing(wave.getSource(), f.hitPosition);
-                    intersection = new AngularRange(
-                            bearingFromWave,
-                            -Physics.hitAngle(distance),
-                            +Physics.hitAngle(distance)
-                    );
-                }
-
-                f.preciseIntersection = intersection;
-
-                if(wave instanceof EnemyFireWave) {
-                    if(hasHit.contains(wave)) {
-                        log(f, BreakType.BULLET_HIT);
-                        hasHit.remove(wave);
-                    } else {
-                        log(f, BreakType.BULLET_BREAK);
-                    }
-                    _bulletsFired.increment();
-                }
-                else {
-                    log(f, BreakType.VIRTUAL_BREAK);
-                }
-
-                iterator.remove();
-                _wavesPassed++;
-            }
-        }
+    public Knn.ParametrizedCondition getViewCondition() {
+        return new Knn.HitLeastCondition(getEnemyConfidence(), getRobot().getRoundNum());
     }
 
-    private void log(TargetingLog f, BreakType type) {
+    public void log(TargetingLog f, BreakType type) {
         dodging.log(f, type);
     }
 
@@ -443,7 +391,6 @@ public class GotoSurfing extends Movement {
             log.accelDirection = -log.direction;
         else
             log.accelDirection = log.direction;
-
 
         final int backInTime = 120;
 
@@ -506,15 +453,15 @@ public class GotoSurfing extends Movement {
         return log;
     }
 
-    private DangerWavePoint[] getSurfingCandidates(PredictedPoint initialPoint,
-                                                   EnemyFireWave wave, GuessFactorStats stats, Range preciseMea,
-                                                   boolean fast) {
+    private GotoSurfingCandidate[] getSurfingCandidates(PredictedPoint initialPoint,
+                                                        EnemyFireWave wave, GuessFactorStats stats, Range preciseMea,
+                                                        boolean fast) {
+
+        WaveSnap snap = waves.getData(wave);
         MyRobot me = wave.getSnapshot().getOffset(-1);
-        double absBearing = Physics.absoluteBearing(wave.getSource(), me.getPoint());
-        double initialBearing = Physics.absoluteBearing(wave.getSource(), initialPoint);
 
         double distance = initialPoint.distance(wave.getSource());
-        double perp = R.HALF_PI - (1 - (distance / 400)) * 0.7;
+        double perp = controller.getPerpendiculator(distance);
 
         List<PredictedPoint> genPoints = MovementPredictor.generateOnWaveImpact(
                 field, initialPoint,
@@ -531,118 +478,48 @@ public class GotoSurfing extends Movement {
         if(genPoints.size() == 0)
             throw new IllegalStateException();
 
-        ArrayList<DangerWavePoint> dangers = new ArrayList<>();
+        ArrayList<GotoSurfingCandidate> dangers = new ArrayList<>();
         PredictedPoint first = genPoints.get(0);
         PredictedPoint back = genPoints.get(genPoints.size() - 1);
         PredictedPoint last = null;
 
-        int step = fast ? 30 : 16;
-
-        ArrayList<Shadow> shadows = shadowing.getShadows(wave);
+        final int CANDIDATE_STEP = 20;
 
         for(PredictedPoint predicted : genPoints) {
-            if(last == null || last == first || last == back || last.distance(predicted) > step) {
+            if(last == null || last == first || last == back || last.distance(predicted) > CANDIDATE_STEP) {
                 last = predicted;
 
                 // TODO: use gauss smoothing over here
                 double value = 0;
 
+                List<PredictedPoint> points = MovementPredictor.predictOnWaveImpact(
+                        initialPoint,
+                        wave,
+                        predicted,
+                        !fast // true maybe?
+                );
+
                 if(!fast) {
-                    PredictedWaveImpact data = MovementPredictor.preciselyPredictOnWaveImpact(
-                            initialPoint,
-                            wave,
-                            predicted
-                    );
+                    PredictedPoint passPoint = R.getLast(points);
+                    AngularRange intersection =
+                            R.preciseIntersection(wave, points);
 
-                    Point impactPoint = data.getMidwayImpactPoint();
-                    double impactGf = getGf(wave, impactPoint, preciseMea);
+                    value = getPreciseDanger(wave, snap, intersection, passPoint);
+                    value *= Math.pow(2.45, distance / passPoint.distance(wave.getSource()) - 1);
 
-                    Range gfRange = new Range();
-                    double absMin = Utils.normalAbsoluteAngle(data.getIntersection().min + initialBearing);
-                    double absMax = Utils.normalAbsoluteAngle(data.getIntersection().max + initialBearing);
-
-                    double gfLow = getGf(wave, absMin, preciseMea);
-                    double gfHigh = getGf(wave, absMax, preciseMea);
-
-                    gfRange.push(gfLow);
-                    gfRange.push(gfHigh);
-
-                    int iBucket = stats.getBucket(gfRange.min)-1;
-                    int jBucket = stats.getBucket(gfRange.max)+1;
-                    if(jBucket >= GuessFactorStats.BUCKET_COUNT)
-                        jBucket = GuessFactorStats.BUCKET_COUNT - 1;
-                    if(iBucket < 0)
-                        iBucket = 0;
-
-                    for (int i = iBucket; i <= jBucket; i++) {
-                        double gf = stats.getGuessFactor(i);
-                        boolean usedShadow = false;
-                        double angle = (gf >= 0 ? gf * preciseMea.max : -gf * preciseMea.min) + absBearing;
-
-                        for(Shadow shadow : shadows) {
-                            if(shadow.isInside(angle)) {
-                                // add a length requirement?
-                                usedShadow = true;
-                                break;
-                            }
-                        }
-
-                        if(usedShadow)
-                            continue;
-
-                        value += stats.getValueFromBucket(i);
-                    }
-
-                    value /= jBucket - iBucket + 1;
-
-                    dangers.add(new DangerWavePoint(predicted, value, data.getMidwayImpactPoint()));
+                    dangers.add(new GotoSurfingCandidate(predicted, value, passPoint));
                 } else {
-                    List<PredictedPoint> points = MovementPredictor.predictOnWaveImpact(
-                            initialPoint,
-                            wave,
-                            predicted,
-                            false // true maybe?
-                    );
+                    PredictedPoint impactPoint = R.getLast(points);
+                    value = getPreciseDanger(wave, snap, null, impactPoint);
+                    value *= Math.pow(2.45, distance / impactPoint.distance(wave.getSource()) - 1);
 
-                    points.add(0, initialPoint);
-
-                    PredictedPoint impactPoint = points.get(points.size() - 1);
-                    double impactGf = getGf(wave, impactPoint, preciseMea);
-                    value = stats.getValue(impactGf);
-
-                    dangers.add(new DangerWavePoint(predicted, value, impactPoint));
+                    dangers.add(new GotoSurfingCandidate(predicted, value, impactPoint));
                 }
-
-//                if(value < best || R.isNear(best, value) && predicted.distance(initialPoint) > res.distance(initialPoint)) {
-//                    best = value;
-//                    res = predicted;
-//                }
             }
         }
 
         Collections.sort(dangers);
-        return dangers.toArray(new DangerWavePoint[0]);
-    }
-
-    private double getUnconstrainedGf(Wave wave, double absBearing, Range preciseMea) {
-        MyRobot me = wave.getSnapshot().getOffset(-1); // recheck
-        int direction = me.getDirection(wave.getSource());
-
-        double absBearingWhenShot = Physics.absoluteBearing(wave.getSource(), me.getPoint());
-        double offset = Utils.normalRelativeAngle(absBearing - absBearingWhenShot);
-
-        if(offset * direction >= 0)
-            return offset * direction / preciseMea.max;
-        else
-            return -offset * direction / preciseMea.min;
-    }
-
-    private double getGf(Wave wave, double absBearing, Range preciseMea) {
-        return R.constrain(-1, getUnconstrainedGf(wave, absBearing, preciseMea), +1);
-    }
-
-    private double getGf(Wave wave, Point impactPoint, Range preciseMea) {
-        return getGf(wave, Physics.absoluteBearing(wave.getSource(), impactPoint), preciseMea);
+        return dangers.toArray(new GotoSurfingCandidate[0]);
     }
 
     private void goTo(Point dest) {
@@ -675,69 +552,7 @@ public class GotoSurfing extends Movement {
             g.drawLine(getRobot().getPoint(), _gotoPoint, Color.WHITE);
         }
 
-        Wave earliestWave = waves.earliestFireWave(myLog.getLatest());
-
-        for(Wave cur : waves) {
-            if(!(cur instanceof EnemyFireWave))
-                continue;
-
-            EnemyFireWave wave = (EnemyFireWave) cur;
-
-            g.drawCircle(wave.getSource(), wave.getDistanceTraveled(getTime()),
-                    wave == earliestWave ? Color.WHITE : Color.BLUE);
-
-            ComplexEnemyRobot enemy = wave.getEnemy();
-            MyRobot me = wave.getSnapshot().getOffset(-1);
-
-            TargetingLog log = waves.getData(wave).getLog();
-            Range preciseMea = log.getPreciseMea();
-
-            GuessFactorStats st = waves.getData(wave).getStats();
-
-            double angle = 0;
-            double ratio = R.DOUBLE_PI / WAVE_DIVISIONS;
-            double maxDanger = 0;
-
-            ArrayList<Shadow> shadows = shadowing.getShadows(wave);
-
-           ArrayList<DangerPoint> dangerPoints = new ArrayList<>();
-
-            for(int i = 0; i < WAVE_DIVISIONS; i++) {
-                angle += ratio;
-
-                boolean usedShadow = false;
-                for(Shadow shadow : shadows) {
-                    if(shadow.isInside(angle)) {
-                        usedShadow = true;
-                        break;
-                    }
-                }
-
-                if(usedShadow)
-                    continue;
-
-                Point hitPoint = wave.getSource().project(angle, wave.getDistanceTraveled(getTime()));
-                double gf = getUnconstrainedGf(wave, angle, preciseMea);
-
-                if(!R.nearOrBetween(-1, gf, +1))
-                    continue;
-
-                double value = st.getValue(gf);
-                dangerPoints.add(new DangerPoint(hitPoint, value));
-                maxDanger = Math.max(maxDanger, value);
-            }
-
-            if(R.isNear(maxDanger, 0)) continue;
-
-            Collections.sort(dangerPoints);
-
-            int cnt = 0;
-            for(DangerPoint dangerPoint : dangerPoints) {
-                Color dangerColor = G.getDiscreteSafeColor(1.0 * ++cnt / dangerPoints.size());
-                Point base = wave.getSource().project(wave.getAngle(dangerPoint), wave.getDistanceTraveled(getTime()) - 18);
-                g.drawLine(base, dangerPoint, dangerColor);
-            }
-        }
+        drawWaves(graphics);
     }
 
     public void printLog() {

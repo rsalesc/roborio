@@ -25,6 +25,12 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     private boolean sharpened = false;
     private double _velocityBeforeSharp;
 
+    public void dissociate() {
+        setAdjustRadarForRobotTurn(true);
+        setAdjustGunForRobotTurn(true);
+        setAdjustRadarForGunTurn(true);
+    }
+
     @Override
     public void onStatus(StatusEvent e) {
         if(sharpened) {
@@ -194,13 +200,18 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         }
     }
 
+    public void setGunTo(double radians) {
+        double offset = Utils.normalRelativeAngle(radians - getGunHeadingRadians());
+        setTurnGunRightRadians(offset);
+    }
+
     public AxisRectangle getHitBox() {
         return new AxisRectangle(getX() - 18, getX() + 18, getY() - 18, getY() + 18);
     }
 
     public Point getNextPosition() {
         // safely assume that if the bot is not moving, it will keep this way
-        // its ok to do this because even if it moves it displacement will be really small
+        // its ok to do this because even if it moves its displacement will be really small
         // and prediction will correct any mistake in the next ticks
         if(getVelocity() == 0)
             return getPoint();

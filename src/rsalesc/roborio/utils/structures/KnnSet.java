@@ -2,7 +2,6 @@ package rsalesc.roborio.utils.structures;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.utils.waves.BreakType;
-import rsalesc.roborio.utils.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,15 +12,20 @@ import java.util.List;
  */
 public class KnnSet<T> {
     private List<Knn<T>> knns;
-    private DistanceWeighter<T> weighter;
+    private Knn.DistanceWeighter<T> weighter;
 
     public KnnSet() {
         knns = new ArrayList<>();
     }
 
-    public KnnSet<T> setDistanceWeighter(DistanceWeighter<T> weighter) {
+    public KnnSet<T> setDistanceWeighter(Knn.DistanceWeighter<T> weighter) {
         this.weighter = weighter;
         return this;
+    }
+
+    public void mutate(Knn.ConditionMutation mutation) {
+        for(Knn<T> knn : knns)
+            knn.mutate(mutation);
     }
 
     public KnnSet<T> add(Knn<T> knn) {
@@ -76,61 +80,5 @@ public class KnnSet<T> {
 
     public List<Knn<T>> getKnns() {
         return knns;
-    }
-
-    public static abstract class DistanceWeighter<T> {
-        public abstract List<Knn.Entry<T>> getWeightedEntries(List<Knn.Entry<T>> entries);
-    }
-
-    public static class InverseDistanceWeighter<T> extends DistanceWeighter<T> {
-        private double ratio;
-        public InverseDistanceWeighter() {
-            this(1.0);
-        }
-
-        public InverseDistanceWeighter(double ratio) {
-            this.ratio = ratio;
-        }
-
-        @Override
-        public List<Knn.Entry<T>> getWeightedEntries(List<Knn.Entry<T>> entries) {
-            List<Knn.Entry<T>> res = new ArrayList<>();
-            for(Knn.Entry<T> entry : entries) {
-                res.add(new Knn.Entry<>(entry.weight / Math.pow(entry.distance + 1e-10, ratio),
-                        entry.distance, entry.payload));
-            }
-
-            return res;
-        }
-    }
-
-    public static class GaussDistanceWeighter<T> extends DistanceWeighter<T> {
-        private double ratio;
-
-        public GaussDistanceWeighter() {
-            this(1.0);
-        }
-
-        public GaussDistanceWeighter(double ratio) {
-            this.ratio = ratio;
-        }
-
-        public List<Knn.Entry<T>> getWeightedEntries(List<Knn.Entry<T>> entries) {
-            double sum = 1e-9;
-            for(Knn.Entry<T> entry : entries) {
-                sum += entry.distance;
-            }
-
-            double invAvg = entries.size() / sum;
-
-            List<Knn.Entry<T>> res = new ArrayList<>();
-
-            for(Knn.Entry<T> entry : entries) {
-                res.add(new Knn.Entry<T>(entry.weight  * R.gaussKernel(entry.distance * invAvg * ratio),
-                        entry.distance, entry.payload));
-            }
-
-            return res;
-        }
     }
 }

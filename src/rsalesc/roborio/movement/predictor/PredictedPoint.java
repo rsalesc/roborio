@@ -78,4 +78,10 @@ public class PredictedPoint extends Point {
         else if(off < 0) return 1;
         else return 0;
     }
+
+    public double getBafHeading() {
+        if(getAhead() < 0)
+            return Utils.normalAbsoluteAngle(heading + R.PI);
+        return heading;
+    }
 }

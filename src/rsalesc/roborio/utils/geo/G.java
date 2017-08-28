@@ -1,9 +1,11 @@
 package rsalesc.roborio.utils.geo;
 
+import robocode.util.Utils;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.colors.Gradient;
 
 import java.awt.*;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -104,6 +106,25 @@ public class G {
         popColor();
     }
 
+    public Shape getArcShape(Point center, double radius, double startAngle, double angle) {
+        if(angle > 0) {
+            angle = -angle;
+            startAngle = Utils.normalAbsoluteAngle(startAngle + angle);
+        }
+        double fixedStart = Utils.normalAbsoluteAngle(-startAngle + R.HALF_PI);
+        return new Arc2D.Double(center.x, center.y, radius, radius, fixedStart, -angle, Arc2D.OPEN);
+    }
+
+    public void drawArc(Point center, double radius, double startAngle, double angle) {
+        g.draw(getArcShape(center, radius, startAngle, angle));
+    }
+
+    public void drawArc(Point center, double radius, double startAngle, double angle, Color color) {
+        pushColor(color);
+        drawArc(center, radius, startAngle, angle);
+        popColor();
+    }
+
     public Shape getLine(Point a, Point b) {
         Line2D.Double line = new Line2D.Double(a.to2D(), b.to2D());
         return line;
@@ -116,6 +137,16 @@ public class G {
     public void drawLine(Point a, Point b, Color color) {
         pushColor(color);
         drawLine(a, b);
+        popColor();
+    }
+
+    public void drawRadial(Point center, double angle, double start, double end) {
+        drawLine(center.project(angle, start), center.project(angle, end));
+    }
+
+    public void drawRadial(Point center, double angle, double start, double end, Color color) {
+        pushColor(color);
+        drawRadial(center, angle, start, end);
         popColor();
     }
 

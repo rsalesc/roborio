@@ -1,5 +1,6 @@
-package rsalesc.roborio.gunning;
+package rsalesc.roborio.gunning.targetings;
 
+import rsalesc.roborio.gunning.NNGuessFactorTargeting;
 import rsalesc.roborio.gunning.strategies.AntiSurferNNStrategy;
 import rsalesc.roborio.utils.nn.GuessFactorNetwork;
 import rsalesc.roborio.utils.nn.SoftmaxStrategy;

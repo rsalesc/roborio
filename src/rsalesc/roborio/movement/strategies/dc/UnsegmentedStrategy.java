@@ -1,4 +1,4 @@
-package rsalesc.roborio.movement.strategies;
+package rsalesc.roborio.movement.strategies.dc;
 
 import rsalesc.roborio.gunning.utils.TargetingLog;
 
@@ -11,12 +11,13 @@ public class UnsegmentedStrategy extends rsalesc.roborio.utils.Strategy {
         return new double[]{
                 Math.max(f.bft() / 81, 1),
                 Math.max(f.lateralVelocity / 8., 1),
+                Math.max((f.advancingVelocity + 8) / 16, 1),
                 Math.max((f.accel + 1) / 2, 1)
         };
     }
 
     @Override
     public double[] getWeights() {
-        return new double[]{2.0, 3.0, 2.0};
+        return new double[]{1, 1, 1, 1};
     }
 }

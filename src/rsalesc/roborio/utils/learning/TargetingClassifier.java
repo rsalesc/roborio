@@ -5,7 +5,7 @@ package rsalesc.roborio.utils.learning;
  */
 
 import robocode.util.Utils;
-import rsalesc.roborio.gunning.AntiEverything2Targeting;
+import rsalesc.roborio.gunning.targetings.AntiEverything2Targeting;
 import rsalesc.roborio.gunning.Targeting;
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.utils.Physics;

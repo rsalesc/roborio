@@ -7,7 +7,7 @@ import rsalesc.roborio.utils.geo.Point;
  * Created by Roberto Sales on 25/07/17.
  */
 public abstract class WallSmoothing {
-    private static final double WALL_STICK = 160;
+    public static final double WALL_STICK = 160;
 
     public static double naive(AxisRectangle field, Point source, double angle, int direction) {
 //        if(field.contains(source.project(angle, WALL_STICK)))
