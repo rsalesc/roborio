@@ -3,23 +3,21 @@ package rsalesc.roborio;
 import robocode.*;
 import robocode.util.Utils;
 import rsalesc.roborio.enemies.EnemyTracker;
-import rsalesc.roborio.energy.EnergyManager;
-import rsalesc.roborio.energy.MirrorPowerManager;
-import rsalesc.roborio.energy.TCManager;
-import rsalesc.roborio.gunning.AutomaticGun;
+import rsalesc.roborio.energy.*;
 import rsalesc.roborio.gunning.RaikoGun;
 import rsalesc.roborio.gunning.RoborioGunArray;
+import rsalesc.roborio.gunning.utils.GunFireEvent;
+import rsalesc.roborio.movement.BaseSurfing;
 import rsalesc.roborio.movement.Movement;
 import rsalesc.roborio.movement.RoborioMovement;
 import rsalesc.roborio.movement.TCMovement;
 import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.myself.MyRobot;
-import rsalesc.roborio.utils.BackAsFrontRobot;
-import rsalesc.roborio.utils.Checkpoint;
-import rsalesc.roborio.utils.Clock;
-import rsalesc.roborio.utils.R;
+import rsalesc.roborio.utils.*;
+import rsalesc.roborio.utils.colors.AnimatedRobotColoring;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * Created by Roberto Sales on 21/07/17.
@@ -27,6 +25,7 @@ import java.awt.*;
 public class Roborio extends BackAsFrontRobot {
     private final boolean TC = false;
     private final boolean MC = false;
+    private final boolean SHIELD = true;
 
     private boolean lostScan = true;
     private static double worstTime = 0;
@@ -37,12 +36,17 @@ public class Roborio extends BackAsFrontRobot {
     private static double lastSpent = 0;
     private static double lastEnergy = -1;
     private Movement movement;
-    private AutomaticGun gun;
+    private RoborioGunArray gun;
 
     private boolean hasEnded = false;
     private MirrorPowerManager powerPredictor;
     private EnergyManager manager;
+
     private static RaikoGun raikoGun;
+
+    private AnimatedRobotColoring coloring;
+
+    private BulletShield shield;
 
     public void run() {
 //        System.out.println(timedTicks + " " + lastTime + " " + skipped + " " + lastSpent + " " + worstTime);
@@ -58,6 +62,14 @@ public class Roborio extends BackAsFrontRobot {
         clearLastRoundData();
         recoverLastRoundData();
 
+        setupColors();
+//        coloring = new AnimatedRobotColoring(this, new Gradient(new Gradient.GradientColor[]{
+//            new Gradient.GradientColor(Color.PINK, 0.0),
+//            new Gradient.GradientColor(Color.CYAN, 1.0)
+//        }), 50);
+
+        HeatTracker.getInstance().setCoolingRate(getGunCoolingRate());
+
         if(!MC) {
             dissociate();
             setupRadar();
@@ -66,8 +78,6 @@ public class Roborio extends BackAsFrontRobot {
                 raikoGun = new RaikoGun();
             raikoGun.setup(this);
         }
-
-        setupColors();
 
         if(!TC) {
             powerPredictor = new MirrorPowerManager("power_manager");
@@ -78,14 +88,16 @@ public class Roborio extends BackAsFrontRobot {
 
         if(!TC) {
             movement = new RoborioMovement(this).setPowerPredictor(powerPredictor).build();
-//            movement = new DCSurfingMovement(this, "dcsurfing");
-//            movement = new GotoSurfingMovement(this);
+            if(movement instanceof BaseSurfing && SHIELD && !MC) {
+                shield = new BulletShield(this);
+            }
         } else {
             movement = new TCMovement(this);
         }
 
         if(!MC) {
-            gun = new RoborioGunArray(this).setManager(manager).build();
+            gun = new RoborioGunArray(this);
+            gun.setManager(manager).build();
         }
 
         do {
@@ -99,7 +111,7 @@ public class Roborio extends BackAsFrontRobot {
     }
 
     private void innerMC2K7() {
-        movement.doMovement();
+        movement.doMovement(false);
         if(powerPredictor != null && movement.getLastFireEnemy() != null)
             powerPredictor.log(MyLog.getInstance().atLeastAt(movement.getLastFireEnemy().getTime()),
                     movement.getLastFireEnemy(),
@@ -111,22 +123,44 @@ public class Roborio extends BackAsFrontRobot {
         execute();
     }
 
+    public boolean shouldShield() {
+        return shield != null && shield.shouldShield();
+    }
+
     public void innerExecute() {
         Checkpoint.getInstance().enter("while");
 
         try {
             Clock clock = new Clock();
+            if(coloring != null)
+                coloring.tick(getTime());
 
             if(!hasEnded && !lostScan && getEnergy() > R.EPSILON) {
-                gun.doFiring();
-                movement.doShadowing(gun.getVirtualBullets());
-                movement.doMovement();
+                gun.setShielding(shouldShieldNextRound());
+
+                if(!shouldShieldNextRound()) {
+                    gun.doFiring();
+                } else {
+                    GunFireEvent event = shield.doFiring();
+                    if(event != null)
+                        gun.onFire(event);
+                }
+
+                if(!shouldShieldNextRound())
+                    movement.doShadowing(gun.getVirtualBullets());
+
+                movement.doMovement(shouldShield());
+
                 if(powerPredictor != null && movement.getLastFireEnemy() != null)
                     powerPredictor.log(MyLog.getInstance().atLeastAt(movement.getLastFireEnemy().getTime()),
                             movement.getLastFireEnemy(),
                             0,
                             0,
                             movement.getLastFirePower());
+
+                if(shouldShield()) {
+                    shield.doShielding(((BaseSurfing) movement).getWaves(), EnemyTracker.getInstance().getLatest());
+                }
 
                 gun.doGunning();
 
@@ -173,6 +207,7 @@ public class Roborio extends BackAsFrontRobot {
         try {
             super.onStatus(e);
             trackMe();
+            HeatTracker.getInstance().tick(getTime());
 
             if(movement != null)
                 movement.onStatus(e);
@@ -201,12 +236,24 @@ public class Roborio extends BackAsFrontRobot {
 
         Checkpoint.getInstance().enter("hit_by");
         try {
-            if(movement != null)
-                movement.onHitByBullet(e);
+            HeatTracker.getInstance().onHitByBullet(e);
+
+            if(shouldShield())
+                shield.onHitByBullet(e);
+            else {
+                if(movement != null)
+                    movement.onHitByBullet(e);
+                if(shouldShieldNextRound())
+                    shield.onHitByBullet(e);
+            }
         } catch(Exception ex) {
             handle(ex);
         }
         Checkpoint.getInstance().leave("hit_by");
+    }
+
+    private boolean shouldShieldNextRound() {
+        return shield != null && shield.shouldShieldNextRound();
     }
 
     @Override
@@ -215,8 +262,13 @@ public class Roborio extends BackAsFrontRobot {
             return;
 
         try {
-            if(movement != null)
-                movement.onBulletHitBullet(e);
+            if(shouldShield())
+                shield.onBulletHitBullet(e);
+             else {
+                if(movement != null)
+                    movement.onBulletHitBullet(e);
+            }
+
             // TODO: gun here
         } catch(Exception ex) {
             handle(ex);
@@ -230,9 +282,18 @@ public class Roborio extends BackAsFrontRobot {
 
         Checkpoint.getInstance().enter("bullet_hit");
         try {
-            if(movement != null)
-                movement.onBulletHit(e);
-            if(gun != null)
+            HeatTracker.getInstance().onBulletHit(e);
+
+            if(!shouldShield()) {
+                if (movement != null)
+                    movement.onBulletHit(e);
+                if(shouldShieldNextRound())
+                    shield.onBulletHit(e);
+            } else{
+                shield.onBulletHit(e);
+            }
+
+            if (gun != null)
                 gun.onBulletHit(e);
         } catch(Exception ex) {
             handle(ex);
@@ -250,12 +311,14 @@ public class Roborio extends BackAsFrontRobot {
             try {
                 if (getEnergy() > R.EPSILON)
                     trackEnemy(e);
+
+                HeatTracker.getInstance().push(EnemyTracker.getInstance().getLatestState(e));
             } catch (Exception ex) {
                 handle(ex);
             }
 
             try {
-                gun.onScan(e);
+                gun.setShielding(shouldShield()).onScan(e);
                 movement.onScan(e);
                 doOnScan(e);
             } catch (Exception ex) {
@@ -300,6 +363,9 @@ public class Roborio extends BackAsFrontRobot {
 
     @Override
     public void onPaint(Graphics2D g) {
+        KeyConfig config = KeyConfig.getInstance();
+        config.onPaint(g);
+
         if(hasEnded)
             return;
 
@@ -309,6 +375,8 @@ public class Roborio extends BackAsFrontRobot {
             movement.onPaint(g);
         if(gun != null)
             gun.onPaint(g);
+        if(shield != null)
+            shield.onPaint(g);
         Checkpoint.getInstance().leave("paint");
     }
 
@@ -324,5 +392,18 @@ public class Roborio extends BackAsFrontRobot {
         System.out.println("Timing Info");
         System.out.println("Average time per tick: " + totalTime / timedTicks);
         System.out.println("Worst time: " + worstTime);
+    }
+
+    @Override
+    public void onKeyPressed(KeyEvent e) {
+        KeyConfig config = KeyConfig.getInstance();
+        config.toggle(e);
+
+        if(movement != null)
+            movement.onKeyPressed(e);
+        if(gun != null)
+            gun.onKeyPressed(e);
+        if(shield != null)
+            shield.onKeyPressed(e);
     }
 }

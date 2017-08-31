@@ -79,20 +79,20 @@ public abstract class VirtualGunArray extends AutomaticGun {
 
     public void setActive(int index) {
         for(int i = 0; i < length; i++) {
-            if(index == i)
+            guns[i].deactivate();
+
+            if(index == i && isActive())
                 guns[i].activate();
-            else
-                guns[i].deactivate();
         }
 
-        if(index != activeIndex) {
+        if(isActive() && index != activeIndex) {
             activeIndex = index;
             System.out.println("Switching over to gun " + guns[index].getName() + " (" + R.formattedPercentage(score[index]) + ")");
         }
     }
 
     public AutomaticGun getActive() {
-        if(activeIndex == -1)
+        if(activeIndex == -1 || !isActive())
             return null;
         return guns[activeIndex];
     }
@@ -102,12 +102,15 @@ public abstract class VirtualGunArray extends AutomaticGun {
         setActive(strategy.choose(this));
 
         GunFireEvent event = null;
-        for(int i = 0; i < length; i++) {
-            AutomaticGun gun = guns[i];
-            gun.doGunning();
-            if(gun.isActive() && gun.hasJustFired()) {
-                event = gun.getLastGunFireEvent();
-                scoring.fire(i, 1.0, event.getPower());
+
+        if(this.isActive()) {
+            for (int i = 0; i < length; i++) {
+                AutomaticGun gun = guns[i];
+                gun.doGunning();
+                if (gun.isActive() && gun.hasJustFired()) {
+                    event = gun.getLastGunFireEvent();
+                    scoring.fire(i, 1.0, event.getPower());
+                }
             }
         }
 
@@ -155,6 +158,9 @@ public abstract class VirtualGunArray extends AutomaticGun {
 
     @Override
     public void doFiring() {
+        if(!isActive())
+            return;
+
         for(AutomaticGun gun : guns)
             gun.doFiring();
     }

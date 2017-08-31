@@ -188,6 +188,78 @@ public abstract class Knn<T> {
         public abstract void mutate(ConditionMutation mutation);
     }
 
+    public static class OrCondition extends ParametrizedCondition {
+        ArrayList<ParametrizedCondition> conditions = new ArrayList<>();
+
+        public OrCondition add(ParametrizedCondition condition) {
+            conditions.add(condition);
+            return this;
+        }
+
+        @Override
+        public boolean test(Object o) {
+            boolean res = false;
+
+            // cant return immediately because of mutation
+            for(ParametrizedCondition condition : conditions) {
+                res = res || condition.test(o);
+            }
+
+            return res;
+        }
+
+        @Override
+        public void mutate(ConditionMutation mutation) {
+            for(ParametrizedCondition condition : conditions)
+                condition.mutate(mutation);
+        }
+    }
+
+    public static class AndCondition extends ParametrizedCondition {
+        ArrayList<ParametrizedCondition> conditions = new ArrayList<>();
+
+        public AndCondition add(ParametrizedCondition condition) {
+            conditions.add(condition);
+            return this;
+        }
+
+        @Override
+        public boolean test(Object o) {
+            boolean res = true;
+
+            // cant return immediately because of mutation
+            for(ParametrizedCondition condition : conditions) {
+                res = res && condition.test(o);
+            }
+
+            return res;
+        }
+
+        @Override
+        public void mutate(ConditionMutation mutation) {
+            for(ParametrizedCondition condition : conditions)
+                condition.mutate(mutation);
+        }
+    }
+
+    public static class NotCondition extends ParametrizedCondition {
+        ParametrizedCondition condition;
+
+        public NotCondition(ParametrizedCondition condition) {
+            this.condition = condition;
+        }
+
+        @Override
+        public boolean test(Object o) {
+            return !condition.test(o);
+        }
+
+        @Override
+        public void mutate(ConditionMutation mutation) {
+            condition.mutate(mutation);
+        }
+    }
+
     public static class ConditionMutation {
         public final long time;
         public final int round;

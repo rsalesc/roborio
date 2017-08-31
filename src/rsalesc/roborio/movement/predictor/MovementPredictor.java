@@ -16,8 +16,11 @@ import java.util.List;
 /**
  *  This class has methods to support precise movement prediction.
  *  Note that all methods assume that you are using a BackAsFrontRobot-like robot.
+ *  TODO: sharp turning not working
+ *  TODO: maybe use a special sized wall stick for precise MEA
  */
 public abstract class MovementPredictor {
+    public static List<PredictedPoint> lastEscape = null;
     private static final boolean SHARP_TURNING = BackAsFrontRobot.SHARP_TURNING;
 
     public static List<PredictedPoint> predictOnWaveImpact(AxisRectangle field, PredictedPoint initialPoint, Wave wave,
@@ -91,13 +94,19 @@ public abstract class MovementPredictor {
         List<PredictedPoint> posList = predictOnWaveImpact(field, initialPoint, wave, direction, R.HALF_PI, true, false);
         List<PredictedPoint> negList = predictOnWaveImpact(field, initialPoint, wave, -direction, R.HALF_PI, true, false);
 
-        Point pos = posList.get(posList.size() - 1);
-        Point neg = negList.get(negList.size() - 1);
-
         double absBearing = Physics.absoluteBearing(wave.getSource(), initialPoint);
         Range res = new Range(-1e-8, +1e-8);
-        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), pos) - absBearing) * direction);
-        res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), neg) - absBearing) * direction);
+
+        lastEscape = new ArrayList<>();
+        for(PredictedPoint pos : posList) {
+            res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), pos) - absBearing) * direction);
+            lastEscape.add(pos);
+        }
+
+        for(PredictedPoint neg : negList) {
+            lastEscape.add(neg);
+            res.push(Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), neg) - absBearing) * direction);
+        }
 
         return res;
     }
@@ -145,7 +154,7 @@ public abstract class MovementPredictor {
      * to move infinitely (hit the maximum speed and never break)
      *
      * This is usually quicker than _tick for wavesurfing because it does not rely
-     * on getVelocity() to get the velocity the bot must hit to still be able to break
+     * on getNewVelocity() to get the velocity the bot must hit to still be able to break
      * and stop at the destination. There is no real destination here. You can tick, for
      * example, while the enemy's wave does not hit you.
      *
@@ -163,7 +172,7 @@ public abstract class MovementPredictor {
         double maxTurning = Physics.maxTurningRate(last.velocity);
         double newHeading = Utils.normalAbsoluteAngle(R.constrain(-maxTurning, turn, maxTurning) + last.heading);
 
-        double newVelocity = getNewVelocity(last.velocity, maxVelocity, ahead, Double.POSITIVE_INFINITY);
+        double newVelocity = getTickVelocity(last.velocity, maxVelocity, ahead, Double.POSITIVE_INFINITY);
 
         return last.tick(newHeading, newVelocity);
     }
@@ -177,142 +186,66 @@ public abstract class MovementPredictor {
         double newHeading = Utils.normalAbsoluteAngle(R.constrain(-maxTurning, turn, maxTurning) + last.heading);
 
         double newVelocity = new Range(-maxTurning, maxTurning).isNearlyContained(turn) || !SHARP_TURNING
-                ? getNewVelocity(last.velocity, maxVelocity, ahead, remaining)
-                : getNewVelocity(last.velocity, 0, ahead, remaining);
+                ? getTickVelocity(last.velocity, maxVelocity, ahead, remaining)
+                : getTickVelocity(last.velocity, 0, ahead, remaining);
 
         return last.tick(newHeading, newVelocity);
     }
 
-    public static double getNewVelocity(double velocity, double maxVelocity, int ahead, double remaining) {
+    public static double getTickVelocity(double velocity, double maxVelocity, int ahead, double remaining) {
         if(ahead < 0) {
-            return -getNewVelocity(-velocity, maxVelocity, -ahead, remaining);
+            return -getTickVelocity(-velocity, maxVelocity, -ahead, remaining);
         }
 
-        return getVelocity(velocity, maxVelocity, remaining);
+        return getNewVelocity(velocity, maxVelocity, remaining);
     }
 
-    /* Piece of code from Robocode engine, too hard to try to come up with this from scratch */
-    private static double getVelocity(double currentVelocity,
-                                      double maxVelocity, double distanceRemaining) {
-        if (distanceRemaining < 0) {
-            return -getVelocity(-currentVelocity, maxVelocity,
-                    -distanceRemaining);
-        }
-
-        double newVelocity = currentVelocity;
-
-        final double maxSpeed = Math.abs(maxVelocity);
-        final double currentSpeed = Math.abs(currentVelocity);
-
-        // Check if we are decelerating, i.e. if the velocity is negative.
-        // Note that if the speed is too high due to a new max. velocity, we
-        // must also decelerate.
-        if (currentVelocity < 0 || currentSpeed > maxSpeed) {
-            // If the velocity is negative, we are decelerating
-            newVelocity = currentSpeed - Rules.DECELERATION;
-
-            // Check if we are going from deceleration into acceleration
-            if (newVelocity < 0) {
-                // If we have decelerated to velocity = 0, then the remaining
-                // time must be used for acceleration
-                double decelTime = currentSpeed / Rules.DECELERATION;
-                double accelTime = (1 - decelTime);
-
-                // New velocity (v) = d / t, where time = 1 (i.e. 1 turn).
-                // Hence, v = d / 1 => v = d
-                // However, the new velocity must be limited by the max.
-                // velocity
-                newVelocity = Math.min(maxSpeed, Math.min(Rules.DECELERATION
-                        * decelTime * decelTime + Rules.ACCELERATION
-                        * accelTime * accelTime, distanceRemaining));
-
-                // Note: We change the sign here due to the sign check later
-                // when returning the result
-                currentVelocity *= -1;
-            }
-        } else {
-            // Else, we are not decelerating, but might need to start doing so
-            // due to the remaining distance
-
-            // Deceleration time (t) is calculated by: v = a * t => t = v / a
-            final double decelTime = currentSpeed / Rules.DECELERATION;
-
-            // Deceleration time (d) is calculated by: d = 1/2 a * t^2 + v0 * t
-            // + t
-            // Adding the extra 't' (in the end) is special for Robocode, and v0
-            // is the starting velocity = 0
-            final double decelDist = 0.5 * Rules.DECELERATION * decelTime
-                    * decelTime + decelTime;
-
-            // Check if we should start decelerating
-            if (distanceRemaining <= decelDist) {
-                // If the distance < max. deceleration distance, we must
-                // decelerate so we hit a distance = 0
-
-                // Calculate time left for deceleration to distance = 0
-                double time = distanceRemaining / (decelTime + 1); // 1 is added
-                // here due
-                // to the extra 't'
-                // for Robocode
-
-                // New velocity (v) = a * t, i.e. deceleration * time, but not
-                // greater than the current speed
-
-                if (time <= 1) {
-                    // When there is only one turn left (t <= 1), we set the
-                    // speed to match the remaining distance
-                    newVelocity = Math.max(currentSpeed - Rules.DECELERATION,
-                            distanceRemaining);
-                } else {
-                    // New velocity (v) = a * t, i.e. deceleration * time
-                    newVelocity = time * Rules.DECELERATION;
-
-                    if (currentSpeed < newVelocity) {
-                        // If the speed is less that the new velocity we just
-                        // calculated, then use the old speed instead
-                        newVelocity = currentSpeed;
-                    } else if (currentSpeed - newVelocity > Rules.DECELERATION) {
-                        // The deceleration must not exceed the max.
-                        // deceleration.
-                        // Hence, we limit the velocity to the speed minus the
-                        // max. deceleration.
-                        newVelocity = currentSpeed - Rules.DECELERATION;
-                    }
-                }
-            } else {
-                // Else, we need to accelerate, but only to max. velocity
-                newVelocity = Math
-                        .min(currentSpeed + Rules.ACCELERATION, maxSpeed);
-            }
-        }
-
-        // Return the new velocity with the correct sign. We have been working
-        // with the speed, which is always positive
-        return (currentVelocity < 0) ? -newVelocity : newVelocity;
+    public static double getNewHeading(double heading, double turn, double velocity) {
+        double turnRate = Rules.getTurnRateRadians(velocity);
+        return Utils.normalAbsoluteAngle(heading + R.constrain(-turnRate, turn, +turnRate));
     }
 
-    /** This implementation is not getVelocity compliant. That means Robocode
-     * does not necessarily goes from decel to accel like this, but this performs
-     * precisely enough for _fastTick.
-     *
-     * @param velocity
-     * @param maxVelocity
-     * @param ahead
-     * @return
-     */
-    private static double getFastVelocity(double velocity, double maxVelocity, int ahead) {
-        double aheadVelocity = ahead * velocity;
-        double newVelocity;
-        if(aheadVelocity < -Rules.DECELERATION)
-            newVelocity = velocity + Rules.DECELERATION * ahead;
-        else if(aheadVelocity >= 0) {
-            newVelocity = velocity + Rules.ACCELERATION * ahead;
-        } else {
-            double decelerationPercent = -aheadVelocity / Rules.DECELERATION;
-            newVelocity = Rules.ACCELERATION * ahead * (1.0 - decelerationPercent);
+    public static double getNewVelocity(double velocity, double maxVelocity, double distance) {
+        if (distance < 0) {
+            // If the distance is negative, then change it to be positive
+            // and change the sign of the input velocity and the result
+            return -getNewVelocity(-velocity, maxVelocity, -distance);
         }
 
-        return R.constrain(-maxVelocity, newVelocity, maxVelocity);
+        final double goalVel;
+
+        if (distance == Double.POSITIVE_INFINITY) {
+            goalVel = maxVelocity;
+        } else {
+            goalVel = Math.min(getMaxVelocity(distance), maxVelocity);
+        }
+
+        if (velocity >= 0) {
+            return Math.max(velocity - Rules.DECELERATION, Math.min(goalVel, velocity + Rules.ACCELERATION));
+        }
+        // else
+        return Math.max(velocity - Rules.ACCELERATION, Math.min(goalVel, velocity + maxDecel(-velocity)));
+    }
+
+    private final static double getMaxVelocity(double distance) {
+        final double decelTime = Math.max(1, Math.ceil(
+                (Math.sqrt((4 * 2 / Rules.DECELERATION) * distance + 1) - 1) / 2));
+
+        if (decelTime == Double.POSITIVE_INFINITY) {
+            return Rules.MAX_VELOCITY;
+        }
+
+        final double decelDist = (decelTime / 2.0) * (decelTime - 1)
+                * Rules.DECELERATION;
+
+        return ((decelTime - 1) * Rules.DECELERATION) + ((distance - decelDist) / decelTime);
+    }
+
+    private static double maxDecel(double speed) {
+        double decelTime = speed / Rules.DECELERATION;
+        double accelTime = (1 - decelTime);
+
+        return Math.min(1, decelTime) * Rules.DECELERATION + Math.max(0, accelTime) * Rules.ACCELERATION;
     }
 
 }

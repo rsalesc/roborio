@@ -1,5 +1,6 @@
 package rsalesc.roborio.utils;
 
+import robocode.Bullet;
 import robocode.util.Utils;
 import rsalesc.roborio.enemies.ComplexEnemyRobot;
 import rsalesc.roborio.enemies.EnemyLog;
@@ -10,7 +11,9 @@ import rsalesc.roborio.utils.geo.AngularRange;
 import rsalesc.roborio.utils.geo.AxisRectangle;
 import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.geo.Range;
+import rsalesc.roborio.utils.waves.EnemyFireWave;
 import rsalesc.roborio.utils.waves.Wave;
+import rsalesc.roborio.utils.waves.WaveCollection;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -28,15 +31,17 @@ public class R {
     private static final DecimalFormat PERCENTAGE_FORMATTER = new DecimalFormat("#.##");
 
     public static double sin(double radians) {
-        double offset = radians - DOUBLE_PI * Math.floor((radians + PI) / DOUBLE_PI);
-        if(Math.abs(offset) > HALF_PI)
-            return -xsin((offset - Math.signum(offset) * PI) / HALF_PI);
-        else
-            return xsin(offset / HALF_PI);
+//        double offset = radians - DOUBLE_PI * Math.floor((radians + PI) / DOUBLE_PI);
+//        if(Math.abs(offset) > HALF_PI)
+//            return -xsin((offset - Math.signum(offset) * PI) / HALF_PI);
+//        else
+//            return xsin(offset / HALF_PI);
+        return Math.sin(radians);
     }
 
     public static double cos(double radians) {
-        return R.sin(radians + HALF_PI);
+//        return R.sin(radians + HALF_PI);
+        return Math.cos(radians);
     }
 
     public static double asin(double x) {
@@ -52,7 +57,8 @@ public class R {
     }
 
     public static double atan2(double y, double x) {
-        return fastAtan2(y, x);
+//        return fastAtan2(y, x);
+        return Math.atan2(y, x);
     }
 
     public static double tan(double radians) {
@@ -152,6 +158,10 @@ public class R {
     }
 
     public static boolean isBetween(int min, int x, int max) {
+        return min <= x && x <= max;
+    }
+
+    public static boolean isBetween(long min, long x, long max) {
         return min <= x && x <= max;
     }
 
@@ -317,5 +327,21 @@ public class R {
 
     public static boolean strictlyBetween(double min, double x, double max) {
         return R.nearOrBetween(min, x, max) && !R.isNear(x, min) && !R.isNear(x, max);
+    }
+
+    public static double basicSurferRounding(double x) {
+        return Math.max(Math.min(x, 0.15), Math.floor(x / 0.05) * 0.05 - (x < 0.05 ? 0.05 : 0));
+    }
+
+    public static Wave getFirer(WaveCollection waves, Bullet bullet, long time) {
+        for(Wave wave : waves) {
+            if(wave instanceof EnemyFireWave
+                    && !((EnemyFireWave) wave).isImaginary()
+                    && ((EnemyFireWave) wave).wasFiredBy(bullet, time)) {
+                return wave;
+            }
+        }
+
+        return null;
     }
 }

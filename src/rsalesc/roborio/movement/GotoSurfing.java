@@ -202,7 +202,7 @@ public class GotoSurfing extends BaseSurfing {
     }
 
     @Override
-    public void doMovement() {
+    public void doMovement(boolean shielding) {
         checkHits();
 
         // stop surfing current wave on touch
@@ -342,116 +342,6 @@ public class GotoSurfing extends BaseSurfing {
         dodging.log(f, type);
     }
 
-    private TargetingLog getTargetingLog(EnemyWave wave) {
-        double bulletSpeed = wave.getVelocity();
-        double bulletPower = Physics.bulletPower(bulletSpeed);
-
-        // get enemys position at the moment of shooting and my info at the moment before
-        MyRobot me = wave.getSnapshot().getOffset(-2); // decision time
-        MyRobot pastMe = wave.getSnapshot().getOffset(-3);
-
-        ComplexEnemyRobot enemy = wave.getEnemy();
-
-        Range preciseMea = MovementPredictor.getBetterMaximumEscapeAngle(
-                field,
-                me.getPredictionPoint(),
-                wave,
-                me.getDirection(wave.getSource())
-        );
-
-        TargetingLog log = new TargetingLog();
-        log.preciseMea = preciseMea;
-        log.time = wave.getTime() - 1; // is this right?
-        log.velocity = me.getVelocity();
-        log.source = wave.getSource();
-        log.direction = me.getDirection(wave.getSource()); // improve this?
-        log.distance = wave.getEnemy().getDistance();
-        log.absBearing = wave.getAngle(me.getPoint());
-        log.lateralVelocity = me.getLateralVelocity(wave.getSource());
-        log.advancingVelocity = me.getApproachingVelocity(wave.getSource());
-        log.bulletPower = bulletPower;
-        log.bulletsFired = _bulletsFired.toLong();
-        log.distance = me.getPoint().distance(wave.getSource());
-        log.accel = (me.getVelocity() - pastMe.getVelocity())
-                * Math.signum(me.getVelocity() + 1e-8);
-
-        log.bafHeading = me.getHeading();
-
-        if(me.getAhead() < 0)
-            log.bafHeading = Utils.normalAbsoluteAngle(log.bafHeading + R.PI);
-
-        log.relativeHeading = Math.abs(Utils.normalRelativeAngle(log.bafHeading -
-                Physics.absoluteBearing(wave.getSource(), me.getPoint())));
-
-        log.positiveEscape = R.getWallEscape(getRobot().getBattleField(), me.getPoint(), log.bafHeading);
-        log.negativeEscape = R.getWallEscape(getRobot().getBattleField(), me.getPoint(),
-                Utils.normalAbsoluteAngle(log.bafHeading + R.PI));
-
-        if(log.accel < 0)
-            log.accelDirection = -log.direction;
-        else
-            log.accelDirection = log.direction;
-
-        final int backInTime = 120;
-
-        log.timeAccel = log.accel > 0 ? 0 : 1;
-        log.timeDecel = log.accel < 0 ? 0 : 1;
-        log.timeRevert = me.getDirection(enemy.getPoint()) * pastMe.getDirection(enemy.getPoint()) < 0 ? 0 : 1;
-        log.revertLast20 = log.timeRevert ^ 1;
-        log.run = me.getVelocity() != pastMe.getVelocity() ? 0 : backInTime;
-        log.lastRun = backInTime;
-
-        Range coveredLast20 = new Range();
-
-        for(int i = 1; i < backInTime; i++) {
-            MyRobot curMe = myLog.atLeastAt(wave.getTime() - i - 1); // change to snapshot
-            MyRobot lastMe = myLog.atLeastAt(wave.getTime() - i - 2);
-
-            if(curMe == lastMe)
-                break;
-
-            double prevAccel = (curMe.getVelocity() - lastMe.getVelocity())
-                    * Math.signum(curMe.getVelocity() + 1e-8);
-            if(log.timeAccel == i && prevAccel <= 0)
-                log.timeAccel++;
-            if(log.timeDecel == i && prevAccel >= 0)
-                log.timeDecel++;
-            if(curMe.getDirection(wave.getSource()) * lastMe.getDirection(wave.getSource()) >= 0 && log.timeRevert == i)
-                log.timeRevert++;
-            if(log.run == backInTime && curMe.getVelocity() != lastMe.getVelocity())
-                log.run = i;
-            if(log.run != backInTime && curMe.getVelocity() != lastMe.getVelocity())
-                log.lastRun = i - log.run;
-
-            if(i <= 20) {
-                double curBearing = Physics.absoluteBearing(wave.getSource(), curMe.getPoint());
-                double curOffset = curBearing - log.absBearing;
-                coveredLast20.push(log.getGf(curOffset));
-
-                if(curMe.getDirection(wave.getSource()) * lastMe.getDirection(wave.getSource()) < 0)
-                    log.revertLast20++;
-            }
-        }
-
-        log.displaceLast10 = myLog.atLeastAt(wave.getTime() - 11).getPoint()
-                .distance(me.getPoint());
-
-        log.displaceLast20 = myLog.atLeastAt(wave.getTime() - 21).getPoint()
-                .distance(me.getPoint());
-
-        log.displaceLast40 = myLog.atLeastAt(wave.getTime() - 41).getPoint()
-                .distance(me.getPoint());
-
-        log.displaceLast80 = myLog.atLeastAt(wave.getTime() - 81).getPoint()
-                .distance(me.getPoint());
-
-        log.displaceLast160 = myLog.atLeastAt(wave.getTime() - 161).getPoint()
-                .distance(me.getPoint());
-
-        log.coveredLast20 = coveredLast20.maxAbsolute();
-
-        return log;
-    }
 
     private GotoSurfingCandidate[] getSurfingCandidates(PredictedPoint initialPoint,
                                                         EnemyFireWave wave, GuessFactorStats stats, Range preciseMea,

@@ -2,14 +2,14 @@ package rsalesc.roborio.movement;
 
 import robocode.*;
 import robocode.util.Utils;
-import rsalesc.roborio.enemies.ComplexEnemyRobot;
 import rsalesc.roborio.enemies.EnemyLog;
 import rsalesc.roborio.enemies.EnemyTracker;
+import rsalesc.roborio.energy.HeatLog;
+import rsalesc.roborio.energy.HeatTracker;
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.gunning.utils.VirtualBullet;
 import rsalesc.roborio.movement.distancing.DefaultDistanceController;
 import rsalesc.roborio.movement.distancing.DistanceController;
-import rsalesc.roborio.movement.distancing.FallbackDistanceController;
 import rsalesc.roborio.movement.predictor.MovementPredictor;
 import rsalesc.roborio.movement.predictor.PredictedPoint;
 import rsalesc.roborio.movement.predictor.WallSmoothing;
@@ -17,9 +17,12 @@ import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.myself.MyRobot;
 import rsalesc.roborio.myself.MySnapshot;
 import rsalesc.roborio.utils.BackAsFrontRobot;
+import rsalesc.roborio.utils.KeyConfig;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
-import rsalesc.roborio.utils.geo.*;
+import rsalesc.roborio.utils.geo.AngularRange;
+import rsalesc.roborio.utils.geo.AxisRectangle;
+import rsalesc.roborio.utils.geo.G;
 import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.storage.NamedStorage;
 import rsalesc.roborio.utils.structures.Knn;
@@ -31,31 +34,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import static rsalesc.roborio.movement.predictor.WallSmoothing.WALL_STICK;
-
 /**
  * Created by Roberto Sales on 21/08/17.
- * TODO: surf shadows
- * TODO: check why I am hiting the wall constantly
- * TODO: do not surf bullet hit bullet wave
  */
 public class TrueSurfing extends BaseSurfing {
-    private Double destAngle;
+    private Boolean stopped;
 
     private AxisRectangle field;
     private MyLog myLog;
     private EnemyLog targetLog;
 
-    private Double lastEnergy = null;
-
     private GuessFactorDodging dodging;
 
     private Point _lastImpact;
-
-    private int _lastAwayDirection = 1;
-
     private DistanceController controller;
-    private DistanceController fallbackController;
 
     public TrueSurfing(BackAsFrontRobot robot, String storageHint) {
         super(robot, storageHint);
@@ -65,7 +57,6 @@ public class TrueSurfing extends BaseSurfing {
         myLog = MyLog.getInstance();
 
         controller = new DefaultDistanceController();
-        fallbackController = new FallbackDistanceController();
     }
 
     public TrueSurfing setDodging(GuessFactorDodging dodging) {
@@ -114,20 +105,12 @@ public class TrueSurfing extends BaseSurfing {
     public void onBulletHit(BulletHitEvent e) {
         if(R.isNear(getRobot().getEnergy(), 0))
             return;
-        if(lastEnergy == null)
-            return;
-
-        lastEnergy -= Rules.getBulletDamage(e.getBullet().getPower());
     }
 
     @Override
     public void onHitByBullet(HitByBulletEvent e) {
         if(R.isNear(getRobot().getEnergy(), 0))
             return;
-
-        if(lastEnergy == null)
-            return;
-        lastEnergy += Rules.getBulletHitBonus(e.getBullet().getPower());
 
         Point hitPoint = new Point(e.getBullet().getX(), e.getBullet().getY());
 
@@ -159,22 +142,45 @@ public class TrueSurfing extends BaseSurfing {
         clearLastFire();
 
         targetLog = EnemyTracker.getInstance().getLog(e);
-        double energyDelta = e.getEnergy() - (lastEnergy == null ? e.getEnergy() : lastEnergy);
+        HeatLog heatLog = HeatTracker.getInstance().ensure(e.getName());
 
-        lastEnergy = e.getEnergy();
-
-        if(R.nearOrBetween(-Physics.MAX_POWER, energyDelta, -Physics.MIN_POWER)) {
-            double power = -energyDelta;
+        if(heatLog.hasShot(getTime() - 1)) {
+            double power = heatLog.getLastShotPower();
             double speed = Rules.getBulletSpeed(power);
+            long shotTime = getTime() - 1;
 
             MySnapshot snap = myLog.takeSnapshot(R.WAVE_SNAPSHOT_DIAMETER);
-            EnemyFireWave wave = new EnemyFireWave(snap, targetLog.atLeastAt(getTime() - 1), speed);
+            EnemyFireWave wave = new EnemyFireWave(snap, targetLog.atLeastAt(shotTime), speed);
 
             TargetingLog log = getTargetingLog(wave);
             waves.add(wave, new WaveSnap(log,
                     dodging.getStats(log, getViewCondition())));
 
             onFire(targetLog.getLatest(), power);
+        } else if(heatLog.ticksToCool() == 1) {
+            double power = getPowerPredictor().predictEnemyPower(MyLog.getInstance().getLatest(),
+                        targetLog.getLatest(), 0, 0);
+            double speed = Rules.getBulletSpeed(power);
+
+            MySnapshot snap = myLog.takeSnapshot(R.WAVE_SNAPSHOT_DIAMETER);
+
+            EnemyFireWave wave = new EnemyFireWave(snap, targetLog.atLeastAt(getTime()), speed).imaginary();
+
+            TargetingLog log = getTargetingLog(wave);
+            waves.add(wave, new WaveSnap(log,
+                    dodging.getStats(log, getViewCondition())));
+        } else if(heatLog.ticksToCool() == 0) {
+            double power = getPowerPredictor().predictEnemyPower(MyLog.getInstance().getLatest(),
+                    targetLog.getLatest(), 0, 0);
+            double speed = Rules.getBulletSpeed(power);
+
+            MySnapshot snap = myLog.takeSnapshot(R.WAVE_SNAPSHOT_DIAMETER);
+
+            EnemyFireWave wave = new EnemyFireWave(snap, targetLog.atLeastAt(getTime()), speed).imaginary();
+
+            TargetingLog log = getTargetingLog(wave);
+            waves.add(wave, new WaveSnap(log,
+                    dodging.getStats(log, getViewCondition())));
         }
 
         // flattening
@@ -192,33 +198,17 @@ public class TrueSurfing extends BaseSurfing {
     }
 
     public Knn.ParametrizedCondition getViewCondition() {
-        return new Knn.HitLeastCondition(getEnemyConfidence(), getRobot().getRoundNum());
+        return new LateFlatteningCondition(getEnemyConfidence(), getRobot().getRoundNum(), getEnemyAverageDistance());
     }
 
     public double getEnemyConfidence() {
         return 0.99999 * _bulletsHit.toDouble() / (_bulletsFired.toDouble() + 1e-9);
     }
 
-    private void fallback() {
-        if(targetLog != null) {
-            MyRobot my = MyLog.getInstance().getLatest();
-            ComplexEnemyRobot enemy = targetLog.getLatest();
-
-            double distance = my.getPoint().distance(enemy.getPoint());
-            double absBearing = Physics.absoluteBearing(enemy.getPoint(), my.getPoint());
-            double offset = fallbackController.getPerpendiculator(distance);
-
-            AxisRectangle field = getRobot().getBattleField().shrink(18, 18);
-            while(!field.strictlyContains(getRobot().getPoint().project(absBearing + offset * _lastAwayDirection, WALL_STICK))) {
-                offset += _lastAwayDirection * 0.05;
-            }
-
-            destAngle = absBearing + offset * _lastAwayDirection;
-            setBackAsFront(destAngle);
-
-            if(Math.abs(offset) > 4 * R.PI / 5)
-                _lastAwayDirection *= -1;
-        }
+    public double getEnemyAverageDistance() {
+        if(targetLog == null || targetLog.getLatest() == null)
+            return 0.0;
+        return targetLog.getAverageDistance();
     }
 
     @Override
@@ -234,16 +224,23 @@ public class TrueSurfing extends BaseSurfing {
     }
 
     @Override
-    public void doMovement() {
+    public void doMovement(boolean shielding) {
         checkHits();
-
-        destAngle = null;
+        feltBack = false;
+        stopped = false;
 
         final MyRobot me = myLog.getLatest();
         Wave nextWave = waves.earliestFireWave(me);
 
-        if(nextWave == null || !controller.shouldSurf(nextWave.getSource().distance(me.getPoint()))) {
-            fallback();
+        boolean hasData = dodging.hasData(getViewCondition());
+
+        if(shielding)
+            return;
+
+        if(nextWave == null || !controller.shouldSurf(nextWave.getSource().distance(me.getPoint()))
+                || !hasData) {
+            if(targetLog != null && targetLog.getLatest() != null)
+                fallback(targetLog.getLatest());
             return;
         }
 
@@ -277,6 +274,8 @@ public class TrueSurfing extends BaseSurfing {
         if (stopDanger < counterDanger && stopDanger < clockwiseDanger) {
             int stopDirection = me.getDirection(nextWave.getSource());
             if(stopDirection == 0) stopDirection = 1;
+
+            stopped = true;
 
             getRobot().setMaxVelocity(0);
             double angle = Utils.normalAbsoluteAngle(WallSmoothing.naive(shrinkedField, me.getPoint(),
@@ -346,11 +345,21 @@ public class TrueSurfing extends BaseSurfing {
         double impactTime = Math.max(nextWave.getVelocity() /
                 (distanceToSource - nextWave.getDistanceTraveled(initialPoint.getTime())), 1);
 
+        boolean stopProtection = false;
+        boolean diveProtection = false;
+
         for(int i = 0; i < 3; i++) {
             res[i].danger *= Physics.bulletPower(nextWave.getVelocity());
             res[i].danger /= impactTime;
-//            res[i].danger *=
-//                    Math.pow(2.45, distanceToSource / res[i].passPoint.distance(nextWave.getSource()) - 1);
+            res[i].danger *=
+                    Math.pow(2.45, distanceToSource / res[i].passPoint.distance(nextWave.getSource()) - 1);
+            if(diveProtection) {
+                if (i == 1 && stopProtection) {
+                    res[i].danger = 1e14;
+                } else if (i == 1 || (i == 0 && stopDirection == -1) || (i == 2 && stopDirection == 1)) {
+                    res[i].danger *= 50;
+                }
+            }
         }
 
         return res;
@@ -360,143 +369,33 @@ public class TrueSurfing extends BaseSurfing {
         dodging.log(f, type);
     }
 
-    private TargetingLog getTargetingLog(EnemyWave wave) {
-        double bulletSpeed = wave.getVelocity();
-        double bulletPower = Physics.bulletPower(bulletSpeed);
-
-        // get enemys position at the moment of shooting and my info at the moment before
-        MyRobot fireMe = wave.getSnapshot().getOffset(-1); // decision time
-        MyRobot me = wave.getSnapshot().getOffset(-2); // decision time
-        MyRobot pastMe = wave.getSnapshot().getOffset(-3);
-
-        ComplexEnemyRobot enemy = wave.getEnemy();
-
-        Range preciseMea = MovementPredictor.getBetterMaximumEscapeAngle(
-                field,
-                fireMe.getPredictionPoint(),
-                wave,
-                fireMe.getDirection(wave.getSource())
-        );
-
-        double halfWidth = Physics.hitAngle(wave.getSource().distance(me.getPoint())) / 2;
-        preciseMea.push(preciseMea.max + halfWidth);
-        preciseMea.push(preciseMea.min - halfWidth);
-
-        TargetingLog log = new TargetingLog();
-        log.preciseMea = preciseMea;
-        log.time = wave.getTime(); // is this right?
-        log.velocity = me.getVelocity();
-        log.source = wave.getSource();
-        log.direction = me.getDirection(wave.getSource()); // improve this?
-        log.distance = wave.getSource().distance(me.getPoint());
-        log.absBearing = wave.getAngle(me.getPoint());
-        log.lateralVelocity = me.getLateralVelocity(wave.getSource());
-        log.advancingVelocity = me.getApproachingVelocity(wave.getSource());
-        log.bulletPower = bulletPower;
-        log.bulletsFired = _bulletsFired.toLong();
-        log.distance = me.getPoint().distance(wave.getSource());
-        log.accel = (me.getVelocity() - pastMe.getVelocity())
-                * Math.signum(me.getVelocity() + 1e-8);
-
-        log.bafHeading = me.getHeading();
-
-        if(me.getAhead() < 0)
-            log.bafHeading = Utils.normalAbsoluteAngle(log.bafHeading + R.PI);
-
-        log.relativeHeading = Math.abs(Utils.normalRelativeAngle(log.bafHeading -
-                Physics.absoluteBearing(wave.getSource(), me.getPoint())));
-
-        log.positiveEscape = R.getWallEscape(getRobot().getBattleField(), me.getPoint(), log.bafHeading);
-        log.negativeEscape = R.getWallEscape(getRobot().getBattleField(), me.getPoint(),
-                Utils.normalAbsoluteAngle(log.bafHeading + R.PI));
-
-        if(log.accel < 0)
-            log.accelDirection = -log.direction;
-        else
-            log.accelDirection = log.direction;
-
-
-        final int backInTime = 120;
-
-        log.timeAccel = log.accel > 0 ? 0 : 1;
-        log.timeDecel = log.accel < 0 ? 0 : 1;
-        log.timeRevert = me.getDirection(enemy.getPoint()) * pastMe.getDirection(enemy.getPoint()) < 0 ? 0 : 1;
-        log.revertLast20 = log.timeRevert ^ 1;
-        log.run = me.getVelocity() != pastMe.getVelocity() ? 0 : backInTime;
-        log.lastRun = backInTime;
-
-        Range coveredLast20 = new Range();
-
-        for(int i = 1; i < backInTime; i++) {
-            MyRobot curMe = myLog.atLeastAt(wave.getTime() - i - 1); // change to snapshot
-            MyRobot lastMe = myLog.atLeastAt(wave.getTime() - i - 2);
-
-            if(curMe == lastMe)
-                break;
-
-            double prevAccel = (curMe.getVelocity() - lastMe.getVelocity())
-                    * Math.signum(curMe.getVelocity() + 1e-8);
-            if(log.timeAccel == i && prevAccel <= 0)
-                log.timeAccel++;
-            if(log.timeDecel == i && prevAccel >= 0)
-                log.timeDecel++;
-            if(curMe.getDirection(wave.getSource()) * lastMe.getDirection(wave.getSource()) >= 0 && log.timeRevert == i)
-                log.timeRevert++;
-            if(log.run == backInTime && curMe.getVelocity() != lastMe.getVelocity())
-                log.run = i;
-            if(log.run != backInTime && curMe.getVelocity() != lastMe.getVelocity())
-                log.lastRun = i - log.run;
-
-            if(i <= 20) {
-                double curBearing = Physics.absoluteBearing(wave.getSource(), curMe.getPoint());
-                double curOffset = curBearing - log.absBearing;
-                coveredLast20.push(log.getGf(curOffset));
-
-                if(curMe.getDirection(wave.getSource()) * lastMe.getDirection(wave.getSource()) < 0)
-                    log.revertLast20++;
-            }
-        }
-
-        log.displaceLast10 = myLog.atLeastAt(wave.getTime() - 11).getPoint()
-                .distance(me.getPoint());
-
-        log.displaceLast20 = myLog.atLeastAt(wave.getTime() - 21).getPoint()
-                .distance(me.getPoint());
-
-        log.displaceLast40 = myLog.atLeastAt(wave.getTime() - 41).getPoint()
-                .distance(me.getPoint());
-
-        log.displaceLast80 = myLog.atLeastAt(wave.getTime() - 81).getPoint()
-                .distance(me.getPoint());
-
-        log.displaceLast160 = myLog.atLeastAt(wave.getTime() - 161).getPoint()
-                .distance(me.getPoint());
-
-        log.coveredLast20 = coveredLast20.maxAbsolute();
-
-        return log;
-    }
-
     @Override
     public void onPaint(Graphics2D graphics) {
         G g = new G(graphics);
 
-        if(targetLog != null && targetLog.getLatest() != null) {
-            if (MyLog.getInstance().getLatest().getDirection(targetLog.getLatest().getPoint()) >= 0)
-                g.drawString(new Point(10, 550), "POSITIVE");
-            else
-                g.drawString(new Point(10, 550), "NEGATIVE");
-        }
+        if(KeyConfig.getInstance().get('m')) {
+            if (stopped != null && stopped) {
+                g.drawString(new Point(10, 550), "STOPPED");
+            }
 
-        if(_lastImpact != null) {
-            g.drawPoint(_lastImpact, Physics.BOT_WIDTH * 2, Color.WHITE);
-        }
+            g.drawString(new Point(700, 20), Double.toString(getEnemyConfidence()));
+            g.drawString(new Point(700, 30), Double.toString(getEnemyAverageDistance()));
 
-        if(destAngle != null) {
-            g.drawRadial(getRobot().getPoint(), destAngle, 0, WALL_STICK, Color.WHITE);
-        }
+            g.drawString(new Point(740, 10),
+                    DCMovement.getFlatteningCondition().test(getViewCondition()) ? "FLATTENING" : "");
 
-        drawWaves(graphics);
+            if (MovementPredictor.lastEscape != null) {
+                for (Point pt : MovementPredictor.lastEscape) {
+                    g.drawPoint(pt, 3.0, Color.WHITE);
+                }
+            }
+
+            if (_lastImpact != null) {
+                g.drawPoint(_lastImpact, Physics.BOT_WIDTH * 2, Color.WHITE);
+            }
+
+            drawWaves(graphics);
+        }
     }
 
     private class SurfingCandidate {

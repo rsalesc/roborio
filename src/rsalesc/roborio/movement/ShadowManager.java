@@ -2,14 +2,12 @@ package rsalesc.roborio.movement;
 
 import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
-import robocode.util.Utils;
 import rsalesc.roborio.gunning.utils.VirtualBullet;
 import rsalesc.roborio.utils.Physics;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.geo.AngularRange;
 import rsalesc.roborio.utils.geo.LineSegment;
 import rsalesc.roborio.utils.geo.Point;
-import rsalesc.roborio.utils.geo.Range;
 import rsalesc.roborio.utils.waves.EnemyFireWave;
 import rsalesc.roborio.utils.waves.Wave;
 
@@ -82,9 +80,76 @@ public class ShadowManager {
     }
 
     private void computeShadow(Wave wave, VirtualBullet bullet) {
+        ArrayList<Shadow> shades = shadows.get(wave);
+        AngularRange range = getShadow(wave, bullet);
+        if(range == null)
+            return;
+        shades.add(new Shadow(range.getAngle(0), range, bullet));
+    }
+
+//    public static AngularRange getShadow(Wave wave, VirtualBullet bullet) {
+//        long time = Math.max(bullet.getTime(), wave.getTime());
+//        if(wave.getSource().distance(bullet.project(time)) < wave.getDistanceTraveled(time) - R.EPSILON)
+//            return null;
+//
+//        int iterations = 0;
+//        while(wave.getSource().distance(bullet.project(time)) > wave.getDistanceTraveled(time) && iterations++ < 120) {
+//            time++;
+//        }
+//
+//        if(iterations > 120)
+//            return null;
+//
+//        LineSegment segment = new LineSegment(bullet.project(time - 1), bullet.project(time));
+//        Point[] interOuter = segment.intersect(wave.getCircle(time));
+//        Point[] interInner = segment.intersect(wave.getCircle(time - 1));
+//
+//        ArrayList<Point> candidates = new ArrayList<>();
+//        for(Point point : interOuter)
+//            candidates.add(point);
+//
+//        for(Point point : interInner)
+//            candidates.add(point);
+//
+//        if(wave.getCircle(time).isInside(segment.p1) && !wave.getCircle(time - 1).isInside(segment.p1))
+//            candidates.add(segment.p1);
+//
+//        if(wave.getCircle(time).isInside(segment.p2) && !wave.getCircle(time - 1).isInside(segment.p2))
+//            candidates.add(segment.p2);
+//
+//        Point mean = segment.middle();
+//        double absBearing = Physics.absoluteBearing(wave.getSource(), mean);
+//
+//        Range range = new Range();
+//
+//        for(Point point : candidates) {
+//            double offset = Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), point) - absBearing);
+//            range.push(offset);
+//        }
+//
+//        return new AngularRange(absBearing, range);
+//    }
+
+    public static AngularRange getShadow(Wave wave, VirtualBullet bullet) {
+        LineSegment intersection = getShadowSegment(wave, bullet);
+        if(intersection == null)
+            return null;
+
+        Point middle = intersection.middle();
+
+        double absBearing = Physics.absoluteBearing(wave.getSource(), middle);
+        AngularRange range = new AngularRange(absBearing, -1e-8, +1e-8);
+
+        range.pushAngle(Physics.absoluteBearing(wave.getSource(), intersection.p1));
+        range.pushAngle(Physics.absoluteBearing(wave.getSource(), intersection.p2));
+
+        return range;
+    }
+
+    public static LineSegment getShadowSegment(Wave wave, VirtualBullet bullet) {
         long time = Math.max(bullet.getTime(), wave.getTime());
         if(wave.getSource().distance(bullet.project(time)) < wave.getDistanceTraveled(time) - R.EPSILON)
-            return;
+            return null;
 
         int iterations = 0;
         while(wave.getSource().distance(bullet.project(time)) > wave.getDistanceTraveled(time) && iterations++ < 120) {
@@ -92,37 +157,24 @@ public class ShadowManager {
         }
 
         if(iterations > 120)
-            return;
+            return null;
 
         LineSegment segment = new LineSegment(bullet.project(time - 1), bullet.project(time));
-        Point[] interOuter = segment.intersect(wave.getCircle(time));
-        Point[] interInner = segment.intersect(wave.getCircle(time - 1));
 
-        ArrayList<Point> candidates = new ArrayList<>();
-        for(Point point : interOuter)
-            candidates.add(point);
+        Point pA;
+        Point pB;
 
-        for(Point point : interInner)
-            candidates.add(point);
+        if(wave.getCircle(time - 1).isInside(segment.p2))
+            pB = segment.rayLikeIntersect(wave.getCircle(time - 1));
+        else
+            pB = segment.p2;
 
-        if(wave.getCircle(time).isInside(segment.p1) && !wave.getCircle(time - 1).isInside(segment.p1))
-            candidates.add(segment.p1);
+        if(wave.getCircle(time).isInside(segment.p1))
+            pA = segment.p1;
+        else
+            pA = segment.rayLikeIntersect(wave.getCircle(time));
 
-        if(wave.getCircle(time).isInside(segment.p2) && !wave.getCircle(time - 1).isInside(segment.p2))
-            candidates.add(segment.p2);
-
-        Point mean = segment.middle();
-        double absBearing = Physics.absoluteBearing(wave.getSource(), mean);
-
-        Range range = new Range();
-
-        for(Point point : candidates) {
-            double offset = Utils.normalRelativeAngle(Physics.absoluteBearing(wave.getSource(), point) - absBearing);
-            range.push(offset);
-        }
-
-        ArrayList<Shadow> shades = shadows.get(wave);
-        shades.add(new Shadow(absBearing, new AngularRange(absBearing, range), bullet));
+        return new LineSegment(pA, pB);
     }
 
     private void cleanup(HashSet<Wave> newWaves, HashSet<VirtualBullet> newBullets) {
@@ -180,6 +232,6 @@ public class ShadowManager {
         if(Double.isNaN(res))
             return 1.0;
 
-        return res;
+        return 1.0 - res;
     }
 }

@@ -81,4 +81,12 @@ public class KnnSet<T> {
     public List<Knn<T>> getKnns() {
         return knns;
     }
+
+    public int availableData(Object o) {
+        int res = 0;
+        for(Knn<T> knn : knns)
+            if(knn.isEnabled(o))
+                res += knn.size();
+        return res;
+    }
 }

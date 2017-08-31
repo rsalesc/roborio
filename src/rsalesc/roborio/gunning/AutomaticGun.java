@@ -31,8 +31,7 @@ public abstract class AutomaticGun extends Gun {
         super(robot);
         firePending = false;
         firePower = Physics.MAX_POWER;
-        this.isVirtual = isVirtual;
-        isUsed = false;
+        isUsed = !isVirtual;
         firedBullets = new HashSet<>();
         lastFire = -100;
     }
@@ -60,6 +59,7 @@ public abstract class AutomaticGun extends Gun {
     public AutomaticGun build() {
         buildStructure();
         built = true;
+        isUsed = !isVirtual;
         return this;
     }
 
@@ -72,7 +72,7 @@ public abstract class AutomaticGun extends Gun {
     }
 
     public boolean isActive() {
-        return !isVirtual || isUsed;
+        return isUsed;
     }
 
     public long getTime() {

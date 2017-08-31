@@ -18,6 +18,14 @@ public class VirtualBullet {
         this.source = source;
     }
 
+    public VirtualBullet(Point source, double heading, double power, long time) {
+        this.time = time;
+        this.source = source;
+        this.bullet =
+                new Bullet(heading, source.x, source.y, power, "doesntmatter",
+                        "lala", false, 921);
+    }
+
     public Bullet getBullet() {
         return bullet;
     }
@@ -44,9 +52,6 @@ public class VirtualBullet {
 
     public Point getSource() {
         return source;
-    }
-    public Point getPoint() {
-        return new Point(bullet.getX(), bullet.getY());
     }
 
     public Point travel(long delta) {

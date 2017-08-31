@@ -4,6 +4,7 @@ import robocode.ScannedRobotEvent;
 import rsalesc.roborio.utils.BackAsFrontRobot;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Roberto Sales on 21/07/17.
@@ -64,5 +65,13 @@ public class EnemyTracker {
 
     public void clear() {
         seenEnemies.clear();
+    }
+
+    public ComplexEnemyRobot getLatest() {
+        for(Map.Entry<String, EnemyLog> entry : seenEnemies.entrySet()) {
+            return entry.getValue().getLatest();
+        }
+
+        return null;
     }
 }

@@ -16,9 +16,13 @@ import rsalesc.roborio.utils.BattleTime;
 public class EnemyLog {
     private static int              LOG_SIZE = 2000;
 
-    private ComplexEnemyRobot[]     log;
-    private int                     length;
-    private int                     removed;
+    private long                    approaching = 0;
+    private long                    everLength = 0;
+    private double                  distanceSum = 0;
+
+    private ComplexEnemyRobot[]         log;
+    private int                         length;
+    private int                         removed;
 
     EnemyLog() {
         log = new ComplexEnemyRobot[LOG_SIZE];
@@ -104,6 +108,13 @@ public class EnemyLog {
 
         enemy.setAhead(newAhead);
 
+        if(enemy.getApproachingVelocity() > 5.75) {
+            approaching++;
+        }
+
+        distanceSum += enemy.getDistance();
+        everLength++;
+
         log[realAt(length++)] = enemy;
         if(length > LOG_SIZE) {
             length = LOG_SIZE;
@@ -163,5 +174,17 @@ public class EnemyLog {
 
     public double getEnergyDelta() {
         return getLatest().getEnergy() - getKthLatest(2).getEnergy();
+    }
+
+    public boolean isRamming() {
+        return approaching * 2 > everLength;
+    }
+
+    public double getRamming() {
+        return (double) approaching / everLength;
+    }
+
+    public double getAverageDistance() {
+        return distanceSum / everLength;
     }
 }

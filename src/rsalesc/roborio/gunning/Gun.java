@@ -8,6 +8,7 @@ import rsalesc.roborio.gunning.utils.GunHitEvent;
 import rsalesc.roborio.utils.BackAsFrontRobot;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * Created by Roberto Sales on 24/07/17.
@@ -26,6 +27,7 @@ public abstract class Gun {
     public void onBulletHit(BulletHitEvent e) {
         onGunHit(new GunHitEvent(e));
     }
+    public void onKeyPressed(KeyEvent e) {}
 
     public BackAsFrontRobot getRobot() {
         return robot;

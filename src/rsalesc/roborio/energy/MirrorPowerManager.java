@@ -1,13 +1,14 @@
 package rsalesc.roborio.energy;
 
 import rsalesc.roborio.enemies.ComplexEnemyRobot;
+import rsalesc.roborio.enemies.EnemyTracker;
 import rsalesc.roborio.gunning.utils.TargetingLog;
 import rsalesc.roborio.myself.MyRobot;
-import rsalesc.roborio.utils.structures.Knn;
-import rsalesc.roborio.utils.structures.KnnTree;
 import rsalesc.roborio.utils.R;
 import rsalesc.roborio.utils.Strategy;
 import rsalesc.roborio.utils.storage.NamedStorage;
+import rsalesc.roborio.utils.structures.Knn;
+import rsalesc.roborio.utils.structures.KnnTree;
 
 import java.util.List;
 
@@ -90,37 +91,38 @@ public class MirrorPowerManager extends EnergyManager {
         if(enemy.getDistance() < 150)
             return Math.min(enemy.getEnergy() * 0.25, Math.min(2.9999, Math.max(robot.getEnergy() - 0.4, 0)));
 
-        double hisPower = predictEnemyPower(robot, enemy, myScore, hisScore);
+        boolean ramming = EnemyTracker.getInstance().getLog(enemy).isRamming();
+        double hisPower = Double.POSITIVE_INFINITY;
+        if(myScore < 0.12) {
+            hisPower = predictEnemyPower(robot, enemy, myScore, hisScore);
+        } else if(myScore < 0.17) {
+            hisPower = Math.min(predictEnemyPower(robot, enemy, myScore, hisScore) + 0.1, 3.0);
+        }
 
         double distance = robot.getPoint().distance(enemy.getPoint());
         double myEnergy = robot.getEnergy();
         double hisEnergy = enemy.getEnergy();
-        double basePower = myScore > 0.28 ? 2.9 : 1.85;
+        double basePower = (myScore > 0.31 && robot.getBattleTime().getRound() >= 1 || ramming)
+                ? 2.95
+                : (hisEnergy*2.5 <= myEnergy && myEnergy >= 15 ? 2.4 : 1.95);
 
-        if(hisEnergy+1 < myEnergy && myEnergy < 60
-                && (hisEnergy * 2.5 >= myEnergy || myEnergy < 15)) {
-            basePower -= (myEnergy - hisEnergy) / 50 * 0.3;
-        } else {
-            basePower = 2.5;
-            if(distance > 500)
-                basePower -= (distance - 500) / 300;
+        double expectedPower = Math.max((myEnergy - 20 + R.constrain(-10, myEnergy - hisEnergy, +30) / 2) / 25, 0);
+
+        if(distance > 500) {
+            expectedPower -= (distance - 500) / 300;
         }
 
-        if(distance < 300)
-            basePower += (200 - distance) / 300;
+        if(distance < 300) {
+            expectedPower += (300 - distance) / 200;
+        }
 
-        double power = R.constrain(0.1, basePower, 3.0);
-
-        if(myEnergy < 5)
-            power /= 3;
-        else if(myEnergy < 10)
-            power /= 2;
+        double power = R.constrain(0.1, Math.min(basePower, expectedPower), 3.0);
 
         if(myEnergy < 0.4)
             return 0;
 
-        return R.constrain(0.1, Math.min(power, hisEnergy * 0.25),
-                Math.max(Math.min(hisPower, myEnergy - 0.1), 0));
+        return R.basicSurferRounding(R.constrain(0.15, Math.min(power, hisEnergy * 0.25),
+                Math.max(Math.min(hisPower - 0.1, myEnergy - 0.1), 0.1)));
     }
 
     private static class ConservativeStrategy extends Strategy {

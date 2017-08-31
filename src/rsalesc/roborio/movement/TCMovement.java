@@ -11,7 +11,7 @@ public class TCMovement extends Movement {
     }
 
     @Override
-    public void doMovement() {
+    public void doMovement(boolean shielding) {
 
     }
 }

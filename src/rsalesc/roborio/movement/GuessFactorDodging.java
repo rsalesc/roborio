@@ -21,6 +21,7 @@ public abstract class GuessFactorDodging {
         return storageHint;
     }
 
+    public abstract boolean hasData(Knn.ParametrizedCondition condition);
     public abstract GuessFactorStats getLastStats();
     public abstract void log(TargetingLog log, BreakType type);
     public abstract GuessFactorStats getStats(TargetingLog log, Knn.ParametrizedCondition condition);

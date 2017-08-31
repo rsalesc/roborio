@@ -26,6 +26,11 @@ public abstract class VCSGuessFactorDodging extends GuessFactorDodging {
     }
 
     @Override
+    public boolean hasData(Knn.ParametrizedCondition condition) {
+        return true;
+    }
+
+    @Override
     public void log(TargetingLog missLog, BreakType type) {
         // process range gf
         double gfLow = missLog.getGfFromAngle(missLog.preciseIntersection.getStartingAngle());

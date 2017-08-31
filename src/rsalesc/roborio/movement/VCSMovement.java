@@ -46,7 +46,7 @@ public class VCSMovement extends TrueSurfing {
                     .add(new MultipleSegmentedBuffer()
                         .setMultipleStrategy(new SlicingFlattenerStrategy())
                         .weightsSegments()
-                        .setWeight(25)
+                        .setWeight(35)
                         .setCondition(FLATTENER_LEAST)
                         .logsBreak())
 //                    .add(new MultipleSegmentedBuffer()

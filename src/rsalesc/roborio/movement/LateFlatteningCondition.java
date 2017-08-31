@@ -9,14 +9,17 @@ public class LateFlatteningCondition extends Knn.HitLeastCondition {
     public int lateRound = -1;
     public int lastRound = -1;
     public int currentRound = -1;
+    public double avgDistance;
 
-    public LateFlatteningCondition(double min, int rounds) {
+    public LateFlatteningCondition(double min, int rounds, double avgDistance) {
         super(min, rounds);
+        this.avgDistance = avgDistance;
     }
 
-    public LateFlatteningCondition(double min, int rounds, int lateRound) {
+    public LateFlatteningCondition(double min, int rounds, double avgDistance, int lateRound) {
         super(min, rounds);
         this.lateRound = lateRound;
+        this.avgDistance = avgDistance;
     }
 
     @Override
@@ -26,7 +29,12 @@ public class LateFlatteningCondition extends Knn.HitLeastCondition {
 
     @Override
     public boolean test(Object o) {
-        boolean res = super.test(o) || (lastRound  >= lateRound);
+        if(!(o instanceof LateFlatteningCondition))
+            throw new IllegalStateException();
+
+        boolean res = (super.test(o) || (lastRound  >= lateRound));
+        LateFlatteningCondition oo = (LateFlatteningCondition) o;
+        res = res && oo.avgDistance > avgDistance;
         if(res)
             lastRound = currentRound;
         return res;

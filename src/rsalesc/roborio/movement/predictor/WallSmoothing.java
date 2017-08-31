@@ -9,7 +9,7 @@ import rsalesc.roborio.utils.geo.Point;
 public abstract class WallSmoothing {
     public static final double WALL_STICK = 160;
 
-    public static double naive(AxisRectangle field, Point source, double angle, int direction) {
+    public static double naive(AxisRectangle shrinkedField, Point source, double angle, int direction) {
 //        if(field.contains(source.project(angle, WALL_STICK)))
 //            return angle;
 //
@@ -24,7 +24,7 @@ public abstract class WallSmoothing {
 //        if(field.contains(source.project(angle + l * direction, WALL_STICK)))
 //            return angle + l * direction;
 
-        while(!field.strictlyContains(source.project(angle, WALL_STICK)))
+        while(!shrinkedField.strictlyContains(source.project(angle, WALL_STICK)))
             angle += 0.05*direction;
 
         return angle;

@@ -63,8 +63,12 @@ public class Wave {
 
     public boolean isVirtual() { return true; }
 
+    public boolean hasStarted(long time) {
+        return time >= this.time;
+    }
+
     public double getDistanceTraveled(long time) {
-        return velocity * (time - this.time);
+        return Math.max(velocity * (time - this.time), 0);
     }
 
     public boolean hasTouchedRobot(Point point, long time) {

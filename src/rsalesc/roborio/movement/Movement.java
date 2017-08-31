@@ -7,6 +7,7 @@ import rsalesc.roborio.gunning.utils.VirtualBullet;
 import rsalesc.roborio.utils.BackAsFrontRobot;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * Created by Roberto Sales on 22/07/17.
@@ -29,7 +30,7 @@ public abstract class Movement {
         this.robot = robot;
     }
 
-    public abstract void doMovement();
+    public abstract void doMovement(boolean shielding);
     public void doShadowing(VirtualBullet[] bullets) {}
     public void onScan(ScannedRobotEvent e) {}
 
@@ -38,6 +39,7 @@ public abstract class Movement {
     public void onBulletHit(BulletHitEvent e) {}
     public void onHitByBullet(HitByBulletEvent e) {}
     public void onBulletHitBullet(BulletHitBulletEvent e) {}
+    public void onKeyPressed(KeyEvent e) {}
 
     public void onPaint(Graphics2D g) {}
 

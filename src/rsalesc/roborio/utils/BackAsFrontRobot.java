@@ -3,7 +3,6 @@ package rsalesc.roborio.utils;
 import robocode.*;
 import robocode.util.Utils;
 import rsalesc.roborio.movement.predictor.MovementPredictor;
-import rsalesc.roborio.myself.MyLog;
 import rsalesc.roborio.utils.geo.AxisRectangle;
 import rsalesc.roborio.utils.geo.Point;
 import rsalesc.roborio.utils.geo.Range;
@@ -15,9 +14,12 @@ import static rsalesc.roborio.utils.R.HALF_PI;
 
 /**
  * Created by Roberto Sales on 22/07/17.
+ * TODO: prediction with sharp turning not working
  */
 public abstract class BackAsFrontRobot extends AdvancedRobot {
-    public static final boolean SHARP_TURNING = true;
+    public static final boolean SHARP_TURNING = false;
+
+    private int idle = 0;
 
     private RobotStatus status;
     private AxisRectangle field;
@@ -39,6 +41,11 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
             sharpened = false;
         }
 
+        if(status != null && status.getGunHeat() == 0 && status.getGunHeat() == e.getStatus().getGunHeat())
+            idle++;
+        else
+            idle = 0;
+
         status = e.getStatus();
         field = _getBattleField();
     }
@@ -49,21 +56,6 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
 
     public double getY() {
         return status.getY();
-    }
-
-    @Override
-    public double getDistanceRemaining() {
-        return status.getDistanceRemaining();
-    }
-
-    @Override
-    public double getGunTurnRemainingRadians() {
-        return status.getGunTurnRemainingRadians();
-    }
-
-    @Override
-    public double getGunTurnRemaining() {
-        return status.getGunTurnRemaining();
     }
 
     @Override
@@ -120,11 +112,6 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     }
 
     @Override
-    public double getTurnRemainingRadians() {
-        return status.getTurnRemainingRadians();
-    }
-
-    @Override
     public double getGunHeading() {
         return status.getGunHeading();
     }
@@ -166,6 +153,7 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     }
 
     public void setBackAsFront(double bearing, double distance) {
+        bearing = Utils.normalAbsoluteAngle(bearing);
         double angle = Utils.normalRelativeAngle(bearing - getHeadingRadians());
         double narrowAngle = getQuickestTurn(angle);
         setTurnRightRadians(R.isNear(distance, 0.0) ? 0 : narrowAngle);
@@ -189,6 +177,12 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         return Physics.maxTurningRate(getVelocity());
     }
 
+    public void setTurnTo(double radians) {
+        radians = Utils.normalAbsoluteAngle(radians);
+        double offset = Utils.normalRelativeAngle(radians - getHeadingRadians());
+        setTurnRightRadians(offset);
+    }
+
     private void doSharpTurning() {
         double maxTurn = getMaxTurning();
         Range turnRange = new Range(-maxTurn, +maxTurn);
@@ -201,6 +195,7 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
     }
 
     public void setGunTo(double radians) {
+        radians = Utils.normalAbsoluteAngle(radians);
         double offset = Utils.normalRelativeAngle(radians - getGunHeadingRadians());
         setTurnGunRightRadians(offset);
     }
@@ -209,24 +204,27 @@ public abstract class BackAsFrontRobot extends AdvancedRobot {
         return new AxisRectangle(getX() - 18, getX() + 18, getY() - 18, getY() + 18);
     }
 
+    public double getNewVelocity() {
+        return MovementPredictor.getNewVelocity(getVelocity(), getMaxVelocity(), getDistanceRemaining());
+    }
+
+    public double getNewHeading() {
+        return MovementPredictor.getNewHeading(getHeadingRadians(), getVelocity(), getTurnRemainingRadians());
+    }
+
     public Point getNextPosition() {
-        // safely assume that if the bot is not moving, it will keep this way
-        // its ok to do this because even if it moves its displacement will be really small
-        // and prediction will correct any mistake in the next ticks
-        if(getVelocity() == 0)
-            return getPoint();
+        return getPoint().project(getNewHeading(), getNewVelocity());
+    }
 
-        double maxTurn = Physics.maxTurningRate(getVelocity());
-        double turn = R.constrain(-maxTurn, getTurnRemainingRadians(), +maxTurn);
-        double absHeading = Utils.normalAbsoluteAngle(getHeadingRadians() + turn);
-        double remaining = getDistanceRemaining();
-        int ahead = MyLog.getInstance().getLatest().getAhead();
+    public int getTicksToCool() {
+        return (int) Math.ceil(getGunHeat() / getGunCoolingRate());
+    }
 
-        if(ahead == 0)
-            return getPoint();
-
-        double newVelocity = MovementPredictor.getNewVelocity(getVelocity(), getMaxVelocity(), ahead, remaining);
-        return getPoint().project(absHeading, newVelocity);
+    /**
+     * get the number of complete ticks with gunheat == 0
+     */
+    public int getIdleTicks() {
+        return idle;
     }
 
     public void handle(Exception e) {

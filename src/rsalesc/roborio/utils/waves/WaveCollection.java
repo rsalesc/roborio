@@ -109,6 +109,18 @@ public class WaveCollection implements Iterable<Wave> {
         return removed;
     }
 
+    public EnemyFireWave findImaginaryWave(long time) {
+        for(Wave wave : waves) {
+            if(wave instanceof EnemyFireWave) {
+                EnemyFireWave fireWave = (EnemyFireWave) wave;
+                if(fireWave.isImaginary() && fireWave.getTime() == time)
+                    return fireWave;
+            }
+        }
+
+        return null;
+    }
+
     public int size() {
         return waves.size();
     }

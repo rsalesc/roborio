@@ -33,6 +33,11 @@ public abstract class DCGuessFactorDodging extends GuessFactorDodging {
     }
 
     @Override
+    public boolean hasData(Knn.ParametrizedCondition condition) {
+        return knn.availableData(condition) > 0;
+    }
+
+    @Override
     public GuessFactorStats getLastStats() {
         return lastStats;
     }
